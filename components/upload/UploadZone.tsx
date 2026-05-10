@@ -17,7 +17,6 @@ interface Props {
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'] as const;
-type AllowedMime = (typeof ALLOWED)[number];
 
 // 분석 단계별 메시지 (각 단계 약 4~5초)
 const PHASES = [
