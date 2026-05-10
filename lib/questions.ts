@@ -1,0 +1,143 @@
+import type { Question } from '@/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    id: 1,
+    category: '피부',
+    type: 'text',
+    question: '여름에 햇볕을 오래 쬐면 어떻게 되나요?',
+    options: [
+      { label: '금방 빨개졌다가 다시 하얘져요',   value: 'burn_red' },
+      { label: '까맣게 잘 타고 잘 안 돌아와요',   value: 'tan_dark' },
+      { label: '조금 붉어지다가 서서히 타요',      value: 'gradual_tan' },
+      { label: '거의 변화가 없어요',               value: 'no_change' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 2,
+    category: '피부',
+    type: 'image',
+    question: '손목 안쪽 혈관 색이 어떤가요?',
+    options: [
+      { label: '파란빛·보라빛이 강해요',           value: 'blue_purple' },
+      { label: '초록빛이 강해요',                  value: 'green' },
+      { label: '파란빛과 초록빛이 섞여 있어요',     value: 'mix' },
+      { label: '빛에 따라 달라 보여요',            value: 'varies' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 3,
+    category: '피부',
+    type: 'text',
+    question: '평소 피부 고민이 무엇인가요?',
+    options: [
+      { label: '붉은기·홍조가 잘 올라와요',        value: 'redness' },
+      { label: '칙칙하고 노란빛이 돌아요',         value: 'dull_yellow' },
+      { label: '다크서클이 심한 편이에요',          value: 'dark_circles' },
+      { label: '특별한 고민이 없어요',             value: 'none' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 4,
+    category: '눈',
+    type: 'image',
+    question: '눈동자 색과 테두리가 어떤 편인가요?',
+    options: [
+      { label: '진한 검정·테두리가 선명해요',       value: 'black_sharp' },
+      { label: '짙은 갈색·테두리가 약간 있어요',    value: 'dark_brown' },
+      { label: '밝은 갈색·테두리가 흐려요',         value: 'light_brown' },
+      { label: '황갈색이나 올리브빛이에요',         value: 'golden_olive' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 5,
+    category: '머리',
+    type: 'image',
+    question: '아무것도 하지 않은 내 자연 머리색은요?',
+    options: [
+      { label: '블루블랙·아주 진한 검정',           value: 'blue_black' },
+      { label: '자연스러운 검정',                  value: 'natural_black' },
+      { label: '약간 갈빛이 도는 검정',            value: 'brown_black' },
+      { label: '자연갈색 또는 밝은 갈색',           value: 'brown_light' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 6,
+    category: '스타일링',
+    type: 'image',
+    question: '골드와 실버 중 피부에 더 잘 어울린다고 느끼는 건요?',
+    options: [
+      { label: '골드가 훨씬 잘 어울려요',           value: 'gold' },
+      { label: '실버가 훨씬 잘 어울려요',           value: 'silver' },
+      { label: '비슷한 것 같아요',                 value: 'both' },
+      { label: '주얼리를 잘 안 해요',              value: 'no_jewelry' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 7,
+    category: '스타일링',
+    type: 'image',
+    question: "이 색 입었을 때 '얼굴 밝아 보인다'는 말을 들은 적 있나요?",
+    options: [
+      { label: '따뜻한 색 (코랄·오렌지·카멜·머스타드)', value: 'warm_colors' },
+      { label: '차가운 색 (라벤더·로즈·민트·아이시핑크)', value: 'cool_colors' },
+      { label: '깊은 색 (버건디·네이비·올리브·초콜릿)', value: 'deep_colors' },
+      { label: '밝고 선명한 색 (빨강·로열블루·에메랄드)', value: 'bright_vivid' },
+      { label: '잘 모르겠어요',                    value: 'unknown' },
+    ],
+  },
+  {
+    id: 8,
+    category: '스타일링',
+    type: 'text',
+    question: '파운데이션을 고를 때 보통 어떤 쉐이드를 선택하나요?',
+    options: [
+      { label: '핑크·로즈 계열이 잘 맞아요',        value: 'pink_rose' },
+      { label: '옐로·베이지 계열이 잘 맞아요',       value: 'yellow_beige' },
+      { label: '뉴트럴(중간)이 잘 맞아요',          value: 'neutral' },
+      { label: '파운데이션을 잘 안 써요',           value: 'no_foundation' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 9,
+    category: '고민',
+    type: 'text',
+    question: '옷이나 메이크업 색을 고를 때 어떤 고민이 있나요?',
+    options: [
+      { label: '예쁜데 나한테만 안 어울리는 것 같아요',   value: 'looks_bad' },
+      { label: '항상 비슷한 무채색만 고르게 돼요',       value: 'achromatic_only' },
+      { label: '색을 입으면 얼굴이 떠 보여요',          value: 'looks_floating' },
+      { label: '트렌드 컬러를 소화하지 못하는 것 같아요', value: 'cant_pull_trend' },
+      { label: '잘 모르겠어요',                      value: 'unknown' },
+    ],
+  },
+  {
+    id: 10,
+    category: '고민',
+    type: 'text',
+    question: '사람들이 나에게 자주 하는 말은요?',
+    options: [
+      { label: '청순하다·부드럽다는 말을 들어요',    value: 'pure_soft' },
+      { label: '세련됐다·도시적이라는 말을 들어요',  value: 'chic_urban' },
+      { label: '따뜻하다·친근하다는 말을 들어요',   value: 'warm_friendly' },
+      { label: '강렬하다·개성 있다는 말을 들어요',  value: 'strong_unique' },
+      { label: '잘 모르겠어요',                   value: 'unknown' },
+    ],
+  },
+  {
+    id: 11,
+    category: '고민',
+    type: 'text',
+    question: '퍼스널컬러와 관련해 평소 고민이나 궁금한 점이 있다면 자유롭게 적어주세요.',
+    options: [], // 주관식 — 최대 200자
+  },
+];
+
+export const TOTAL_QUESTIONS = QUESTIONS.filter((q) => q.options.length > 0).length; // 10
