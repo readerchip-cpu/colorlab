@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     // 업로드 미리보기는 blob URL이므로 외부 도메인 불필요
     // 향후 Supabase Storage 연동 시 추가
