@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\HJ\\\\Desktop\\\\color lab\\\\Web\\\\colorlab\\\\app\\\\opengraph-image.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\HJ\\\\Desktop\\\\color lab\\\\Web\\\\colorlab\\\\app\\\\\\(test\\)\\\\result\\\\[id]\\\\opengraph-image.tsx\" -Force)",
+      "Bash(Write-Host \"deleted\")"
     ]
   }
 }

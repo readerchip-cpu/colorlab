@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     description: '나에게 진짜 어울리는 색, 10분 만에 알아보세요.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: '컬러랩 AI 퍼스널컬러 진단',
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '컬러랩 | AI 퍼스널컬러 진단',
     description: '나에게 진짜 어울리는 색, 10분 만에 알아보세요.',
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
   },
   robots: {
     index: true,
