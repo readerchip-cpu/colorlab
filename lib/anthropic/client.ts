@@ -86,7 +86,13 @@ const Q_NAMES = [
 
 function formatAnswers(answers: TestAnswers): string {
   return Q_KEYS
-    .map((key, i) => `${Q_NAMES[i]}: ${ANSWER_LABELS[answers[key]] ?? answers[key]}`)
+    .map((key, i) => {
+      const val = answers[key];
+      const label = Array.isArray(val)
+        ? val.map((v) => ANSWER_LABELS[v] ?? v).join(', ')
+        : (ANSWER_LABELS[val as string] ?? val);
+      return `${Q_NAMES[i]}: ${label}`;
+    })
     .join('\n');
 }
 

@@ -5,6 +5,7 @@ export const QUESTIONS: Question[] = [
     id: 1,
     category: '피부',
     type: 'text',
+    multiSelect: false,
     question: '여름에 햇볕을 오래 쬐면 어떻게 되나요?',
     options: [
       { label: '금방 빨개졌다가 다시 하얘져요',   value: 'burn_red' },
@@ -18,6 +19,7 @@ export const QUESTIONS: Question[] = [
     id: 2,
     category: '피부',
     type: 'image',
+    multiSelect: false,
     question: '손목 안쪽 혈관 색이 어떤가요?',
     options: [
       { label: '파란빛·보라빛이 강해요',           value: 'blue_purple' },
@@ -31,7 +33,8 @@ export const QUESTIONS: Question[] = [
     id: 3,
     category: '피부',
     type: 'text',
-    question: '평소 피부 고민이 무엇인가요?',
+    multiSelect: true,
+    question: '평소 피부와 관련된 고민이 있다면 무엇인가요?',
     options: [
       { label: '붉은기·홍조가 잘 올라와요',        value: 'redness' },
       { label: '칙칙하고 노란빛이 돌아요',         value: 'dull_yellow' },
@@ -44,6 +47,7 @@ export const QUESTIONS: Question[] = [
     id: 4,
     category: '눈',
     type: 'image',
+    multiSelect: false,
     question: '눈동자 색과 테두리가 어떤 편인가요?',
     options: [
       { label: '진한 검정·테두리가 선명해요',       value: 'black_sharp' },
@@ -57,6 +61,7 @@ export const QUESTIONS: Question[] = [
     id: 5,
     category: '머리',
     type: 'image',
+    multiSelect: false,
     question: '아무것도 하지 않은 내 자연 머리색은요?',
     options: [
       { label: '블루블랙·아주 진한 검정',           value: 'blue_black' },
@@ -70,6 +75,7 @@ export const QUESTIONS: Question[] = [
     id: 6,
     category: '스타일링',
     type: 'image',
+    multiSelect: false,
     question: '골드와 실버 중 피부에 더 잘 어울린다고 느끼는 건요?',
     options: [
       { label: '골드가 훨씬 잘 어울려요',           value: 'gold' },
@@ -83,7 +89,8 @@ export const QUESTIONS: Question[] = [
     id: 7,
     category: '스타일링',
     type: 'image',
-    question: "이 색 입었을 때 '얼굴 밝아 보인다'는 말을 들은 적 있나요?",
+    multiSelect: false,
+    question: '다음 중 입었을 때 가장 자연스럽게 어울린다고 느낀 색은 어떤 계열인가요?',
     options: [
       { label: '따뜻한 색 (코랄·오렌지·카멜·머스타드)', value: 'warm_colors' },
       { label: '차가운 색 (라벤더·로즈·민트·아이시핑크)', value: 'cool_colors' },
@@ -96,6 +103,7 @@ export const QUESTIONS: Question[] = [
     id: 8,
     category: '스타일링',
     type: 'text',
+    multiSelect: false,
     question: '파운데이션을 고를 때 보통 어떤 쉐이드를 선택하나요?',
     options: [
       { label: '핑크·로즈 계열이 잘 맞아요',        value: 'pink_rose' },
@@ -109,7 +117,8 @@ export const QUESTIONS: Question[] = [
     id: 9,
     category: '고민',
     type: 'text',
-    question: '옷이나 메이크업 색을 고를 때 어떤 고민이 있나요?',
+    multiSelect: true,
+    question: '옷이나 메이크업 색을 고를 때 자주 느끼는 점이 있다면 무엇인가요?',
     options: [
       { label: '예쁜데 나한테만 안 어울리는 것 같아요',   value: 'looks_bad' },
       { label: '항상 비슷한 무채색만 고르게 돼요',       value: 'achromatic_only' },
@@ -122,7 +131,8 @@ export const QUESTIONS: Question[] = [
     id: 10,
     category: '고민',
     type: 'text',
-    question: '사람들이 나에게 자주 하는 말은요?',
+    multiSelect: true,
+    question: '주변에서 나의 이미지를 표현할 때 자주 듣는 말은 어떤 쪽인가요?',
     options: [
       { label: '청순하다·부드럽다는 말을 들어요',    value: 'pure_soft' },
       { label: '세련됐다·도시적이라는 말을 들어요',  value: 'chic_urban' },
@@ -131,13 +141,6 @@ export const QUESTIONS: Question[] = [
       { label: '잘 모르겠어요',                   value: 'unknown' },
     ],
   },
-  {
-    id: 11,
-    category: '고민',
-    type: 'text',
-    question: '퍼스널컬러와 관련해 평소 고민이나 궁금한 점이 있다면 자유롭게 적어주세요.',
-    options: [], // 주관식 — 최대 200자
-  },
 ];
 
-export const TOTAL_QUESTIONS = QUESTIONS.filter((q) => q.options.length > 0).length; // 10
+export const TOTAL_QUESTIONS = QUESTIONS.length; // 10

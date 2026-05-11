@@ -3,18 +3,14 @@
 // ============================================================
 
 export type PersonalColorType =
-  | '봄밝음'
-  | '봄연함'
-  | '여름연함'
-  | '여름밝음'
-  | '여름뮤트'
-  | '가을뮤트'
-  | '가을강함'
-  | '가을딥'
-  | '겨울딥'
-  | '겨울밝음'
-  | '겨울뮤트'
-  | '겨울강함';
+  | '봄 라이트'
+  | '봄 브라이트'
+  | '여름 라이트'
+  | '여름 뮤트'
+  | '가을 뮤트'
+  | '가을 딥'
+  | '겨울 브라이트'
+  | '겨울 딥';
 
 export type Season = '봄' | '여름' | '가을' | '겨울';
 
@@ -38,21 +34,21 @@ export interface Question {
   category: QuestionCategory;
   question: string;
   type: 'text' | 'image';
+  multiSelect: boolean;
   options: QuestionOption[];
 }
 
 export interface TestAnswers {
   Q1: string;
   Q2: string;
-  Q3: string;
+  Q3: string[]; // 다중 선택
   Q4: string;
   Q5: string;
   Q6: string;
   Q7: string;
   Q8: string;
-  Q9: string;
-  Q10: string;
-  Q11?: string;
+  Q9: string[];  // 다중 선택
+  Q10: string[]; // 다중 선택
 }
 
 

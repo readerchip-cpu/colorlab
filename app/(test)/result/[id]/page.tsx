@@ -7,7 +7,7 @@ import { getSeasonFromType, getToneFromType } from '@/lib/colorLogic';
 import { TYPE_DISPLAY, SEASON_GRADIENT, TYPE_PALETTE } from '@/lib/colorData';
 import ColorPalette from '@/components/result/ColorPalette';
 import LockedContent from '@/components/result/LockedContent';
-import ShareButtons from '@/components/result/ShareButtons';
+import ShareModal from '@/components/share/ShareModal';
 import type { PersonalColorType } from '@/types';
 
 interface Props {
@@ -61,19 +61,19 @@ export default async function ResultPage({ params }: Props) {
   const gradient = SEASON_GRADIENT[season];
 
   return (
-    <main className="min-h-screen bg-white pb-28">
+    <main className="min-h-screen bg-white pb-28 dark:bg-gray-900">
 
       {/* ── 1. 헤더 ── */}
       <header
-        className={`bg-gradient-to-b ${gradient} to-white px-5 pb-12 pt-14 text-center`}
+        className={`bg-gradient-to-b ${gradient} to-white px-5 pb-12 pt-14 text-center dark:to-gray-900`}
       >
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           컬러랩이 분석한 당신의 퍼스널컬러
         </p>
-        <h1 className="mb-3 text-5xl font-black tracking-tight text-gray-900">
+        <h1 className="mb-3 text-5xl font-black tracking-tight text-gray-900 dark:text-gray-100">
           {colorType}
         </h1>
-        <p className="mb-5 text-sm font-medium text-gray-500">{displayName}</p>
+        <p className="mb-5 text-sm font-medium text-gray-500 dark:text-gray-400">{displayName}</p>
         <span
           className={`inline-block rounded-full px-5 py-1.5 text-sm font-bold ${
             tone === '웜톤'
@@ -90,16 +90,16 @@ export default async function ResultPage({ params }: Props) {
 
       {/* 섹션 구분선 */}
       <div className="mx-auto max-w-xl px-5">
-        <div className="border-t border-gray-100" />
+        <div className="border-t border-gray-100 dark:border-gray-700" />
       </div>
 
       {/* ── 3. AI 서사형 설명 ── */}
       {session.report_content && (
         <section className="mx-auto max-w-xl px-5 py-10">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
             AI 분석
           </p>
-          <p className="font-serif text-[17px] leading-[2] tracking-wide text-gray-700">
+          <p className="font-serif text-[17px] leading-[2] tracking-wide text-gray-700 dark:text-gray-300">
             {session.report_content}
           </p>
         </section>
@@ -107,7 +107,7 @@ export default async function ResultPage({ params }: Props) {
 
       {/* 섹션 구분선 */}
       <div className="mx-auto max-w-xl px-5">
-        <div className="border-t border-gray-100" />
+        <div className="border-t border-gray-100 dark:border-gray-700" />
       </div>
 
       {/* ── 4. 잠긴 콘텐츠 (블러) ── */}
@@ -115,17 +115,17 @@ export default async function ResultPage({ params }: Props) {
 
       {/* ── 5. 페이월 CTA ── */}
       <section className="mx-auto max-w-xl px-5 py-6">
-        <div className="rounded-3xl border border-violet-100 bg-gradient-to-b from-violet-50 to-white p-7">
+        <div className="rounded-3xl border border-violet-100 bg-gradient-to-b from-violet-50 to-white p-7 dark:border-violet-800 dark:from-violet-950/30 dark:to-gray-900">
           {/* 훅 문구 */}
           <p className="mb-1 text-center text-xs font-bold uppercase tracking-widest text-violet-400">
             정밀 진단
           </p>
-          <h3 className="mb-3 text-center text-lg font-bold leading-snug text-gray-900">
+          <h3 className="mb-3 text-center text-lg font-bold leading-snug text-gray-900 dark:text-gray-100">
             질문만으론 100% 확신할 수 없어요.
             <br />
-            <span className="text-violet-600">내 사진을 분석하면 더 정확해요.</span>
+            <span className="text-violet-600 dark:text-purple-400">내 사진을 분석하면 더 정확해요.</span>
           </h3>
-          <p className="mb-6 text-center text-sm leading-relaxed text-gray-500">
+          <p className="mb-6 text-center text-sm leading-relaxed text-gray-500 dark:text-gray-400">
             AI가 피부 톤·명도·채도를 직접 읽어
             <br />더 정밀한 타입 분류와 맞춤 조언을 드려요.
           </p>
@@ -140,7 +140,7 @@ export default async function ResultPage({ params }: Props) {
               '시즌별 스타일링',
               '맞춤 조언',
             ].map((item) => (
-              <li key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
+              <li key={item} className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300">
                 <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-violet-100 text-[11px] font-bold text-violet-600">
                   ✓
                 </span>
@@ -161,10 +161,10 @@ export default async function ResultPage({ params }: Props) {
       </section>
 
       {/* ── 6. SNS 공유 ── */}
-      <ShareButtons sessionId={params.id} colorType={colorType} />
+      <ShareModal sessionId={params.id} colorType={colorType} />
 
       {/* ── 하단 고정 CTA 버튼 ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-100 bg-white/95 px-5 pb-8 pt-3 backdrop-blur-sm">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-100 bg-white/95 px-5 pb-8 pt-3 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95">
         <Link
           href={`/upload/${params.id}`}
           className="mx-auto block max-w-xl rounded-2xl bg-[#7C3AED] py-4 text-center text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90"

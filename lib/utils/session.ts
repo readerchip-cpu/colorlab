@@ -9,7 +9,7 @@ export async function createTestSession(
     .from('test_sessions')
     .insert({
       answers,
-      free_concern: answers.Q11 ?? null,
+      free_concern: null,
       result_type: freeResult.colorType,
     })
     .select('id')

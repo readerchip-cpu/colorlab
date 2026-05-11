@@ -10,6 +10,7 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
+import ReviewSlider from '@/components/loading/ReviewSlider';
 
 interface Props {
   sessionId: string;
@@ -40,6 +41,7 @@ export default function UploadZone({ sessionId }: Props) {
   const [progress, setProgress] = useState(0);
   const [phaseIdx, setPhaseIdx] = useState(0);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [freeConcern, setFreeConcern] = useState('');
 
   const validate = useCallback((f: File): string | null => {
     if (!(ALLOWED as readonly string[]).includes(f.type))
@@ -102,6 +104,7 @@ export default function UploadZone({ sessionId }: Props) {
       const form = new FormData();
       form.append('session_id', sessionId);
       form.append('image', file);
+      form.append('free_concern', freeConcern);
 
       const res = await fetch('/api/analyze', { method: 'POST', body: form });
 
@@ -133,23 +136,29 @@ export default function UploadZone({ sessionId }: Props) {
   /* ── 분석 중 오버레이 ── */
   if (isAnalyzing) {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <div className="relative mb-8 flex h-24 w-24 items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-5 py-8">
+        {/* 스피너 */}
+        <div className="relative flex h-20 w-20 items-center justify-center">
           <div className="absolute inset-0 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
-          <span className="text-3xl">🎨</span>
+          <span className="text-2xl">🎨</span>
         </div>
 
-        {/* 진행 바 */}
-        <div className="mb-3 h-2 w-64 overflow-hidden rounded-full bg-gray-100">
-          <div
-            className="h-full rounded-full bg-[#7C3AED] transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        {/* 상태 텍스트 + 진행 바 */}
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {PHASES[phaseIdx]}
+          </p>
+          <div className="h-1.5 w-56 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+            <div
+              className="h-full rounded-full bg-[#7C3AED] transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500">최대 20초 소요될 수 있어요</p>
         </div>
-        <p className="mb-1 text-sm font-semibold text-gray-700">
-          {PHASES[phaseIdx]}
-        </p>
-        <p className="text-xs text-gray-400">최대 20초 소요될 수 있어요</p>
+
+        {/* 리뷰 슬라이더 */}
+        <ReviewSlider />
       </div>
     );
   }
@@ -230,6 +239,26 @@ export default function UploadZone({ sessionId }: Props) {
           {apiError}
         </p>
       )}
+
+      {/* 자유 고민 입력 */}
+      <div className="mt-5">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
+          마지막으로, 더 알고 싶은 고민이 있다면 적어주세요{' '}
+          <span className="font-normal text-gray-400">(선택)</span>
+        </label>
+        <div className="relative">
+          <textarea
+            value={freeConcern}
+            onChange={(e) => setFreeConcern(e.target.value.slice(0, 200))}
+            placeholder="예: 쿨톤이라는데 왜 핑크가 안 어울리죠?"
+            rows={3}
+            className="w-full resize-none rounded-2xl border-2 border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-300 focus:border-violet-300 focus:bg-white"
+          />
+          <span className="absolute bottom-3 right-4 text-xs text-gray-300">
+            {freeConcern.length}/200
+          </span>
+        </div>
+      </div>
 
       {/* 분석 버튼 */}
       <button

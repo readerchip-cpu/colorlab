@@ -26,31 +26,31 @@ const LOCKED_ITEMS = [
 export default function LockedContent() {
   return (
     <section className="mx-auto max-w-xl px-5 py-4">
-      <h2 className="mb-4 text-lg font-bold text-gray-900">전체 분석 리포트</h2>
+      <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">전체 분석 리포트</h2>
       <div className="space-y-3">
         {LOCKED_ITEMS.map((item) => (
           <div
             key={item.title}
-            className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white"
+            className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800"
           >
             {/* 배경 힌트 텍스트 (블러) */}
             <div className="select-none px-5 py-5">
               <div className="mb-1.5 flex items-center gap-2">
                 <span className="text-base">{item.emoji}</span>
-                <span className="text-sm font-semibold text-gray-200">{item.title}</span>
+                <span className="text-sm font-semibold text-gray-200 dark:text-gray-700">{item.title}</span>
               </div>
-              <p className="text-xs leading-relaxed text-gray-200" style={{ filter: 'blur(3px)' }}>
+              <p className="text-xs leading-relaxed text-gray-200 dark:text-gray-700" style={{ filter: 'blur(3px)' }}>
                 {item.hint}
               </p>
             </div>
 
             {/* 잠금 오버레이 */}
-            <div className="absolute inset-0 flex items-center justify-between bg-white/75 px-5 backdrop-blur-[2px]">
+            <div className="absolute inset-0 flex items-center justify-between bg-white/75 px-5 backdrop-blur-[2px] dark:bg-gray-800/75">
               <div className="flex items-center gap-2.5">
                 <span className="text-lg">{item.emoji}</span>
-                <span className="text-sm font-semibold text-gray-800">{item.title}</span>
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.title}</span>
               </div>
-              <Lock className="h-4 w-4 flex-shrink-0 text-gray-400" />
+              <Lock className="h-4 w-4 flex-shrink-0 text-gray-400 dark:text-gray-500" />
             </div>
           </div>
         ))}

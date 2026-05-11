@@ -22,6 +22,8 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const sessionId = formData.get('session_id');
     const imageFile = formData.get('image');
+    const freeConcernRaw = formData.get('free_concern');
+    const freeConcern = typeof freeConcernRaw === 'string' ? freeConcernRaw.trim() : undefined;
 
     // 입력값 검증
     if (typeof sessionId !== 'string' || !sessionId) {
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
       session.answers,
       session.result_type as PersonalColorType,
       imageBase64,
-      session.free_concern ?? undefined,
+      freeConcern || session.free_concern || undefined,
       mimeType,
     );
 

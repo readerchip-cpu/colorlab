@@ -34,11 +34,13 @@ function buildScores(answers: TestAnswers): Scores {
     // mix / varies → 중립
   }
 
-  // Q3 — 피부 고민 (웜/쿨 보조)
-  switch (answers.Q3) {
-    case 'redness':     warm -= 1; break; // 홍조 → 쿨 성향
-    case 'dull_yellow': warm += 2; break; // 노란빛 → 웜 성향
-    case 'dark_circles': warm -= 1; break; // 다크서클 → 쿨 성향
+  // Q3 — 피부 고민 (웜/쿨 보조) — 다중 선택, 선택지별 합산
+  for (const v of answers.Q3) {
+    switch (v) {
+      case 'redness':      warm -= 1; break; // 홍조 → 쿨 성향
+      case 'dull_yellow':  warm += 2; break; // 노란빛 → 웜 성향
+      case 'dark_circles': warm -= 1; break; // 다크서클 → 쿨 성향
+    }
   }
 
   // Q4 — 눈동자 색 (웜/쿨 + 깊이)
@@ -77,18 +79,22 @@ function buildScores(answers: TestAnswers): Scores {
     case 'yellow_beige': warm += 2; break;
   }
 
-  // Q9 — 컬러 고민 (깊이 + 선명도 보조)
-  switch (answers.Q9) {
-    case 'achromatic_only': depth += 1; clarity -= 1; break; // 무채색 선호 → 뮤트/딥
-    case 'looks_floating':  depth -= 2; clarity -= 2; break; // 뜨면 뮤트/소프트 타입
+  // Q9 — 컬러 고민 (깊이 + 선명도 보조) — 다중 선택, 선택지별 합산
+  for (const v of answers.Q9) {
+    switch (v) {
+      case 'achromatic_only': depth += 1; clarity -= 1; break; // 무채색 선호 → 뮤트/딥
+      case 'looks_floating':  depth -= 2; clarity -= 2; break; // 뜨면 뮤트/소프트 타입
+    }
   }
 
-  // Q10 — 주변 평가 (깊이 + 선명도 보조)
-  switch (answers.Q10) {
-    case 'pure_soft':     depth -= 2; clarity -= 1; break; // 봄연함/여름연함
-    case 'chic_urban':   warm -= 1; depth += 1; clarity += 1; break; // 겨울 계열
-    case 'warm_friendly': warm += 1; depth -= 1;             break; // 봄/가을
-    case 'strong_unique':            depth += 2; clarity += 2; break; // 겨울강함/가을강함
+  // Q10 — 주변 평가 (깊이 + 선명도 보조) — 다중 선택, 선택지별 합산
+  for (const v of answers.Q10) {
+    switch (v) {
+      case 'pure_soft':     depth -= 2; clarity -= 1; break; // 봄 라이트/여름 라이트
+      case 'chic_urban':    warm -= 1; depth += 1; clarity += 1; break; // 겨울 계열
+      case 'warm_friendly': warm += 1; depth -= 1; break; // 봄/가을
+      case 'strong_unique':            depth += 2; clarity += 2; break; // 겨울 브라이트/가을 딥
+    }
   }
 
   return { warm, depth, clarity };
@@ -102,28 +108,24 @@ function scoresToType({ warm, depth, clarity }: Scores): PersonalColorType {
   if (warm >= 0) {
     // 웜톤: 봄 or 가을
     if (depth > 0) {
-      // 가을
-      if (depth >= 4)      return '가을딥';
-      if (clarity >= 2)    return '가을강함';
-      return '가을뮤트';
+      // 가을: 깊이가 강하거나 선명도가 높으면 딥, 그 외 뮤트
+      if (depth >= 4 || clarity >= 2)  return '가을 딥';
+      return '가을 뮤트';
     } else {
-      // 봄
-      if (clarity >= 1)    return '봄밝음';
-      return '봄연함';
+      // 봄: 선명하면 브라이트, 그 외 라이트
+      if (clarity >= 1)    return '봄 브라이트';
+      return '봄 라이트';
     }
   } else {
     // 쿨톤: 여름 or 겨울
     if (depth > 0) {
-      // 겨울
-      if (depth >= 4)      return '겨울딥';
-      if (clarity >= 3)    return '겨울강함';
-      if (clarity >= 1)    return '겨울밝음';
-      return '겨울뮤트';
+      // 겨울: 선명도가 있으면 브라이트, 그 외 딥
+      if (clarity >= 1)    return '겨울 브라이트';
+      return '겨울 딥';
     } else {
-      // 여름
-      if (depth <= -3)     return '여름연함';
-      if (clarity >= 1)    return '여름밝음';
-      return '여름뮤트';
+      // 여름: 매우 밝거나 선명하면 라이트, 그 외 뮤트
+      if (depth <= -3 || clarity >= 1)  return '여름 라이트';
+      return '여름 뮤트';
     }
   }
 }
@@ -150,18 +152,14 @@ export function getToneFromType(type: PersonalColorType): Tone {
 
 // 대표 추천 컬러 (hex 3개) — 추후 디자인 확정 후 교체 가능
 const TYPE_COLORS: Record<PersonalColorType, [string, string, string]> = {
-  봄밝음:   ['#FFD580', '#FF8C69', '#90EE90'],
-  봄연함:   ['#FFB6C1', '#FFDAB9', '#B0E0E6'],
-  여름연함:  ['#E6C8D8', '#B0C4DE', '#D8BFD8'],
-  여름밝음:  ['#89CFF0', '#F4C2C2', '#B8D8C8'],
-  여름뮤트:  ['#C4A0A0', '#A0B4C8', '#B8A8C8'],
-  가을뮤트:  ['#C8A882', '#8B7355', '#A0A878'],
-  가을강함:  ['#B87333', '#8B4513', '#6B8E23'],
-  가을딥:   ['#7B3F00', '#556B2F', '#8B2500'],
-  겨울딥:   ['#1C1C2E', '#2E0854', '#1A3A2A'],
-  겨울밝음:  ['#FFFFFF', '#E8F4FD', '#F0E8F8'],
-  겨울뮤트:  ['#8896A8', '#A0A0B8', '#888898'],
-  겨울강함:  ['#CC0000', '#0000CC', '#00CC66'],
+  '봄 라이트':    ['#FFB6C1', '#FFDAB9', '#B0E0E6'],
+  '봄 브라이트':  ['#FFD580', '#FF8C69', '#90EE90'],
+  '여름 라이트':  ['#E6C8D8', '#B0C4DE', '#D8BFD8'],
+  '여름 뮤트':   ['#C4A0A0', '#A0B4C8', '#B8A8C8'],
+  '가을 뮤트':   ['#C8A882', '#8B7355', '#A0A878'],
+  '가을 딥':     ['#7B3F00', '#556B2F', '#8B2500'],
+  '겨울 브라이트': ['#CC0000', '#0000CC', '#00CC66'],
+  '겨울 딥':     ['#1C1C2E', '#2E0854', '#1A3A2A'],
 };
 
 export function buildFreeResult(

@@ -10,8 +10,7 @@ import ColorPalette from '@/components/result/ColorPalette';
 import ContentRenderer from '@/components/report/ContentRenderer';
 import TableOfContents from '@/components/report/TableOfContents';
 import ReviewForm from '@/components/report/ReviewForm';
-import ShareCardButton from '@/components/report/ShareCardButton';
-import ShareButtons from '@/components/result/ShareButtons';
+import ShareModal from '@/components/share/ShareModal';
 import type { PersonalColorType } from '@/types';
 
 interface Props {
@@ -69,17 +68,17 @@ export default async function ReportPage({ params }: Props) {
   );
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-white pb-20 dark:bg-gray-900">
 
       {/* ── 1. 헤더 ── */}
-      <header className={`bg-gradient-to-b ${gradient} to-white px-5 pb-10 pt-12 text-center`}>
-        <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+      <header className={`bg-gradient-to-b ${gradient} to-white px-5 pb-10 pt-12 text-center dark:to-gray-900`}>
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           정밀 분석 리포트
         </p>
-        <h1 className="mb-2 text-5xl font-black tracking-tight text-gray-900">
+        <h1 className="mb-2 text-5xl font-black tracking-tight text-gray-900 dark:text-gray-100">
           {colorType}
         </h1>
-        <p className="mb-4 text-sm font-medium text-gray-500">{displayName}</p>
+        <p className="mb-4 text-sm font-medium text-gray-500 dark:text-gray-400">{displayName}</p>
         <span
           className={`inline-block rounded-full px-5 py-1.5 text-sm font-bold ${
             tone === '웜톤'
@@ -95,7 +94,7 @@ export default async function ReportPage({ params }: Props) {
       <ColorPalette palette={palette} />
 
       <div className="mx-auto max-w-xl px-5">
-        <div className="border-t border-gray-100" />
+        <div className="border-t border-gray-100 dark:border-gray-700" />
       </div>
 
       {/* ── 2. 목차 네비게이션 ── */}
@@ -122,11 +121,11 @@ export default async function ReportPage({ params }: Props) {
                 >
                   {meta.icon}
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">{section.title}</h2>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{section.title}</h2>
               </div>
 
               {/* 섹션 내용 */}
-              <div className="rounded-2xl bg-gray-50 px-5 py-5">
+              <div className="rounded-2xl bg-gray-50 px-5 py-5 dark:bg-gray-800">
                 <ContentRenderer content={section.content} />
               </div>
             </section>
@@ -136,23 +135,20 @@ export default async function ReportPage({ params }: Props) {
 
       {/* ── 4. 하단 액션 ── */}
       <div className="mx-auto max-w-xl space-y-4 px-5">
-        {/* SNS 공유 카드 생성 */}
-        <ShareCardButton sessionId={params.id} />
-
-        {/* 링크 공유 */}
-        <ShareButtons sessionId={params.id} colorType={colorType} />
+        {/* 공유하기 */}
+        <ShareModal sessionId={params.id} colorType={colorType} />
 
         {/* 별점 + 후기 */}
-        <div className="rounded-3xl border border-gray-100 bg-white px-6 py-6 shadow-sm">
+        <div className="rounded-3xl border border-gray-100 bg-white px-6 py-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <ReviewForm />
         </div>
 
         {/* 친구에게 공유 */}
         <div className="pb-6 text-center">
-          <p className="mb-3 text-sm text-gray-500">친구의 퍼스널컬러도 궁금하다면?</p>
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">친구의 퍼스널컬러도 궁금하다면?</p>
           <Link
             href="/"
-            className="inline-block rounded-2xl border-2 border-violet-200 px-8 py-3 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-50"
+            className="inline-block rounded-2xl border-2 border-violet-200 px-8 py-3 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-50 dark:border-violet-700 dark:text-purple-400 dark:hover:bg-violet-900/20"
           >
             컬러랩을 친구에게 공유하기 🎨
           </Link>

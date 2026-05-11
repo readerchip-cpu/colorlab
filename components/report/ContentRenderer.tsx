@@ -33,7 +33,7 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode {
     const k = `${keyPrefix}-b${i}`;
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={k} className="font-semibold text-gray-900">
+        <strong key={k} className="font-semibold text-gray-900 dark:text-gray-100">
           {renderHexColors(part.slice(2, -2), k)}
         </strong>
       );
@@ -55,7 +55,7 @@ export default function ContentRenderer({ content }: Props) {
     // 하위 섹션 제목 (###)
     if (trimmed.startsWith('### ')) {
       nodes.push(
-        <p key={`h-${i}`} className="mt-4 mb-1.5 text-sm font-bold text-gray-800">
+        <p key={`h-${i}`} className="mt-4 mb-1.5 text-sm font-bold text-gray-800 dark:text-gray-200">
           {trimmed.replace(/^### /, '')}
         </p>,
       );
@@ -76,7 +76,7 @@ export default function ContentRenderer({ content }: Props) {
       nodes.push(
         <ul key={`ul-${i}`} className="my-2.5 space-y-2 pl-0.5">
           {items.map((item, j) => (
-            <li key={j} className="flex items-start gap-2 text-sm leading-relaxed text-gray-700">
+            <li key={j} className="flex items-start gap-2 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
               <span className="mt-[7px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-violet-300" />
               <span>{renderInline(item, `li-${i}-${j}`)}</span>
             </li>
@@ -88,7 +88,7 @@ export default function ContentRenderer({ content }: Props) {
 
     // 일반 단락
     nodes.push(
-      <p key={`p-${i}`} className="my-2 text-sm leading-relaxed text-gray-700">
+      <p key={`p-${i}`} className="my-2 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
         {renderInline(trimmed, `p-${i}`)}
       </p>,
     );
