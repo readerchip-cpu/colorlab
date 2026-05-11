@@ -65,7 +65,7 @@ export default async function ResultPage({ params }: Props) {
 
       {/* ── 1. 헤더 ── */}
       <header
-        className={`bg-gradient-to-b ${gradient} to-white px-5 pb-12 pt-14 text-center dark:to-gray-900`}
+        className={`bg-gradient-to-b ${gradient} to-white px-5 pb-12 pt-14 text-center dark:bg-gray-900 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900`}
       >
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           컬러랩이 분석한 당신의 퍼스널컬러
@@ -115,7 +115,7 @@ export default async function ResultPage({ params }: Props) {
 
       {/* ── 5. 페이월 CTA ── */}
       <section className="mx-auto max-w-xl px-5 py-6">
-        <div className="rounded-3xl border border-violet-100 bg-gradient-to-b from-violet-50 to-white p-7 dark:border-violet-800 dark:from-violet-950/30 dark:to-gray-900">
+        <div className="rounded-3xl border border-violet-100 bg-gradient-to-b from-violet-50 to-white p-7 dark:border-violet-800 dark:bg-gray-800 dark:from-gray-800 dark:to-gray-800">
           {/* 훅 문구 */}
           <p className="mb-1 text-center text-xs font-bold uppercase tracking-widest text-violet-400">
             정밀 진단

@@ -106,7 +106,7 @@ function ResultCardPreview() {
         <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 rounded-3xl bg-violet-300/40 blur-sm" />
         <div className="relative overflow-hidden rounded-3xl bg-white shadow-2xl shadow-violet-200/60 dark:bg-gray-800">
           {/* 카드 헤더 */}
-          <div className="bg-gradient-to-r from-sky-50 to-violet-50 px-5 pt-5 pb-4 dark:from-sky-900/20 dark:to-violet-900/20">
+          <div className="bg-gradient-to-r from-sky-50 to-violet-50 px-5 pt-5 pb-4 dark:bg-gray-900 dark:from-gray-900 dark:to-gray-900">
             <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
               퍼스널컬러 분석 결과
             </p>
@@ -162,7 +162,7 @@ export default function LandingPage() {
     <main className="min-h-screen overflow-x-hidden bg-white dark:bg-gray-900">
 
       {/* ── 1. 히어로 섹션 ── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-violet-50 via-violet-50/30 to-white px-5 pb-20 pt-14 text-center dark:from-violet-950/20 dark:via-gray-900/60 dark:to-gray-900">
+      <section className="relative overflow-hidden bg-gradient-to-b from-violet-50 via-violet-50/30 to-white px-5 pb-20 pt-14 text-center dark:bg-gray-900 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
         {/* 장식 blob */}
         <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-10 h-56 w-56 rounded-full bg-pink-200/30 blur-3xl" />
@@ -241,7 +241,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={item.type}
-                  className={`overflow-hidden rounded-3xl bg-gradient-to-br ${item.gradient} p-5`}
+                  className={`overflow-hidden rounded-3xl bg-gradient-to-br ${item.gradient} dark:bg-gray-800 dark:from-gray-800 dark:to-gray-800 p-5`}
                 >
                   <div className="mb-3 flex items-center gap-2.5">
                     <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">{item.type}</h3>

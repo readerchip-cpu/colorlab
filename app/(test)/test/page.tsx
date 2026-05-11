@@ -121,7 +121,7 @@ export default function TestPage() {
 
       {/* 하단 고정 버튼 영역 */}
       {showBottomBar && (
-        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white/90 to-transparent pb-8 pt-6 dark:from-gray-900 dark:via-gray-900/90">
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white/90 to-transparent pb-8 pt-6 dark:bg-gray-900 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
           <div className="mx-auto flex max-w-xl flex-col gap-3 px-5">
             {/* 다중 선택 "다음" 버튼 */}
             {isMulti && (

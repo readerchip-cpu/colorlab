@@ -71,7 +71,7 @@ export default async function ReportPage({ params }: Props) {
     <main className="min-h-screen bg-white pb-20 dark:bg-gray-900">
 
       {/* ── 1. 헤더 ── */}
-      <header className={`bg-gradient-to-b ${gradient} to-white px-5 pb-10 pt-12 text-center dark:to-gray-900`}>
+      <header className={`bg-gradient-to-b ${gradient} to-white px-5 pb-10 pt-12 text-center dark:bg-gray-900 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900`}>
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           정밀 분석 리포트
         </p>
