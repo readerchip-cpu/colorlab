@@ -6,10 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "download-fonts": "node scripts/download-fonts.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",
+    "@react-pdf/renderer": "^4.5.1",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "@tosspayments/payment-widget-sdk": "^0.12.1",
