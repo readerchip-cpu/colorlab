@@ -3,78 +3,54 @@ import type { PersonalColorType, TestAnswers } from '@/types';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-  defaultHeaders: {
-    'anthropic-beta': 'prompt-caching-2024-07-31',
-  },
 });
 
-const MODEL = 'claude-opus-4-5';
+const MODEL = 'claude-sonnet-4-6';
 
-// 시스템 프롬프트는 반복 호출 시 캐시됨
-const EXPERT_SYSTEM = `당신은 10년 경력의 퍼스널컬러 전문 컨설턴트입니다.
-과학적 색채 이론과 따뜻한 공감 능력을 겸비하고 있으며, 고객이 자신만의 색을 발견하는 기쁨을 함께 나눕니다.
+// ── 내부 응답 코드 → 한국어 레이블 ────────────────────────────
 
-응답 원칙:
-- 반드시 한국어로 작성하세요
-- 친근하면서도 전문적인 문체를 사용하세요
-- 전문 용어는 쉽게 풀어 설명하세요
-- 고객의 자존감과 개성을 존중하는 표현을 사용하세요
-- 수치나 근거를 들 때는 색채 이론에 기반하여 설명하세요`;
-
-// 내부 응답 코드 → 한국어 레이블 (프롬프트 가독성용)
 const ANSWER_LABELS: Record<string, string> = {
-  // Q1 — 햇볕 반응
-  burn_red:        '금방 빨개졌다가 다시 하얘짐',
-  tan_dark:        '까맣게 잘 타고 잘 안 돌아옴',
-  gradual_tan:     '조금 붉어지다가 서서히 탐',
-  no_change:       '거의 변화 없음',
-  // Q2 — 혈관색
-  blue_purple:     '파란빛·보라빛이 강함',
-  green:           '초록빛이 강함',
-  mix:             '파란빛과 초록빛이 섞여 있음',
-  varies:          '빛에 따라 달라 보임',
-  // Q3 — 피부 고민
-  redness:         '붉은기·홍조가 잘 올라옴',
-  dull_yellow:     '칙칙하고 노란빛이 돎',
-  dark_circles:    '다크서클이 심함',
-  none:            '특별한 피부 고민 없음',
-  // Q4 — 눈동자
-  black_sharp:     '진한 검정·테두리 선명',
-  dark_brown:      '짙은 갈색·테두리 약간',
-  light_brown:     '밝은 갈색·테두리 흐림',
-  golden_olive:    '황갈색이나 올리브빛',
-  // Q5 — 머리색
-  blue_black:      '블루블랙·아주 진한 검정',
-  natural_black:   '자연스러운 검정',
-  brown_black:     '약간 갈빛이 도는 검정',
-  brown_light:     '자연갈색 또는 밝은 갈색',
-  // Q6 — 주얼리
-  gold:            '골드가 잘 어울림',
-  silver:          '실버가 잘 어울림',
-  both:            '골드·실버 비슷함',
-  no_jewelry:      '주얼리를 잘 안 함',
-  // Q7 — 어울리는 색
-  warm_colors:     '따뜻한 색(코랄·오렌지·카멜·머스타드)',
-  cool_colors:     '차가운 색(라벤더·로즈·민트·아이시핑크)',
-  deep_colors:     '깊은 색(버건디·네이비·올리브·초콜릿)',
-  bright_vivid:    '밝고 선명한 색(빨강·로열블루·에메랄드)',
-  // Q8 — 파운데이션
-  pink_rose:       '핑크·로즈 계열',
-  yellow_beige:    '옐로·베이지 계열',
-  neutral:         '뉴트럴(중간)',
-  no_foundation:   '파운데이션 미사용',
-  // Q9 — 컬러 고민
-  looks_bad:       '예쁜데 나한테만 안 어울림',
+  burn_red: '금방 빨개졌다가 다시 하얘짐',
+  tan_dark: '까맣게 잘 타고 잘 안 돌아옴',
+  gradual_tan: '조금 붉어지다가 서서히 탐',
+  no_change: '거의 변화 없음',
+  blue_purple: '파란빛·보라빛이 강함',
+  green: '초록빛이 강함',
+  mix: '파란빛과 초록빛이 섞여 있음',
+  varies: '빛에 따라 달라 보임',
+  redness: '붉은기·홍조가 잘 올라옴',
+  dull_yellow: '칙칙하고 노란빛이 돎',
+  dark_circles: '다크서클이 심함',
+  none: '특별한 피부 고민 없음',
+  black_sharp: '진한 검정·테두리 선명',
+  dark_brown: '짙은 갈색·테두리 약간',
+  light_brown: '밝은 갈색·테두리 흐림',
+  golden_olive: '황갈색이나 올리브빛',
+  blue_black: '블루블랙·아주 진한 검정',
+  natural_black: '자연스러운 검정',
+  brown_black: '약간 갈빛이 도는 검정',
+  brown_light: '자연갈색 또는 밝은 갈색',
+  gold: '골드가 잘 어울림',
+  silver: '실버가 잘 어울림',
+  both: '골드·실버 비슷함',
+  no_jewelry: '주얼리를 잘 안 함',
+  warm_colors: '따뜻한 색(코랄·오렌지·카멜·머스타드)',
+  cool_colors: '차가운 색(라벤더·로즈·민트·아이시핑크)',
+  deep_colors: '깊은 색(버건디·네이비·올리브·초콜릿)',
+  bright_vivid: '밝고 선명한 색(빨강·로열블루·에메랄드)',
+  pink_rose: '핑크·로즈 계열',
+  yellow_beige: '옐로·베이지 계열',
+  neutral_shade: '뉴트럴(중간)',
+  no_foundation: '파운데이션 미사용',
+  looks_bad: '예쁜데 나한테만 안 어울림',
   achromatic_only: '항상 무채색만 고르게 됨',
-  looks_floating:  '색을 입으면 얼굴이 떠 보임',
+  looks_floating: '색을 입으면 얼굴이 떠 보임',
   cant_pull_trend: '트렌드 컬러 소화 어려움',
-  // Q10 — 주변 평가
-  pure_soft:       '청순하다·부드럽다는 말을 들음',
-  chic_urban:      '세련됐다·도시적이라는 말을 들음',
-  warm_friendly:   '따뜻하다·친근하다는 말을 들음',
-  strong_unique:   '강렬하다·개성 있다는 말을 들음',
-  // 공통
-  unknown:         '잘 모르겠음',
+  pure_soft: '청순하다·부드럽다는 말을 들음',
+  chic_urban: '세련됐다·도시적이라는 말을 들음',
+  warm_friendly: '따뜻하다·친근하다는 말을 들음',
+  strong_unique: '강렬하다·개성 있다는 말을 들음',
+  unknown: '잘 모르겠음',
 };
 
 const Q_KEYS = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'] as const;
@@ -96,9 +72,49 @@ function formatAnswers(answers: TestAnswers): string {
     .join('\n');
 }
 
-// ────────────────────────────────────────────────────────────
-// 1. 무료 결과 — 서사형 2~3문장 (200자 이내)
-// ────────────────────────────────────────────────────────────
+// ── 공통 학술 시스템 프롬프트 ─────────────────────────────────
+
+const ACADEMIC_SYSTEM = `당신은 한국 퍼스널컬러 학회 기반의 공인 전문 분석가입니다.
+색채과학 학위와 10년 이상의 임상 진단 경험을 보유하고 있으며,
+매거진 컬러 칼럼니스트로도 활동 중입니다.
+
+■ 반드시 사용해야 할 학술 용어
+
+1. 색의 4속성
+   - 색상(Hue): 색의 종류 — Warm Yellow-Red / Cool Pink-Blue 등으로 표현
+   - 명도(Value): 색의 밝고 어두운 정도 — Light / Medium / Deep
+   - 채도(Chroma): 색의 선명하고 탁한 정도 — Bright / Muted / Soft
+   - 청탁(Clear/Mute): 색의 투명감·선명도 — Clear(맑음) / Muted(탁함)
+
+2. 베이스 톤
+   - Yellow Base (웜 베이스): 피부에 황색 기운이 도는 웜톤
+   - Pink Base (쿨 베이스): 피부에 분홍·붉은 기운이 도는 쿨톤
+   - Neutral Base: 두 기운이 혼재하는 중립형
+
+3. 톤(Tone) 분류
+   - Pale, Light, Bright, Vivid, Strong, Deep, Dark, Soft, Muted
+
+4. 컨트라스트 레벨
+   - High Contrast: 피부와 눈·머리 간 명도(Value) 차이가 큰 유형
+   - Medium Contrast: 중간 수준의 대비감
+   - Low Contrast: 전반적으로 유사한 명도 분포
+
+5. 4분면 좌표 (Warm–Cool 축 × Light–Deep 축)
+   - 봄 라이트/브라이트: Warm × Light
+   - 여름 라이트/뮤트: Cool × Light~Medium
+   - 가을 뮤트/딥: Warm × Medium~Deep
+   - 겨울 브라이트/딥: Cool × Medium~Deep
+
+■ 문체 원칙
+- 학술 용어 첫 등장 시 반드시 괄호 안에 설명 추가
+  예) "명도(Value, 색의 밝기)", "채도(Chroma, 색의 선명도)"
+- 매거진 컬러 칼럼 스타일: 전문적이면서도 읽기 쉽고 부드러운 문체
+- "~입니다" 정중체 사용, 친근한 2인칭 "당신"으로 호칭
+- 고객의 개성과 자존감을 존중하는 표현
+- 수치와 근거는 반드시 색채 이론에 기반하여 제시
+- 한국어로만 작성`;
+
+// ── 1. 무료 결과 — 서사형 2~3문장 ────────────────────────────
 
 export async function generateFreeResult(
   answers: TestAnswers,
@@ -110,7 +126,7 @@ export async function generateFreeResult(
     system: [
       {
         type: 'text',
-        text: EXPERT_SYSTEM,
+        text: ACADEMIC_SYSTEM,
         cache_control: { type: 'ephemeral' },
       },
     ] as Anthropic.TextBlockParam[],
@@ -122,10 +138,10 @@ export async function generateFreeResult(
 테스트 응답:
 ${formatAnswers(answers)}
 
-이 사람에게 전달할 서사형 설명을 2~3문장으로 작성해주세요.
+이 분에게 전달할 서사형 설명을 2~3문장으로 작성해주세요.
 
 조건:
-- 공감, 놀람, 발견의 감정을 자극하는 문체
+- 공감, 발견의 감정을 자극하는 문체
 - 예시 톤: "지금까지 고른 색들이 틀렸던 게 아니에요. 단지 당신의 색이 아니었을 뿐이에요."
 - 반드시 200자 이내
 - 순수 텍스트만 출력 (제목·마크다운·따옴표 없이)`,
@@ -137,9 +153,7 @@ ${formatAnswers(answers)}
   return block.type === 'text' ? block.text.trim() : '';
 }
 
-// ────────────────────────────────────────────────────────────
-// 2. 유료 전체 리포트 — 7개 섹션 마크다운
-// ────────────────────────────────────────────────────────────
+// ── 2. 유료 전체 리포트 — 7개 섹션 마크다운 (개선판) ─────────
 
 export async function generateFullReport(
   answers: TestAnswers,
@@ -148,58 +162,63 @@ export async function generateFullReport(
   freeConcern?: string,
   imageMediaType: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg',
 ): Promise<string> {
-  const section7Instruction = freeConcern
-    ? `## 7. 맞춤 조언
+  const section7 = freeConcern
+    ? `## [섹션 7] 당신의 고민에 대한 맞춤 답변
 아래 고민을 참고하세요:
 "${freeConcern}"
 
 판단 기준:
-- 이 고민이 퍼스널컬러·뷰티·패션·메이크업과 관련된 경우 → 전문가로서 맞춤 조언을 작성하세요
-- 관련이 없는 경우 → 정확히 다음 문장만 출력하세요: "해당 질문에는 답변이 불가합니다"`
-    : '섹션 7은 생략하세요.';
+- 퍼스널컬러·뷰티·패션·메이크업과 관련된 고민 → 전문가로서 학술 용어를 활용한 맞춤 조언 작성
+- 관련 없는 고민 → 정확히 다음 문장만 출력: "해당 질문에는 답변이 불가합니다"`
+    : '섹션 7은 작성하지 마세요.';
 
   const photoInstruction = imageBase64
-    ? '\n첨부된 사진을 분석하여 피부 톤, 명도, 채도를 파악하고 리포트에 반영하세요.'
+    ? '\n첨부된 사진을 분석하여 피부 색상(Hue), 명도(Value), 채도(Chroma)를 파악하고 리포트에 반영하세요.'
     : '';
 
-  const userText = `응답자의 퍼스널컬러 타입: **${colorType}**
-${photoInstruction}
+  const userText = `응답자 퍼스널컬러 타입: **${colorType}**${photoInstruction}
+
 테스트 응답:
 ${formatAnswers(answers)}
 
-위 정보를 바탕으로 아래 형식의 퍼스널컬러 전문 리포트를 작성해주세요.
-각 섹션은 마크다운 ## 헤더로 구분하고, 구체적이고 실용적인 내용으로 채워주세요.
+아래 형식으로 퍼스널컬러 전문 리포트를 작성해주세요.
+각 섹션은 반드시 ## [섹션 번호] 형태의 헤더로 구분하세요.
+학술 용어(색의 4속성, 베이스 톤, 컨트라스트)를 적극 활용하고,
+용어 첫 등장 시 괄호 안에 설명을 추가하세요.
 
-## 1. 정밀 타입 분석
-(${colorType} 타입의 특징, 피부·눈·머리색과의 연관성, 이 타입이 가진 고유한 매력)
+## [섹션 1] 정밀 타입 분석
+${colorType} 타입의 색상(Hue)·명도(Value)·채도(Chroma)·청탁(Clear/Mute) 특성.
+피부·눈·머리색의 상관관계와 컨트라스트(Contrast) 레벨 분석.
+4분면(Warm-Cool × Light-Deep) 상의 위치와 이 타입이 가진 고유한 매력.
 
-## 2. 피해야 할 색상
-(어울리지 않는 색상과 그 이유, 구체적인 색상명 포함)
+## [섹션 2] 피해야 할 색상
+어울리지 않는 색상과 그 이유를 색의 4속성 관점에서 설명.
+구체적인 색상명과 피해야 하는 색채 이론적 근거 포함.
 
-## 3. 메이크업 추천
-(립 컬러 추천 3가지 이상 / 파운데이션 쉐이드 방향 / 아이섀도우 컬러 추천)
+## [섹션 3] 메이크업 컬러 추천
+립 컬러 3가지 이상 (색상명 + 톤 설명 + 추천 이유).
+파운데이션 쉐이드 방향 (Yellow Base / Pink Base / Neutral Base 기준).
+아이섀도우 컬러 추천 (명도·채도 기준으로 설명).
 
-## 4. 헤어 컬러 추천
-(잘 어울리는 헤어 컬러 추천 3가지 이상, 피해야 할 헤어 컬러 포함)
+## [섹션 4] 헤어 컬러 추천
+잘 어울리는 헤어 컬러 3가지 이상 (톤 설명 포함).
+피해야 할 헤어 컬러와 그 이유.
 
-## 5. 패션 컬러 가이드
-(베스트 컬러 팔레트, 코디 조합 팁, 계절별 활용법)
+## [섹션 5] 패션 컬러 가이드
+베스트 컬러 팔레트 (메인·서브·포인트 컬러 구분).
+코디 조합 팁 (컨트라스트 레벨 활용법 포함).
 
-## 6. 시즌별 스타일링
-(봄·여름·가을·겨울 각 시즌에 맞는 컬러 스타일링 제안)
+## [섹션 6] 시즌별 스타일링
+봄·여름·가을·겨울 각 시즌에 맞는 컬러 스타일링 제안.
+시즌별 색상 조합 예시 포함.
 
-${section7Instruction}`;
+${section7}`;
 
-  // 이미지가 있으면 vision 요청, 없으면 텍스트 전용
   const userContent: Anthropic.MessageParam['content'] = imageBase64
     ? [
         {
           type: 'image',
-          source: {
-            type: 'base64',
-            media_type: imageMediaType,
-            data: imageBase64,
-          },
+          source: { type: 'base64', media_type: imageMediaType, data: imageBase64 },
         },
         { type: 'text', text: userText },
       ]
@@ -207,22 +226,230 @@ ${section7Instruction}`;
 
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 3000,
+    max_tokens: 4000,
     system: [
       {
         type: 'text',
-        text: EXPERT_SYSTEM,
+        text: ACADEMIC_SYSTEM,
         cache_control: { type: 'ephemeral' },
       },
     ] as Anthropic.TextBlockParam[],
-    messages: [
-      {
-        role: 'user',
-        content: userContent,
-      },
-    ],
+    messages: [{ role: 'user', content: userContent }],
   });
 
   const block = response.content[0];
   return block.type === 'text' ? block.text.trim() : '';
+}
+
+// ── 3. 구조화 리포트 데이터 — PDF 컴포넌트용 JSON ────────────
+
+export interface ReportColorItem {
+  name: string;
+  hex: string;
+}
+
+export interface ReportMakeupItem {
+  name: string;
+  hex: string;
+  description: string;
+}
+
+export interface ReportData {
+  meta: {
+    typeName: string;
+    typeNameKr: string;
+    toneStrength: string;
+    issueDate: string;
+    reportId: string;
+  };
+  analysis: {
+    summary: string;
+    quadrant: {
+      warmCool: number;  // 0: 매우 쿨, 100: 매우 웜
+      lightDeep: number; // 0: 매우 라이트, 100: 매우 딥
+    };
+    fourAttributes: {
+      hue: string;
+      value: string;
+      chroma: string;
+      clarity: string;
+    };
+    base: string;
+    contrast: string;
+  };
+  palette: {
+    best: ReportColorItem[];    // 8개
+    worst: ReportColorItem[];   // 4개
+  };
+  makeup: {
+    lip: ReportMakeupItem[];        // 3개
+    foundation: ReportMakeupItem[]; // 2개
+    eyeshadow: ReportMakeupItem[];  // 2개
+    blusher: ReportMakeupItem[];    // 2개
+  };
+  hair: {
+    recommended: Array<{ name: string; description: string }>;  // 3개
+    avoid: Array<{ name: string; reason: string }>;             // 2개
+  };
+  fashion: {
+    main: string[];
+    sub: string[];
+    accent: string[];
+    tips: string[];
+  };
+  seasonalStyling: {
+    spring: string;
+    summer: string;
+    fall: string;
+    winter: string;
+  };
+  customAdvice?: {
+    answer: string;
+    isRelated: boolean;
+  };
+}
+
+export async function generateReportData(
+  answers: TestAnswers,
+  colorType: PersonalColorType,
+  imageBase64?: string,
+  freeConcern?: string,
+  imageMediaType: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg',
+): Promise<ReportData> {
+  const today = new Date().toISOString().slice(0, 10);
+  const reportId = `CL-${Date.now().toString(36).toUpperCase()}`;
+
+  const photoInstruction = imageBase64
+    ? '첨부 사진의 피부 색상(Hue)·명도(Value)·채도(Chroma)를 분석하여 데이터에 반영하세요.'
+    : '';
+
+  const customAdviceInstruction = freeConcern
+    ? `"customAdvice" 필드를 반드시 포함하세요.
+고민: "${freeConcern}"
+- 퍼스널컬러·뷰티·패션·메이크업 관련 → isRelated: true, answer에 전문 조언 작성
+- 관련 없는 경우 → isRelated: false, answer: "해당 질문에는 답변이 불가합니다"`
+    : '"customAdvice" 필드는 생략하세요.';
+
+  const prompt = `퍼스널컬러 타입: ${colorType}
+${photoInstruction}
+테스트 응답:
+${formatAnswers(answers)}
+
+${customAdviceInstruction}
+
+아래 JSON 구조를 정확히 따르는 퍼스널컬러 분석 데이터를 생성하세요.
+순수 JSON만 출력하세요 (마크다운 코드블록, 설명 텍스트 없이).
+hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요.
+학술 용어(색의 4속성, Yellow/Pink/Neutral Base, Contrast 레벨)를 정확히 사용하세요.
+
+{
+  "meta": {
+    "typeName": "영문 타입명 (예: Spring Light)",
+    "typeNameKr": "${colorType}",
+    "toneStrength": "톤 강도 설명 (예: Soft Light tendency, Yellow Base 경향)",
+    "issueDate": "${today}",
+    "reportId": "${reportId}"
+  },
+  "analysis": {
+    "summary": "이 타입의 핵심 특징을 색의 4속성 관점에서 설명하는 2~3문장 요약",
+    "quadrant": {
+      "warmCool": 0~100 사이 숫자 (0=매우 쿨, 100=매우 웜),
+      "lightDeep": 0~100 사이 숫자 (0=매우 라이트, 100=매우 딥)
+    },
+    "fourAttributes": {
+      "hue": "색상 특성 (예: Warm Yellow-Red)",
+      "value": "명도 특성 (예: Light to Medium)",
+      "chroma": "채도 특성 (예: Soft Muted)",
+      "clarity": "청탁 특성 (예: Clear tendency)"
+    },
+    "base": "Yellow Base / Pink Base / Neutral Base 중 하나",
+    "contrast": "High / Medium / Low Contrast 중 하나"
+  },
+  "palette": {
+    "best": [
+      {"name": "색상명", "hex": "#RRGGBB"},
+      (총 8개)
+    ],
+    "worst": [
+      {"name": "색상명", "hex": "#RRGGBB"},
+      (총 4개)
+    ]
+  },
+  "makeup": {
+    "lip": [
+      {"name": "색상명", "hex": "#RRGGBB", "description": "추천 이유 한 문장"},
+      (총 3개)
+    ],
+    "foundation": [
+      {"name": "쉐이드명", "hex": "#RRGGBB", "description": "설명"},
+      (총 2개)
+    ],
+    "eyeshadow": [
+      {"name": "색상명", "hex": "#RRGGBB", "description": "설명"},
+      (총 2개)
+    ],
+    "blusher": [
+      {"name": "색상명", "hex": "#RRGGBB", "description": "설명"},
+      (총 2개)
+    ]
+  },
+  "hair": {
+    "recommended": [
+      {"name": "헤어 컬러명", "description": "톤 설명"},
+      (총 3개)
+    ],
+    "avoid": [
+      {"name": "피해야 할 헤어 컬러명", "reason": "피해야 하는 이유"},
+      (총 2개)
+    ]
+  },
+  "fashion": {
+    "main": ["메인 컬러 추천 (2~3개)"],
+    "sub": ["서브 컬러 추천 (2~3개)"],
+    "accent": ["포인트 컬러 추천 (1~2개)"],
+    "tips": ["코디 팁 (3~5개)"]
+  },
+  "seasonalStyling": {
+    "spring": "봄 스타일링 제안",
+    "summer": "여름 스타일링 제안",
+    "fall": "가을 스타일링 제안",
+    "winter": "겨울 스타일링 제안"
+  }
+}`;
+
+  const userContent: Anthropic.MessageParam['content'] = imageBase64
+    ? [
+        {
+          type: 'image',
+          source: { type: 'base64', media_type: imageMediaType, data: imageBase64 },
+        },
+        { type: 'text', text: prompt },
+      ]
+    : prompt;
+
+  const response = await anthropic.messages.create({
+    model: MODEL,
+    max_tokens: 4000,
+    system: [
+      {
+        type: 'text',
+        text: ACADEMIC_SYSTEM,
+        cache_control: { type: 'ephemeral' },
+      },
+    ] as Anthropic.TextBlockParam[],
+    messages: [{ role: 'user', content: userContent }],
+  });
+
+  const block = response.content[0];
+  if (block.type !== 'text') {
+    throw new Error('Unexpected response type from Claude');
+  }
+
+  // JSON 추출 — 마크다운 코드블록이 포함된 경우 처리
+  const raw = block.text.trim();
+  const jsonText = raw.startsWith('```')
+    ? raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    : raw;
+
+  return JSON.parse(jsonText) as ReportData;
 }
