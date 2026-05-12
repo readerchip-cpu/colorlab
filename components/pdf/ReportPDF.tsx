@@ -3,10 +3,10 @@
 import '@/lib/pdf/font';
 import {
   Document, Page, View, Text, StyleSheet,
-  Svg, Line, Circle as SvgCircle, Rect,
 } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import type { PersonalColorType } from '@/types';
+import { QuadrantChart } from './QuadrantChart';
 
 // ── Static type metadata ────────────────────────────────────────
 
@@ -645,29 +645,6 @@ function SectionHeader({ num, title, accent }: { num: string; title: string; acc
   );
 }
 
-// 4분면 차트 SVG
-function QuadrantChart({ posX, posY, accent }: { posX: number; posY: number; accent: string }) {
-  const SIZE = 180;
-  const MID  = SIZE / 2;
-  const MARGIN = 14;
-  const RANGE  = MID - MARGIN;
-  // SVG y-axis is inverted: posY +1 → top
-  const dotX = MID + posX * RANGE;
-  const dotY = MID - posY * RANGE;
-
-  return (
-    <Svg width={SIZE} height={SIZE} style={{ backgroundColor: '#F5F2ED', borderRadius: 8 }}>
-      {/* Axes */}
-      <Line x1={MARGIN} y1={MID} x2={SIZE - MARGIN} y2={MID} strokeWidth={0.8} stroke="#CCC" />
-      <Line x1={MID} y1={MARGIN} x2={MID} y2={SIZE - MARGIN} strokeWidth={0.8} stroke="#CCC" />
-      {/* Quadrant labels */}
-      {/* User dot */}
-      <SvgCircle cx={dotX} cy={dotY} r={7} fill={accent} opacity={0.9} />
-      <SvgCircle cx={dotX} cy={dotY} r={3} fill="#FFF" />
-    </Svg>
-  );
-}
-
 // ── Page 1: Cover ───────────────────────────────────────────────
 
 function CoverPage({
@@ -752,6 +729,9 @@ function TypeAnalysisPage({
   const extra = TYPE_EXTRA[colorType];
   const { attributes } = extra;
   const [posX, posY] = CHART_POS[colorType];
+  // CHART_POS: posX(-1=Cool, +1=Warm), posY(-1=Deep, +1=Light) → 0~100 범위로 변환
+  const warmCool  = Math.round((posX + 1) / 2 * 100);
+  const lightDeep = Math.round((1 - posY) / 2 * 100);
 
   return (
     <Page size="A4" style={S.page}>
@@ -759,22 +739,12 @@ function TypeAnalysisPage({
 
       {/* Chart + legend */}
       <View style={S.chartWrapper}>
-        <View>
-          <QuadrantChart posX={posX} posY={posY} accent={accent} />
-          {/* Axis labels below/beside chart */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, width: 180 }}>
-            <Text style={{ fontSize: 7.5, color: '#AAA' }}>← Cool</Text>
-            <Text style={{ fontSize: 7.5, color: '#AAA' }}>Warm →</Text>
-          </View>
-          <View style={{ alignItems: 'center', marginTop: 2 }}>
-            <Text style={{ fontSize: 7.5, color: '#AAA' }}>↕ Light / Deep</Text>
-          </View>
-        </View>
+        <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={220} />
         <View style={S.chartLegendBox}>
           <Text style={[S.subSectionTitle, { marginTop: 0 }]}>컬러 포지션</Text>
           <Text style={S.bodyText}>
-            {TYPE_EN[colorType]} 타입은 {posX > 0 ? '웜' : '쿨'}톤 계열이며,
-            {posY > 0 ? ' 라이트' : ' 딥'} 밝기 영역에 위치합니다.
+            {TYPE_EN[colorType]} 타입은 {warmCool >= 50 ? '웜' : '쿨'}톤 계열이며,
+            {lightDeep <= 50 ? ' 라이트' : ' 딥'} 밝기 영역에 위치합니다.
             차트의 빨간 점이 {colorType}의 정확한 위치를 나타냅니다.
           </Text>
         </View>
