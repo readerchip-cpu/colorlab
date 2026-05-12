@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { generateFullReport } from '@/lib/anthropic/client';
 import { getTestSession, saveReportContent } from '@/lib/utils/session';
+import { getEmailBySessionId } from '@/lib/utils/payment';
+import { sendReport } from '@/lib/email/sendReport';
+import { TYPE_EN } from '@/lib/colorData';
 import type { PersonalColorType } from '@/types';
 
 // Anthropic API 호출 시간을 고려해 60초로 설정
@@ -72,6 +75,22 @@ export async function POST(request: Request) {
 
     // DB에 리포트 저장
     await saveReportContent(sessionId, report);
+
+    // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
+    const colorType = session.result_type as PersonalColorType;
+    getEmailBySessionId(sessionId)
+      .then((email) => {
+        if (!email) return;
+        const base = process.env.NEXT_PUBLIC_BASE_URL!;
+        return sendReport(email, {
+          sessionId,
+          typeName:   TYPE_EN[colorType] ?? colorType,
+          typeNameKr: colorType,
+          reportUrl:  `${base}/report/${sessionId}`,
+          pdfUrl:     `${base}/api/pdf/${sessionId}`,
+        });
+      })
+      .catch((err) => console.error('Email send failed:', err));
 
     return NextResponse.json({ redirectUrl: `/report/${sessionId}` });
   } catch (err) {

@@ -5,6 +5,17 @@ export interface ColorSwatch {
   name: string;
 }
 
+export const TYPE_EN: Record<PersonalColorType, string> = {
+  '봄 라이트':    'Spring Light',
+  '봄 브라이트':  'Spring Bright',
+  '여름 라이트':  'Summer Light',
+  '여름 뮤트':    'Summer Muted',
+  '가을 뮤트':    'Autumn Muted',
+  '가을 딥':      'Autumn Deep',
+  '겨울 브라이트': 'Winter Bright',
+  '겨울 딥':      'Winter Deep',
+};
+
 export const TYPE_DISPLAY: Record<PersonalColorType, string> = {
   '봄 라이트':    '봄 웜 라이트',
   '봄 브라이트':  '봄 웜 브라이트',

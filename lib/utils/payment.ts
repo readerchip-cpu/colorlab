@@ -50,3 +50,14 @@ export async function getPaymentByOrderId(orderId: string): Promise<Payment | nu
   if (error) throw error;
   return data as Payment | null;
 }
+
+export async function getEmailBySessionId(sessionId: string): Promise<string | null> {
+  const { data, error } = await adminClient
+    .from('payments')
+    .select('email')
+    .eq('session_id', sessionId)
+    .eq('status', 'done')
+    .maybeSingle();
+  if (error) throw error;
+  return (data as { email: string | null } | null)?.email ?? null;
+}

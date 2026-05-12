@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { confirmTossPayment, parseSessionId } from '@/lib/toss/confirm';
 import { getPaymentByOrderId, updatePaymentDone } from '@/lib/utils/payment';
 import { updateSessionPaid } from '@/lib/utils/session';
-import { sendReportEmail } from '@/lib/email/sendReport';
 
 const PRICE = Number(process.env.PRICE ?? 4900);
 
@@ -36,19 +35,13 @@ export async function GET(request: Request) {
     await confirmTossPayment(paymentKey, orderId, Number(amount));
 
     // 2. DB 업데이트 (결제 키 저장 + is_paid)
-    const [payment] = await Promise.all([
+    await Promise.all([
       getPaymentByOrderId(orderId),
       updatePaymentDone(orderId, paymentKey),
     ]);
     await updateSessionPaid(sessionId);
 
-    // 3. 이메일 발송 (실패해도 결제 플로우는 계속)
-    if (payment?.email) {
-      sendReportEmail(payment.email, sessionId).catch((err) =>
-        console.error('Email send failed:', err),
-      );
-    }
-
+    // 이메일은 분석 완료(analyze route) 시점에 발송됩니다.
     return NextResponse.redirect(`${origin}/upload/${sessionId}`);
   } catch (err) {
     console.error('Payment confirm error:', err);
