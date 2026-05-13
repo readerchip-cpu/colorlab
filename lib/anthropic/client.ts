@@ -357,10 +357,10 @@ export interface ReportData {
     tips: string[];
   };
   seasonalStyling: {
-    spring: string;
-    summer: string;
-    fall: string;
-    winter: string;
+    spring: { title: string; description: string; mustHaves: Array<{ icon: string; label: string }>; colors: Array<{ name: string; hex: string }> };
+    summer: { title: string; description: string; mustHaves: Array<{ icon: string; label: string }>; colors: Array<{ name: string; hex: string }> };
+    fall:   { title: string; description: string; mustHaves: Array<{ icon: string; label: string }>; colors: Array<{ name: string; hex: string }> };
+    winter: { title: string; description: string; mustHaves: Array<{ icon: string; label: string }>; colors: Array<{ name: string; hex: string }> };
   };
   customAdvice?: {
     answer: string;
@@ -487,10 +487,38 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     "tips": ["코디 팁 (3~5개)"]
   },
   "seasonalStyling": {
-    "spring": "봄 스타일링 제안",
-    "summer": "여름 스타일링 제안",
-    "fall": "가을 스타일링 제안",
-    "winter": "겨울 스타일링 제안"
+    "spring": {
+      "title": "봄 룩 제목 (예: '산뜻한 데이트 룩')",
+      "description": "${name}님의 봄 스타일링 제안 — 2~3문장으로 구체적인 코디 방법 설명",
+      "mustHaves": [
+        {"icon": "이모지", "label": "필수 아이템 1"},
+        {"icon": "이모지", "label": "필수 아이템 2"},
+        {"icon": "이모지", "label": "필수 아이템 3"}
+      ],
+      "colors": [
+        {"name": "컬러명", "hex": "#RRGGBB"},
+        {"name": "컬러명", "hex": "#RRGGBB"},
+        {"name": "컬러명", "hex": "#RRGGBB"}
+      ]
+    },
+    "summer": {
+      "title": "여름 룩 제목",
+      "description": "${name}님의 여름 스타일링 제안 — 2~3문장",
+      "mustHaves": [{"icon": "이모지", "label": "아이템"}],
+      "colors": [{"name": "컬러명", "hex": "#RRGGBB"}]
+    },
+    "fall": {
+      "title": "가을 룩 제목",
+      "description": "${name}님의 가을 스타일링 제안 — 2~3문장",
+      "mustHaves": [{"icon": "이모지", "label": "아이템"}],
+      "colors": [{"name": "컬러명", "hex": "#RRGGBB"}]
+    },
+    "winter": {
+      "title": "겨울 룩 제목",
+      "description": "${name}님의 겨울 스타일링 제안 — 2~3문장",
+      "mustHaves": [{"icon": "이모지", "label": "아이템"}],
+      "colors": [{"name": "컬러명", "hex": "#RRGGBB"}]
+    }
   }
 }`;
 

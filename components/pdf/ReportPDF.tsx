@@ -5,7 +5,9 @@ import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
 import { ColorChip } from './ColorChip';
-import { SeasonCard } from './SeasonCard';
+import { SeasonCard, SeasonIcon } from './SeasonCard';
+import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
+import type { SeasonalStyling } from '@/lib/data/seasonalStyling';
 import { PaletteGrid } from './PaletteGrid';
 import { CelebrityCard } from './CelebrityCard';
 import { ProductRecommendation } from './ProductRecommendation';
@@ -681,60 +683,116 @@ function MakeupHairPage({ colorType, accent, customerName }: {
 
 // ── Page 5: Fashion + Seasonal ───────────────────────────────────
 
-function FashionSeasonPage({ colorType, accent, customerName }: { colorType: PersonalColorType; accent: string; customerName: string }) {
-  const { fashion, seasonal } = TYPE_EXTRA[colorType];
+const SEASON_META = [
+  { key: 'spring', bg: '#FFF0F5', leftBg: '#FFE0EB', stripe: '#F098B0' },
+  { key: 'summer', bg: '#F4F0FF', leftBg: '#E4DCFF', stripe: '#9878D8' },
+  { key: 'autumn', bg: '#FFF5EB', leftBg: '#FFE8CC', stripe: '#C87838' },
+  { key: 'winter', bg: '#EEF4FF', leftBg: '#DDE8FF', stripe: '#5878C8' },
+] as const;
+
+function FashionSeasonPage({ colorType, accent, customerName }: {
+  colorType: PersonalColorType; accent: string; customerName: string;
+}) {
+  const { fashion } = TYPE_EXTRA[colorType];
+  const seasonal = seasonalStylingDatabase[colorType];
   const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
       <PageHeader label="패션 & 시즌" page={5} total={6} />
 
+      {/* 07: 패션 컬러 가이드 — compact */}
       <SectionHead num="07" title="패션 컬러 가이드" accent={accent} />
-
-      <View style={{ flexDirection: 'row', gap: 16, marginBottom: 4 }}>
-        {/* Color groups */}
-        <View style={{ width: 160 }}>
-          {[
-            { label: 'MAIN COLOR', val: fashion.main },
-            { label: 'SUB COLOR',  val: fashion.sub },
-            { label: 'ACCENT',     val: fashion.accent },
-          ].map(({ label, val }) => (
-            <View key={label} style={{ marginBottom: 10 }}>
-              <Text style={S.fashionGroupLabel}>{label}</Text>
-              <Text style={S.fashionGroupText}>{val}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Tips */}
-        <View style={{ flex: 1 }}>
-          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 8, color: '#2A2A2A' }]}>코디 팁</Text>
-          {[fashion.tip].map((t, i) => (
-            <View key={i} style={S.tipRow}>
-              <View style={[S.tipBullet, { backgroundColor: accent }]} />
-              <Text style={S.tipText}>{t}</Text>
-            </View>
-          ))}
-          <Text style={[S.bodySmall, { marginTop: 6 }]}>
-            {name}님의 베스트 컬러 조합은 {fashion.main} 계열로, 자연스러운 컬러 레이어링을 시도해보세요.
-          </Text>
-        </View>
+      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 4 }}>
+        {([
+          { label: 'MAIN COLOR', val: fashion.main },
+          { label: 'SUB COLOR',  val: fashion.sub  },
+          { label: 'ACCENT',     val: fashion.accent },
+        ] as const).map(({ label, val }) => (
+          <View key={label} style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 5, padding: 7 }}>
+            <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1, color: '#AAA', marginBottom: 2 }}>{label}</Text>
+            <Text style={{ fontSize: 9, color: '#2A2A2A', lineHeight: 1.5 }}>{val}</Text>
+          </View>
+        ))}
       </View>
 
       <View style={S.sectionDivider} />
 
-      <SectionHead num="08" title="시즌별 스타일링" accent={accent} />
+      {/* 08: 시즌별 스타일링 — 큰 카드 4개 */}
+      <SectionHead num="08" title={`${name}님의 시즌별 스타일링`} accent={accent} />
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-        {(['spring', 'summer', 'autumn', 'winter'] as const).map((key) => (
-          <View key={key} style={{ width: '48%' }}>
-            <SeasonCard
-              season={key}
-              outfit={seasonal[key]}
-              accentColor={accent}
-            />
-          </View>
-        ))}
+      <View style={{ flexDirection: 'column', gap: 7 }}>
+        {SEASON_META.map(({ key, bg, leftBg, stripe }) => {
+          const look = seasonal[key];
+          return (
+            <View key={key} style={{
+              flexDirection: 'row',
+              backgroundColor: bg,
+              borderRadius: 7,
+              borderTopWidth: 3, borderTopColor: stripe, borderTopStyle: 'solid',
+            }}>
+              {/* 좌측 패널 (30%): 시즌 아이콘 + 레이블 */}
+              <View style={{
+                width: '28%', backgroundColor: leftBg,
+                alignItems: 'center', justifyContent: 'center',
+                paddingVertical: 10, paddingHorizontal: 6,
+                borderRightWidth: 0.5, borderRightColor: stripe + '50', borderRightStyle: 'solid',
+              }}>
+                <SeasonIcon season={key} size={42} />
+                <Text style={{
+                  fontSize: 8, fontWeight: 700, color: stripe,
+                  letterSpacing: 0.5, marginTop: 5, textAlign: 'center',
+                }}>
+                  {key === 'spring' ? 'SPRING 봄'
+                    : key === 'summer' ? 'SUMMER 여름'
+                    : key === 'autumn' ? 'AUTUMN 가을'
+                    : 'WINTER 겨울'}
+                </Text>
+              </View>
+
+              {/* 우측 패널 (70%): 룩 상세 */}
+              <View style={{ flex: 1, padding: 9 }}>
+                {/* 제목 */}
+                <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 3 }}>
+                  {look.title}
+                </Text>
+
+                {/* 설명 */}
+                <Text style={{ fontSize: 8.5, color: '#444', lineHeight: 1.55, marginBottom: 5 }}>
+                  {look.description}
+                </Text>
+
+                {/* 필수 아이템 */}
+                <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 3 }}>
+                  MUST HAVE
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 5, flexWrap: 'wrap' }}>
+                  {look.mustHaves.map((item, i) => (
+                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                      <Text style={{ fontSize: 9 }}>{item.icon}</Text>
+                      <Text style={{ fontSize: 7.5, color: '#555' }}>{item.label}</Text>
+                    </View>
+                  ))}
+                </View>
+
+                {/* 추천 컬러 칩 */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={{ fontSize: 6, color: '#BBB', letterSpacing: 0.5 }}>추천 컬러</Text>
+                  {look.colors.map(({ name: cName, hex }) => (
+                    <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                      <View style={{
+                        width: 10, height: 10, borderRadius: 5,
+                        backgroundColor: hex,
+                        borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid',
+                      }} />
+                      <Text style={{ fontSize: 6.5, color: '#666' }}>{cName}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </View>
+          );
+        })}
       </View>
 
       <Footer page={5} total={6} accent={accent} />

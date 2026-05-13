@@ -98,7 +98,7 @@ function SnowflakeIcon({ size }: { size: number }) {
   );
 }
 
-function SeasonIcon({ season, size }: { season: string; size: number }) {
+export function SeasonIcon({ season, size }: { season: string; size: number }) {
   if (season === 'spring') return <FlowerIcon size={size} />;
   if (season === 'summer') return <SunIcon size={size} />;
   if (season === 'autumn') return <LeafIcon size={size} />;
