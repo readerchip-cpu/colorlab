@@ -12,11 +12,13 @@ interface PaletteGridProps {
   columns?: number;
   label?: string;
   opacity?: number;
+  chipSize?: number;
+  gap?: number;
 }
 
-export function PaletteGrid({ colors, columns = 4, label, opacity = 1 }: PaletteGridProps) {
+export function PaletteGrid({ colors, columns = 4, label, opacity = 1, chipSize, gap = 0 }: PaletteGridProps) {
   const pct = `${Math.floor(100 / columns)}%`;
-  const dim = columns <= 4 ? 44 : columns <= 6 ? 34 : 26;
+  const dim = chipSize ?? (columns <= 4 ? 44 : columns <= 6 ? 34 : 26);
   const nameFontSize = columns <= 4 ? 7.5 : 6.5;
 
   return (
@@ -26,7 +28,7 @@ export function PaletteGrid({ colors, columns = 4, label, opacity = 1 }: Palette
           {label}
         </Text>
       ) : null}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap }}>
         {colors.map(({ hex, name }) => (
           <View key={hex} style={{ width: pct, alignItems: 'center', paddingVertical: 6 }}>
             <Text style={{ fontSize: 5.5, color: '#BBB', marginBottom: 2, textAlign: 'center' }}>{hex}</Text>

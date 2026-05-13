@@ -238,8 +238,8 @@ function hairHex(name: string): string {
 
 // ── Styles ───────────────────────────────────────────────────────
 
-const PAD_H = 30;
-const PAD_V = 35;
+const PAD_H = 25;
+const PAD_V = 25;
 
 const S = StyleSheet.create({
   page: {
@@ -247,13 +247,13 @@ const S = StyleSheet.create({
     backgroundColor: '#FBF9F4',
     paddingHorizontal: PAD_H,
     paddingTop: PAD_V,
-    paddingBottom: 32,
+    paddingBottom: 24,
     position: 'relative',
   },
   // ── Page header (all non-cover pages) ──
   pageHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    marginBottom: 20, paddingBottom: 8,
+    marginBottom: 12, paddingBottom: 8,
     borderBottomWidth: 0.5, borderBottomColor: '#DDD8CC', borderBottomStyle: 'solid',
   },
   pageHeaderLeft: { fontSize: 7, color: '#AAA', letterSpacing: 1 },
@@ -262,18 +262,18 @@ const S = StyleSheet.create({
   sectionBlock: { marginBottom: 14 },
   sectionNum: { fontSize: 7.5, fontWeight: 700, letterSpacing: 2, color: '#BBB', marginBottom: 2 },
   sectionTitle: { fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2 },
-  sectionDivider: { height: 0.5, backgroundColor: '#DDD8CC', marginVertical: 16 },
-  subTitle: { fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 8 },
+  sectionDivider: { height: 0.5, backgroundColor: '#DDD8CC', marginVertical: 10 },
+  subTitle: { fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 6 },
   // ── Body text ──
-  body: { fontSize: 10, color: '#444', lineHeight: 1.5 },
-  bodySmall: { fontSize: 8.5, color: '#555', lineHeight: 1.5 },
+  body: { fontSize: 10.5, color: '#444', lineHeight: 1.7 },
+  bodySmall: { fontSize: 8.5, color: '#555', lineHeight: 1.6 },
   caption: { fontSize: 8, color: '#999' },
   // ── Cover ──
   coverMeta: { fontSize: 7, color: '#AAA', letterSpacing: 0.5, textAlign: 'right', lineHeight: 1.7 },
   coverNameLine: { fontSize: 22, fontWeight: 700, color: '#2A2A2A', letterSpacing: -0.5, marginBottom: 4 },
   coverTypeEn: { fontSize: 38, fontWeight: 700, color: '#2A2A2A', letterSpacing: -1, lineHeight: 1, marginBottom: 8 },
   coverTypeKo: { fontSize: 18, fontWeight: 400, color: '#666', marginBottom: 6 },
-  coverDisplayName: { fontSize: 11, color: '#999', marginBottom: 28 },
+  coverDisplayName: { fontSize: 11, color: '#999', marginBottom: 16 },
   // ── Chips ──
   chip: {
     width: 48, height: 48, borderRadius: 24,
@@ -292,16 +292,16 @@ const S = StyleSheet.create({
   },
   // ── Attribute card ──
   attrCard: {
-    flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 9,
+    flex: 1, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8,
   },
   attrCardKey: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 3 },
   attrCardLabel: { fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 },
   attrCardVal: { fontSize: 8, color: '#555' },
   // ── Key finding highlight ──
   keyFindingBox: {
-    backgroundColor: '#F0ECF8', borderRadius: 8,
+    backgroundColor: '#F0ECF8', borderRadius: 6,
     borderLeftWidth: 3, borderLeftColor: '#7C3AED', borderLeftStyle: 'solid',
-    padding: 10, marginTop: 8,
+    padding: 8, marginTop: 6,
   },
   keyFindingLabel: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#7C3AED', marginBottom: 3 },
   keyFindingText: { fontSize: 10, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.4 },
@@ -336,7 +336,7 @@ const S = StyleSheet.create({
   footerText: { fontSize: 7, color: '#BBB' },
   footerPage: { fontSize: 7.5, fontWeight: 700, color: '#CCC' },
   // ── Custom advice ──
-  adviceBox: { backgroundColor: '#F8F5FC', borderRadius: 8, padding: 14 },
+  adviceBox: { backgroundColor: '#F8F5FC', borderRadius: 6, padding: 10 },
   adviceLabel: { fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: '#7C3AED', marginBottom: 6 },
   adviceText: { fontSize: 10, color: '#333', lineHeight: 1.6 },
 });
@@ -384,7 +384,7 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
   return (
     <Page size="A4" style={S.page}>
       {/* Header row */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 48 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: accent }} />
           <Text style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: '#2A2A2A' }}>COLORLAB</Text>
@@ -402,7 +402,7 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
       <Text style={S.coverDisplayName}>{display}</Text>
 
       {/* Palette circles */}
-      <View style={{ flexDirection: 'row', gap: 14, marginBottom: 40 }}>
+      <View style={{ flexDirection: 'row', gap: 14, marginBottom: 24 }}>
         {palette.map(({ hex, name: cName }) => (
           <ColorChip key={hex} hex={hex} name={cName} size="large" showHex={false} />
         ))}
@@ -410,11 +410,21 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
 
       {/* Greeting */}
       {greeting ? (
-        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 10, padding: 16, marginBottom: 20 }}>
-          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 6 }}>PERSONAL MESSAGE</Text>
-          <Text style={{ fontSize: 11, color: '#333', lineHeight: 1.6 }}>{greeting}</Text>
+        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 5 }}>PERSONAL MESSAGE</Text>
+          <Text style={{ fontSize: 11, color: '#333', lineHeight: 1.7 }}>{greeting}</Text>
         </View>
       ) : null}
+
+      {/* Watermark */}
+      <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ height: 0.5, flex: 1, backgroundColor: '#E8E4DC' }} />
+          <Text style={{ fontSize: 7, color: '#CCC', letterSpacing: 2 }}>MADE BY COLORLAB</Text>
+          <View style={{ height: 0.5, flex: 1, backgroundColor: '#E8E4DC' }} />
+        </View>
+        <Text style={{ fontSize: 6.5, color: '#DDD', marginTop: 3, letterSpacing: 1 }}>AI PERSONAL COLOR ANALYSIS · colorlab.kr</Text>
+      </View>
 
       <Footer page={1} total={6} accent={accent} />
     </Page>
@@ -485,12 +495,12 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
       </View>
 
       {/* Base + Contrast */}
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <View style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 10 }}>
+      <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
+        <View style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8 }}>
           <Text style={S.attrCardKey}>BASE TONE</Text>
           <Text style={[S.attrCardLabel, { color: accent }]}>{attributes.base}</Text>
         </View>
-        <View style={{ flex: 2, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 10 }}>
+        <View style={{ flex: 2, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8 }}>
           <Text style={[S.attrCardKey, { marginBottom: 6 }]}>CONTRAST</Text>
           <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
             {[1, 2, 3].map((lv) => (
@@ -499,6 +509,17 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
             <Text style={[S.caption, { marginLeft: 6 }]}>{attributes.contrast}</Text>
           </View>
         </View>
+      </View>
+
+      {/* Academic citation box */}
+      <View style={{
+        backgroundColor: '#F0F4F8', borderRadius: 6, padding: 8,
+        borderLeftWidth: 2, borderLeftColor: '#8FA8C0', borderLeftStyle: 'solid',
+      }}>
+        <Text style={{ fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#8FA8C0', marginBottom: 3 }}>REFERENCE</Text>
+        <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
+          본 분석은 한국색채학회 연구 및 국제 퍼스널컬러 분석 기준(ICA)을 기반으로 합니다. 결과는 촬영 환경·조명에 따라 다소 달라질 수 있으며, 전문가 상담과 병행 시 더 정확한 결과를 얻을 수 있습니다.
+        </Text>
       </View>
 
       <Footer page={2} total={6} accent={accent} />
@@ -518,22 +539,36 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 
       <SectionHead num="03" title={`${name}님께 어울리는 컬러`} accent={accent} />
 
-      <PaletteGrid colors={bestColors} columns={4} />
+      {/* Best 8: 큰 칩, 좁은 gap */}
+      <PaletteGrid colors={bestColors} columns={4} chipSize={70} gap={4} />
 
       <View style={S.sectionDivider} />
 
       <SectionHead num="04" title="피해야 할 컬러" accent="#C0B8B0" />
 
-      <View style={{ marginBottom: 16 }}>
-        <PaletteGrid colors={worstColors} columns={4} opacity={0.5} />
+      {/* Worst 4: 2열 2행으로 배치 */}
+      <View style={{ marginBottom: 8 }}>
+        <PaletteGrid colors={worstColors} columns={2} chipSize={44} opacity={0.5} />
       </View>
 
       <View style={S.sectionDivider} />
 
-      {/* Styling note */}
-      <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 12 }}>
+      {/* Styling note - expanded */}
+      <View style={{ backgroundColor: '#F5F2EC', borderRadius: 6, padding: 10 }}>
         <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 5 }}>STYLING NOTE</Text>
         <Text style={S.body}>{fashion.tip}</Text>
+        <View style={{ flexDirection: 'row', gap: 6, marginTop: 8 }}>
+          {[
+            { label: 'MAIN', val: fashion.main },
+            { label: 'SUB',  val: fashion.sub },
+            { label: 'ACCENT', val: fashion.accent },
+          ].map(({ label, val }) => (
+            <View key={label} style={{ flex: 1, backgroundColor: '#EDE9E0', borderRadius: 4, padding: 6 }}>
+              <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1, color: '#999', marginBottom: 2 }}>{label}</Text>
+              <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.5 }}>{val}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       <Footer page={3} total={6} accent={accent} />
@@ -616,9 +651,20 @@ function MakeupHairPage({ colorType, accent }: { colorType: PersonalColorType; a
         ))}
       </View>
 
-      <View style={[S.adviceBox, { backgroundColor: '#FFF5F5', borderRadius: 8, padding: 10 }]}>
+      <View style={{ backgroundColor: '#FFF5F5', borderRadius: 6, padding: 8, marginBottom: 10 }}>
         <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: '#E05555', marginBottom: 3 }}>AVOID</Text>
-        <Text style={{ fontSize: 9, color: '#666' }}>{hair.avoid}</Text>
+        <Text style={{ fontSize: 9, color: '#666', lineHeight: 1.5 }}>{hair.avoid}</Text>
+      </View>
+
+      {/* Pro tip box */}
+      <View style={{
+        backgroundColor: '#F5F2EC', borderRadius: 6, padding: 10,
+        borderLeftWidth: 2, borderLeftColor: accent, borderLeftStyle: 'solid',
+      }}>
+        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 4 }}>PRO TIP</Text>
+        <Text style={{ fontSize: 9.5, color: '#444', lineHeight: 1.7 }}>
+          {colorType} 타입은 베이스 메이크업 단계에서 컬러 컨트롤러(CC크림)로 피부 베이스를 고른 후, 내추럴 피니시 파운데이션을 얇게 레이어링하면 피부의 투명감이 살아납니다. 포인트는 립 컬러 하나로 충분히 연출할 수 있습니다.
+        </Text>
       </View>
 
       <Footer page={4} total={6} accent={accent} />
