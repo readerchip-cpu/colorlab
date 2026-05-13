@@ -345,6 +345,7 @@ export interface ReportData {
     foundation: ReportMakeupItem[]; // 2개
     eyeshadow: ReportMakeupItem[];  // 2개
     blusher: ReportMakeupItem[];    // 2개
+    tips: string[];                 // 4-5개 맞춤 팁
   };
   hair: {
     recommended: Array<{ name: string; description: string }>;  // 3개
@@ -468,6 +469,13 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     "blusher": [
       {"name": "색상명", "hex": "#RRGGBB", "description": "설명"},
       (총 2개)
+    ],
+    "tips": [
+      "${name}님께 맞는 베이스 메이크업 팁 (1문장)",
+      "립 컬러 선택 팁 (1문장)",
+      "아이 메이크업 팁 (1문장)",
+      "블러셔 팁 (1문장)",
+      "전체 메이크업 마무리 팁 (1문장)"
     ]
   },
   "hair": {

@@ -61,6 +61,7 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '롬앤',    product: '쥬시 래스팅 틴트',        shade: '#23 핑크 무드',         hex: '#C4A0B0', price: 10000 },
       { brand: '데이지크', product: '워터 벨벳 틴트',          shade: '#24 모브 로즈',         hex: '#B8A0B8', price: 12000 },
       { brand: '어뮤즈',  product: '듀 벨벳 틴트',            shade: '#09 모브 핑크',         hex: '#C0A0B8', price: 15000 },
+      { brand: '에뛰드',  product: '픽싱 틴트',               shade: '#PK401 뮤트 모브',      hex: '#B0A0C0', price: 9000  },
     ],
     foundation: [
       { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#22C 쿨 베이지',        hex: '#E8D5DF', price: 32000 },
