@@ -114,6 +114,51 @@ const ACADEMIC_SYSTEM = `당신은 한국 퍼스널컬러 학회 기반의 공�
 - 수치와 근거는 반드시 색채 이론에 기반하여 제시
 - 한국어로만 작성`;
 
+// ── 유명인 후보풀 ─────────────────────────────────────────────
+
+const CELEBRITY_POOL = `
+■ 유명인 후보풀 (타입별 참고 — 최근 활동 활발한 인물 우선)
+봄 라이트:    아이유, 박보영, 정채연, 한지민
+봄 브라이트:  카리나, 윈터, 박은빈, 김유정
+여름 라이트:  김다미, 김지원, 박소이, 채수빈
+여름 뮤트:    한소희, 정유미, 송혜교, 이은샘
+가을 뮤트:    김태리, 박서준, 한예슬, 이성경
+가을 딥:      전지현, 김희애, 공효진
+겨울 브라이트: 제니, 차은우, 이도현
+겨울 딥:      김혜수, 송중기, 김다미
+
+선정 기준: 2030 세대가 즉시 알아볼 수 있는 인물, 최근 3년 내 활발히 활동 중인 인물 우선.
+위 목록 외에도 적절한 인물 추천 가능 (단, 한국에서 인지도 높은 인물).
+`;
+
+function buildPersonalizationSystem(name: string, colorType: PersonalColorType): string {
+  const n = name || '고객';
+  return `
+■ 개인화 리포트 지침 — 반드시 준수
+
+이 리포트는 "${n}"님께 보내는 개인 맞춤 분석 보고서입니다.
+
+호칭 규칙:
+- 모든 섹션에서 "${n}님은~", "${n}님께~" 형식을 자연스럽게 사용하세요
+- 일방적 정보 전달이 아닌, 내담자에게 직접 말하는 따뜻한 어조
+- Q11 고민에 대한 답변은 특별히 공감적이고 따뜻하게
+
+유명인 추천 기준:
+- 2030 세대(만 20~39세)가 즉시 알아볼 수 있는 인물
+- 한국에서 활동 중이거나 잘 알려진 K-POP 아이돌·한국 배우·글로벌 셀럽
+- 너무 옛날이거나 잘 알려지지 않은 인물 ❌
+- 4~5명 추천, 각각 왜 같은 톤인지 짧게 설명
+- 동성 인물을 우선 추천하되, 다양한 직군 포함
+
+${CELEBRITY_POOL}
+
+사진 분석 지침 (사진이 제공된 경우):
+- personalIntro.photoImpression에 피부 밝기·톤, 분위기, 어울리는 메이크업 스타일을 구체적으로 서술
+- 분석 데이터(quadrant, fourAttributes)에도 사진 관찰 결과를 반영
+- "[n]님의 사진에서 느껴지는..." 형식으로 직접 언급
+`.trim();
+}
+
 // ── 1. 무료 결과 — 서사형 2~3문장 ────────────────────────────
 
 export async function generateFreeResult(
@@ -254,6 +299,13 @@ export interface ReportMakeupItem {
   description: string;
 }
 
+export interface Celebrity {
+  name: string;
+  profession: string;
+  similarity: string;
+  iconicLook: string;
+}
+
 export interface ReportData {
   meta: {
     typeName: string;
@@ -261,7 +313,14 @@ export interface ReportData {
     toneStrength: string;
     issueDate: string;
     reportId: string;
+    customerName: string;
   };
+  personalIntro: {
+    greeting: string;
+    photoImpression: string;
+    keyFinding: string;
+  };
+  celebrities: Celebrity[];
   analysis: {
     summary: string;
     quadrant: {
@@ -315,12 +374,14 @@ export async function generateReportData(
   imageBase64?: string,
   freeConcern?: string,
   imageMediaType: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg',
+  customerName?: string,
 ): Promise<ReportData> {
   const today = new Date().toISOString().slice(0, 10);
   const reportId = `CL-${Date.now().toString(36).toUpperCase()}`;
+  const name = customerName?.trim() || '고객';
 
   const photoInstruction = imageBase64
-    ? '첨부 사진의 피부 색상(Hue)·명도(Value)·채도(Chroma)를 분석하여 데이터에 반영하세요.'
+    ? `첨부 사진에서 ${name}님의 피부 색상(Hue)·명도(Value)·채도(Chroma)·분위기를 분석하여 personalIntro.photoImpression 및 분석 데이터에 반영하세요.`
     : '';
 
   const customAdviceInstruction = freeConcern
@@ -330,7 +391,7 @@ export async function generateReportData(
 - 관련 없는 경우 → isRelated: false, answer: "해당 질문에는 답변이 불가합니다"`
     : '"customAdvice" 필드는 생략하세요.';
 
-  const prompt = `퍼스널컬러 타입: ${colorType}
+  const prompt = `내담자: ${name}님 | 퍼스널컬러 타입: ${colorType}
 ${photoInstruction}
 테스트 응답:
 ${formatAnswers(answers)}
@@ -340,6 +401,7 @@ ${customAdviceInstruction}
 아래 JSON 구조를 정확히 따르는 퍼스널컬러 분석 데이터를 생성하세요.
 순수 JSON만 출력하세요 (마크다운 코드블록, 설명 텍스트 없이).
 hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요.
+모든 텍스트 필드에서 "${name}님" 호칭을 자연스럽게 사용하세요.
 학술 용어(색의 4속성, Yellow/Pink/Neutral Base, Contrast 레벨)를 정확히 사용하세요.
 
 {
@@ -348,8 +410,23 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     "typeNameKr": "${colorType}",
     "toneStrength": "톤 강도 설명 (예: Soft Light tendency, Yellow Base 경향)",
     "issueDate": "${today}",
-    "reportId": "${reportId}"
+    "reportId": "${reportId}",
+    "customerName": "${name}"
   },
+  "personalIntro": {
+    "greeting": "${name}님께 건네는 따뜻한 첫 인사 (1~2문장)",
+    "photoImpression": "${name}님 사진에서 받은 첫인상 — 피부 밝기·톤, 전체적 분위기, 어울리는 메이크업 스타일 (2~3문장, 사진 없으면 테스트 응답 기반으로 작성)",
+    "keyFinding": "가장 중요한 발견 한 문장 (예: '${name}님은 Yellow Base의 맑고 투명한 Clear 타입입니다.')"
+  },
+  "celebrities": [
+    {
+      "name": "유명인 이름 (예: 아이유)",
+      "profession": "직업 (예: 가수·배우)",
+      "similarity": "${name}님과 같은 타입인 이유 — 톤·명도·분위기 관점으로 설명",
+      "iconicLook": "이 인물의 트레이드마크 스타일 설명"
+    },
+    (총 4~5명)
+  ],
   "analysis": {
     "summary": "이 타입의 핵심 특징을 색의 4속성 관점에서 설명하는 2~3문장 요약",
     "quadrant": {
@@ -429,12 +506,16 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
 
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 4000,
+    max_tokens: 5000,
     system: [
       {
         type: 'text',
         text: ACADEMIC_SYSTEM,
-        cache_control: { type: 'ephemeral' },
+        cache_control: { type: 'ephemeral' }, // 학술 프롬프트 캐시
+      },
+      {
+        type: 'text',
+        text: buildPersonalizationSystem(name, colorType), // 개인화 (캐시 불가)
       },
     ] as Anthropic.TextBlockParam[],
     messages: [{ role: 'user', content: userContent }],
