@@ -817,7 +817,7 @@ function CelebAdvicePage({
   customAdvice?: { answer: string; isRelated: boolean };
 }) {
   const name = customerName || '고객';
-  const celebBg = accent + '14';
+  const sigColors = TYPE_EXTRA[colorType].bestColors.slice(0, 3).map((c) => c.hex);
 
   return (
     <Page size="A4" style={S.page}>
@@ -826,7 +826,7 @@ function CelebAdvicePage({
       <SectionHead num="09" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
 
       {celebrities && celebrities.length > 0 ? (
-        <View style={{ flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+        <View style={{ flexDirection: 'column', gap: 0, marginBottom: 4 }}>
           {celebrities.map((celeb) => (
             <CelebrityCard
               key={celeb.name}
@@ -834,8 +834,7 @@ function CelebAdvicePage({
               profession={celeb.profession}
               similarity={celeb.similarity}
               iconicLook={celeb.iconicLook}
-              accentColor={accent}
-              compact={celebrities.length >= 4}
+              signatureColors={sigColors}
             />
           ))}
         </View>

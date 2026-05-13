@@ -1,59 +1,124 @@
 'use client';
 
-import { View, Text } from '@react-pdf/renderer';
+import { View, Text, Link, StyleSheet } from '@react-pdf/renderer';
 
 interface CelebrityCardProps {
   name: string;
   profession: string;
   similarity: string;
   iconicLook: string;
-  accentColor?: string;
-  compact?: boolean;
+  signatureColors: string[];
 }
 
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#FBF9F4',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#7C3AED',
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  nameSection: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    flex: 1,
+  },
+  name: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    fontFamily: 'Pretendard',
+    color: '#2A2A2A',
+    marginRight: 8,
+  },
+  profession: {
+    fontSize: 9,
+    color: '#888',
+    fontFamily: 'Pretendard',
+  },
+  colorDots: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  colorDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: '#fff',
+  },
+  similarity: {
+    fontSize: 10,
+    lineHeight: 1.6,
+    color: '#444',
+    fontFamily: 'Pretendard',
+    marginBottom: 8,
+  },
+  iconicBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#fff',
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  iconicLabel: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#7C3AED',
+    marginRight: 6,
+    marginTop: 1,
+  },
+  iconicText: {
+    fontSize: 9.5,
+    color: '#555',
+    fontFamily: 'Pretendard',
+    lineHeight: 1.5,
+    flex: 1,
+  },
+  searchLink: {
+    fontSize: 8.5,
+    color: '#7C3AED',
+    fontFamily: 'Pretendard',
+    alignSelf: 'flex-end',
+  },
+});
+
 export function CelebrityCard({
-  name, profession, similarity, iconicLook, accentColor = '#7C3AED', compact = false,
+  name, profession, similarity, iconicLook, signatureColors,
 }: CelebrityCardProps) {
-  const initial = name.charAt(0);
-  const circleDim = compact ? 36 : 44;
-  const circleFontSize = compact ? 14 : 18;
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(name + ' 패션')}&tbm=isch`;
 
   return (
-    <View style={{
-      flexDirection: 'row', gap: 10,
-      backgroundColor: accentColor + '12',
-      borderRadius: 10, padding: compact ? 10 : 12,
-      borderWidth: 0.5, borderColor: accentColor + '38', borderStyle: 'solid',
-    }}>
-      {/* Initial circle */}
-      <View style={{
-        width: circleDim, height: circleDim, borderRadius: circleDim / 2,
-        backgroundColor: accentColor + '22',
-        borderWidth: 1.5, borderColor: accentColor + '55', borderStyle: 'solid',
-        alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-      }}>
-        <Text style={{ fontSize: circleFontSize, fontWeight: 700, color: accentColor }}>
-          {initial}
-        </Text>
-      </View>
-
-      {/* Info */}
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: compact ? 11 : 13, fontWeight: 700, color: '#2A2A2A', marginBottom: 1 }}>
-          {name}
-        </Text>
-        <Text style={{ fontSize: 7.5, color: '#888', marginBottom: compact ? 3 : 5 }}>
-          {profession}
-        </Text>
-        <Text style={{ fontSize: 9, color: '#444', lineHeight: 1.5, marginBottom: 4 }}>
-          {similarity}
-        </Text>
-        <View style={{
-          borderTopWidth: 0.5, borderTopColor: '#DDD', borderTopStyle: 'solid', paddingTop: 4,
-        }}>
-          <Text style={{ fontSize: 8.5, color: '#666', lineHeight: 1.4 }}>✨ {iconicLook}</Text>
+    <View style={[styles.card, { borderLeftColor: signatureColors[0] ?? '#7C3AED' }]}>
+      <View style={styles.topRow}>
+        <View style={styles.nameSection}>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.profession}>{profession}</Text>
+        </View>
+        <View style={styles.colorDots}>
+          {signatureColors.slice(0, 3).map((color, i) => (
+            <View key={i} style={[styles.colorDot, { backgroundColor: color }]} />
+          ))}
         </View>
       </View>
+
+      <Text style={styles.similarity}>{similarity}</Text>
+
+      <View style={styles.iconicBox}>
+        <Text style={styles.iconicLabel}>✨ SIGNATURE LOOK</Text>
+        <Text style={styles.iconicText}>{iconicLook}</Text>
+      </View>
+
+      <Link src={searchUrl} style={styles.searchLink}>
+        🔍 이미지 검색하기 →
+      </Link>
     </View>
   );
 }
