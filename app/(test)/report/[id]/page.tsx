@@ -135,6 +135,14 @@ export default async function ReportPage({ params }: Props) {
 
       {/* ── 4. 하단 액션 ── */}
       <div className="mx-auto max-w-xl space-y-4 px-5">
+        {/* PDF 보기 */}
+        <Link
+          href={`/report/${params.id}/pdf`}
+          className="flex items-center justify-center gap-2 rounded-2xl border-2 border-violet-200 bg-white py-4 text-sm font-bold text-violet-700 shadow-sm transition hover:bg-violet-50 dark:border-violet-700 dark:bg-gray-800 dark:text-purple-400 dark:hover:bg-violet-900/20"
+        >
+          📄 PDF로 보기 / 다운로드
+        </Link>
+
         {/* 공유하기 */}
         <ShareModal sessionId={params.id} colorType={colorType} />
 
