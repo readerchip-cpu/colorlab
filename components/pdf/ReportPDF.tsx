@@ -1,49 +1,33 @@
 'use client';
 
 import '@/lib/pdf/font';
-import {
-  Document, Page, View, Text, StyleSheet,
-} from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
-import type { PersonalColorType } from '@/types';
 import { QuadrantChart } from './QuadrantChart';
+import type { PersonalColorType } from '@/types';
 
-// ── Static type metadata ────────────────────────────────────────
+// ── Static metadata ──────────────────────────────────────────────
 
 const TYPE_EN: Record<PersonalColorType, string> = {
-  '봄 라이트':    'Spring Light',
-  '봄 브라이트':  'Spring Bright',
-  '여름 라이트':  'Summer Light',
-  '여름 뮤트':    'Summer Muted',
-  '가을 뮤트':    'Autumn Muted',
-  '가을 딥':      'Autumn Deep',
-  '겨울 브라이트': 'Winter Bright',
-  '겨울 딥':      'Winter Deep',
+  '봄 라이트':    'Spring Light',   '봄 브라이트':  'Spring Bright',
+  '여름 라이트':  'Summer Light',   '여름 뮤트':    'Summer Muted',
+  '가을 뮤트':    'Autumn Muted',   '가을 딥':      'Autumn Deep',
+  '겨울 브라이트': 'Winter Bright', '겨울 딥':      'Winter Deep',
 };
 
-// x: -1=Cool, +1=Warm / y: -1=Deep, +1=Light
+// x: -1=Cool,+1=Warm / y: -1=Deep,+1=Light
 const CHART_POS: Record<PersonalColorType, [number, number]> = {
-  '봄 라이트':    [0.45, 0.70],
-  '봄 브라이트':  [0.65, 0.35],
-  '여름 라이트':  [-0.35, 0.68],
-  '여름 뮤트':    [-0.50, 0.20],
-  '가을 뮤트':    [0.42, -0.28],
-  '가을 딥':      [0.68, -0.65],
-  '겨울 브라이트': [-0.48, 0.18],
-  '겨울 딥':      [-0.65, -0.58],
+  '봄 라이트':    [0.45,  0.70], '봄 브라이트':  [0.65,  0.35],
+  '여름 라이트':  [-0.35, 0.68], '여름 뮤트':    [-0.50, 0.20],
+  '가을 뮤트':    [0.42, -0.28], '가을 딥':      [0.68, -0.65],
+  '겨울 브라이트': [-0.48, 0.18], '겨울 딥':      [-0.65,-0.58],
 };
 
 interface ColorItem { hex: string; name: string }
-
 interface TypeExtra {
   bestColors: ColorItem[];
   worstColors: ColorItem[];
-  makeup: {
-    lip: ColorItem[];
-    foundation: ColorItem[];
-    eyeshadow: ColorItem[];
-    blush: ColorItem[];
-  };
+  makeup: { lip: ColorItem[]; foundation: ColorItem[]; eyeshadow: ColorItem[]; blush: ColorItem[] };
   hair: { recommended: Array<{ name: string; desc: string }>; avoid: string };
   fashion: { main: string; sub: string; accent: string; tip: string };
   attributes: { hue: string; value: string; chroma: string; clarity: string; base: string; contrast: string };
@@ -68,26 +52,10 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#F7CAC9', name: '로즈 쿼츠' }, { hex: '#C9B8A8', name: '샌드 베이지' }],
       blush: [{ hex: '#FFB7B2', name: '코랄 핑크' }, { hex: '#FFD1DC', name: '피치 핑크' }],
     },
-    hair: {
-      recommended: [
-        { name: '골든 브라운', desc: '따뜻한 웜톤의 밝은 갈색' },
-        { name: '애쉬 브라운', desc: '자연스러운 중간 갈색' },
-        { name: '라이트 카라멜', desc: '밝고 따뜻한 카라멜 계열' },
-      ],
-      avoid: '쿨 블랙, 블루 블랙, 애쉬 그레이 계열',
-    },
-    fashion: {
-      main: '아이보리, 피치, 살몬', sub: '코랄, 민트, 라이트 블루',
-      accent: '골드, 옐로우 그린',
-      tip: '밝고 맑은 파스텔 위에 코랄 포인트를 더하면 봄 라이트의 화사함이 살아납니다.',
-    },
+    hair: { recommended: [{ name: '골든 브라운', desc: '따뜻한 웜톤의 밝은 갈색' }, { name: '애쉬 브라운', desc: '자연스러운 중간 갈색' }, { name: '라이트 카라멜', desc: '밝고 따뜻한 카라멜 계열' }], avoid: '쿨 블랙, 블루 블랙, 애쉬 그레이 계열' },
+    fashion: { main: '아이보리, 피치, 살몬', sub: '코랄, 민트, 라이트 블루', accent: '골드, 옐로우 그린', tip: '밝고 맑은 파스텔 위에 코랄 포인트를 더하면 봄 라이트의 화사함이 살아납니다.' },
     attributes: { hue: 'Warm Yellow-Red', value: 'Light', chroma: 'Soft', clarity: 'Clear', base: 'Yellow Base', contrast: 'Low' },
-    seasonal: {
-      spring: '피치 블라우스 + 아이보리 슬랙스 + 골드 액세서리',
-      summer: '민트 린넨 셔츠 + 화이트 쇼츠 + 살몬 샌들',
-      autumn: '카멜 가디건 + 크림 팬츠 + 베이지 로퍼',
-      winter: '아이보리 터틀넥 + 라이트 그레이 코트 + 골드 이어링',
-    },
+    seasonal: { spring: '피치 블라우스 + 아이보리 슬랙스 + 골드 액세서리', summer: '민트 린넨 셔츠 + 화이트 쇼츠 + 살몬 샌들', autumn: '카멜 가디건 + 크림 팬츠 + 베이지 로퍼', winter: '아이보리 터틀넥 + 라이트 그레이 코트 + 골드 이어링' },
   },
   '봄 브라이트': {
     bestColors: [
@@ -106,31 +74,15 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#FFD580', name: '골드' }, { hex: '#A0522D', name: '테라코타' }],
       blush: [{ hex: '#FF8C69', name: '살몬' }, { hex: '#FFA07A', name: '코랄' }],
     },
-    hair: {
-      recommended: [
-        { name: '오렌지 브라운', desc: '활기차고 따뜻한 오렌지 계열' },
-        { name: '골든 하이라이트', desc: '밝은 골드 하이라이트 믹스' },
-        { name: '라이트 카퍼', desc: '구리빛의 밝은 브라운' },
-      ],
-      avoid: '쿨 애쉬, 블루 블랙, 무채색 계열',
-    },
-    fashion: {
-      main: '오렌지, 코랄, 옐로우', sub: '민트, 터키즈, 그린',
-      accent: '골드, 레드',
-      tip: '코랄 + 민트처럼 보색 대비를 활용하면 봄 브라이트의 생기가 극대화됩니다.',
-    },
+    hair: { recommended: [{ name: '오렌지 브라운', desc: '활기차고 따뜻한 오렌지 계열' }, { name: '골든 하이라이트', desc: '밝은 골드 하이라이트 믹스' }, { name: '라이트 카퍼', desc: '구리빛의 밝은 브라운' }], avoid: '쿨 애쉬, 블루 블랙, 무채색 계열' },
+    fashion: { main: '오렌지, 코랄, 옐로우', sub: '민트, 터키즈, 그린', accent: '골드, 레드', tip: '코랄 + 민트처럼 보색 대비를 활용하면 봄 브라이트의 생기가 극대화됩니다.' },
     attributes: { hue: 'Warm Yellow-Orange', value: 'Light-Medium', chroma: 'Bright', clarity: 'Clear', base: 'Yellow Base', contrast: 'Medium-High' },
-    seasonal: {
-      spring: '코랄 탑 + 화이트 데님 + 골드 스니커즈',
-      summer: '옐로우 원피스 + 터키즈 액세서리',
-      autumn: '머스타드 재킷 + 오렌지 이너 + 카멜 팬츠',
-      winter: '레드 코트 + 아이보리 터틀넥 + 골드 벨트',
-    },
+    seasonal: { spring: '코랄 탑 + 화이트 데님 + 골드 스니커즈', summer: '옐로우 원피스 + 터키즈 액세서리', autumn: '머스타드 재킷 + 오렌지 이너 + 카멜 팬츠', winter: '레드 코트 + 아이보리 터틀넥 + 골드 벨트' },
   },
   '여름 라이트': {
     bestColors: [
       { hex: '#E6C8D8', name: '로즈 라일락' }, { hex: '#B0C4DE', name: '라이트 스틸' },
-      { hex: '#D8BFD8', name: '씨슬 모브' }, { hex: '#C9B1D3', name: '소프트 라벤더' },
+      { hex: '#D8BFD8', name: '씨슬 모브' },  { hex: '#C9B1D3', name: '소프트 라벤더' },
       { hex: '#F0E6EF', name: '파우더 핑크' }, { hex: '#B0E0E6', name: '파우더 블루' },
       { hex: '#E8E8E8', name: '라이트 실버' }, { hex: '#FFF5EE', name: '플로럴 화이트' },
     ],
@@ -144,26 +96,10 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#C9B1D3', name: '라벤더' }, { hex: '#B0C4DE', name: '스카이 블루' }],
       blush: [{ hex: '#E6C8D8', name: '라이트 로즈' }, { hex: '#D8BFD8', name: '핑크 라일락' }],
     },
-    hair: {
-      recommended: [
-        { name: '애쉬 브라운', desc: '차갑고 세련된 애쉬 계열 갈색' },
-        { name: '라이트 애쉬 블론드', desc: '밝고 쿨한 금발 계열' },
-        { name: '베이지 브라운', desc: '쿨한 베이지 갈색' },
-      ],
-      avoid: '오렌지 브라운, 골든 블론드, 구리빛 계열',
-    },
-    fashion: {
-      main: '라벤더, 파우더 블루, 로즈 핑크', sub: '소프트 화이트, 실버 그레이',
-      accent: '딥 버건디, 네이비',
-      tip: '라벤더 + 소프트 블루처럼 동계색을 레이어링하면 우아하고 시원한 분위기가 연출됩니다.',
-    },
+    hair: { recommended: [{ name: '애쉬 브라운', desc: '차갑고 세련된 애쉬 계열 갈색' }, { name: '라이트 애쉬 블론드', desc: '밝고 쿨한 금발 계열' }, { name: '베이지 브라운', desc: '쿨한 베이지 갈색' }], avoid: '오렌지 브라운, 골든 블론드, 구리빛 계열' },
+    fashion: { main: '라벤더, 파우더 블루, 로즈 핑크', sub: '소프트 화이트, 실버 그레이', accent: '딥 버건디, 네이비', tip: '라벤더 + 소프트 블루처럼 동계색을 레이어링하면 우아하고 시원한 분위기가 연출됩니다.' },
     attributes: { hue: 'Cool Pink-Blue', value: 'Light', chroma: 'Soft', clarity: 'Muted', base: 'Pink Base', contrast: 'Low' },
-    seasonal: {
-      spring: '라벤더 블라우스 + 화이트 스커트 + 실버 플랫',
-      summer: '소프트 블루 린넨 + 파우더 핑크 액세서리',
-      autumn: '로즈 그레이 니트 + 딥 버건디 팬츠',
-      winter: '실버 화이트 코트 + 라이트 블루 터틀넥',
-    },
+    seasonal: { spring: '라벤더 블라우스 + 화이트 스커트 + 실버 플랫', summer: '소프트 블루 린넨 + 파우더 핑크 액세서리', autumn: '로즈 그레이 니트 + 딥 버건디 팬츠', winter: '실버 화이트 코트 + 라이트 블루 터틀넥' },
   },
   '여름 뮤트': {
     bestColors: [
@@ -174,7 +110,7 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
     ],
     worstColors: [
       { hex: '#FF4500', name: '오렌지 레드' }, { hex: '#FFD700', name: '브라이트 옐로' },
-      { hex: '#00FF00', name: '라임 그린' }, { hex: '#FF69B4', name: '핫 핑크' },
+      { hex: '#00FF00', name: '라임 그린' },  { hex: '#FF69B4', name: '핫 핑크' },
     ],
     makeup: {
       lip: [{ hex: '#C4A0A0', name: '모브 로즈' }, { hex: '#B8A8C8', name: '로즈 모브' }, { hex: '#A89098', name: '뮤트 로즈' }],
@@ -182,26 +118,10 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#B8A8C8', name: '라일락 그레이' }, { hex: '#A0B4C8', name: '뮤트 블루' }],
       blush: [{ hex: '#C4A0A0', name: '로즈 뮤트' }, { hex: '#B8A8B8', name: '모브' }],
     },
-    hair: {
-      recommended: [
-        { name: '애쉬 그레이 브라운', desc: '차갑고 뮤트한 회갈색' },
-        { name: '쿨 다크 브라운', desc: '깊고 차가운 어두운 갈색' },
-        { name: '라이트 애쉬', desc: '밝은 재색 계열' },
-      ],
-      avoid: '오렌지 브라운, 구리빛, 레드 브라운',
-    },
-    fashion: {
-      main: '그레이 블루, 뮤트 라일락, 로즈 그레이', sub: '딥 네이비, 차콜 그레이',
-      accent: '버건디, 다크 퍼플',
-      tip: '그레이 블루 + 뮤트 로즈처럼 유사한 채도 레벨을 유지하면 세련된 분위기가 나옵니다.',
-    },
+    hair: { recommended: [{ name: '애쉬 그레이 브라운', desc: '차갑고 뮤트한 회갈색' }, { name: '쿨 다크 브라운', desc: '깊고 차가운 어두운 갈색' }, { name: '라이트 애쉬', desc: '밝은 재색 계열' }], avoid: '오렌지 브라운, 구리빛, 레드 브라운' },
+    fashion: { main: '그레이 블루, 뮤트 라일락, 로즈 그레이', sub: '딥 네이비, 차콜 그레이', accent: '버건디, 다크 퍼플', tip: '그레이 블루 + 뮤트 로즈처럼 유사한 채도 레벨을 유지하면 세련된 분위기가 나옵니다.' },
     attributes: { hue: 'Cool Pink-Gray', value: 'Medium', chroma: 'Muted', clarity: 'Muted', base: 'Pink Base', contrast: 'Low-Medium' },
-    seasonal: {
-      spring: '뮤트 라벤더 블라우스 + 그레이 슬랙스',
-      summer: '그레이 블루 린넨 셔츠 + 로즈 스커트',
-      autumn: '차콜 니트 + 로즈 그레이 팬츠 + 버건디 스카프',
-      winter: '딥 네이비 코트 + 뮤트 핑크 이너',
-    },
+    seasonal: { spring: '뮤트 라벤더 블라우스 + 그레이 슬랙스', summer: '그레이 블루 린넨 셔츠 + 로즈 스커트', autumn: '차콜 니트 + 로즈 그레이 팬츠 + 버건디 스카프', winter: '딥 네이비 코트 + 뮤트 핑크 이너' },
   },
   '가을 뮤트': {
     bestColors: [
@@ -220,26 +140,10 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#C4A87A', name: '골든 베이지' }, { hex: '#8B6914', name: '올리브 골드' }],
       blush: [{ hex: '#C8A882', name: '피치 베이지' }, { hex: '#E5AA70', name: '살몬 베이지' }],
     },
-    hair: {
-      recommended: [
-        { name: '다크 카라멜 브라운', desc: '깊고 따뜻한 카라멜 갈색' },
-        { name: '올리브 브라운', desc: '녹빛이 감도는 어두운 갈색' },
-        { name: '다크 초코', desc: '뮤트한 깊은 초콜릿 브라운' },
-      ],
-      avoid: '애쉬 블론드, 플래티넘, 밝은 쿨 계열',
-    },
-    fashion: {
-      main: '카멜, 베이지, 테라코타', sub: '올리브, 머스타드, 카키',
-      accent: '버건디, 다크 브라운',
-      tip: '카멜 + 올리브처럼 따뜻하면서도 채도 낮은 조합이 가을 뮤트의 성숙미를 살립니다.',
-    },
+    hair: { recommended: [{ name: '다크 카라멜 브라운', desc: '깊고 따뜻한 카라멜 갈색' }, { name: '올리브 브라운', desc: '녹빛이 감도는 어두운 갈색' }, { name: '다크 초코', desc: '뮤트한 깊은 초콜릿 브라운' }], avoid: '애쉬 블론드, 플래티넘, 밝은 쿨 계열' },
+    fashion: { main: '카멜, 베이지, 테라코타', sub: '올리브, 머스타드, 카키', accent: '버건디, 다크 브라운', tip: '카멜 + 올리브처럼 따뜻하면서도 채도 낮은 조합이 가을 뮤트의 성숙미를 살립니다.' },
     attributes: { hue: 'Warm Yellow-Brown', value: 'Medium', chroma: 'Muted', clarity: 'Muted', base: 'Yellow Base', contrast: 'Medium' },
-    seasonal: {
-      spring: '베이지 재킷 + 화이트 이너 + 카멜 팬츠',
-      summer: '올리브 린넨 셔츠 + 카키 쇼츠',
-      autumn: '테라코타 니트 + 머스타드 스커트 + 브라운 부츠',
-      winter: '카멜 울코트 + 버건디 터틀넥 + 다크 브라운 팬츠',
-    },
+    seasonal: { spring: '베이지 재킷 + 화이트 이너 + 카멜 팬츠', summer: '올리브 린넨 셔츠 + 카키 쇼츠', autumn: '테라코타 니트 + 머스타드 스커트 + 브라운 부츠', winter: '카멜 울코트 + 버건디 터틀넥 + 다크 브라운 팬츠' },
   },
   '가을 딥': {
     bestColors: [
@@ -258,37 +162,21 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#556B2F', name: '다크 올리브' }, { hex: '#7B3F00', name: '다크 브라운' }],
       blush: [{ hex: '#8B4513', name: '테라코타' }, { hex: '#A0522D', name: '브릭' }],
     },
-    hair: {
-      recommended: [
-        { name: '딥 에스프레소', desc: '진하고 깊은 에스프레소 블랙' },
-        { name: '다크 올리브 브라운', desc: '녹색기의 매우 어두운 갈색' },
-        { name: '버건디 브라운', desc: '레드기의 깊은 갈색' },
-      ],
-      avoid: '라이트 브라운, 블론드, 밝은 하이라이트',
-    },
-    fashion: {
-      main: '다크 브라운, 에스프레소, 버건디', sub: '다크 올리브, 카키',
-      accent: '딥 골드, 레드',
-      tip: '에스프레소 + 버건디처럼 명도 차이가 적은 조합이 가을 딥의 카리스마를 극대화합니다.',
-    },
+    hair: { recommended: [{ name: '딥 에스프레소', desc: '진하고 깊은 에스프레소 블랙' }, { name: '다크 올리브 브라운', desc: '녹색기의 매우 어두운 갈색' }, { name: '버건디 브라운', desc: '레드기의 깊은 갈색' }], avoid: '라이트 브라운, 블론드, 밝은 하이라이트' },
+    fashion: { main: '다크 브라운, 에스프레소, 버건디', sub: '다크 올리브, 카키', accent: '딥 골드, 레드', tip: '에스프레소 + 버건디처럼 명도 차이가 적은 조합이 가을 딥의 카리스마를 극대화합니다.' },
     attributes: { hue: 'Warm Deep Brown-Red', value: 'Deep', chroma: 'Muted-Rich', clarity: 'Muted', base: 'Yellow Base', contrast: 'Medium-High' },
-    seasonal: {
-      spring: '버건디 재킷 + 카멜 이너 + 다크 브라운 팬츠',
-      summer: '다크 올리브 셔츠 + 카키 팬츠',
-      autumn: '딥 브라운 코트 + 에스프레소 터틀넥 + 가죽 부츠',
-      winter: '다크 버건디 울코트 + 블랙 이너 + 골드 액세서리',
-    },
+    seasonal: { spring: '버건디 재킷 + 카멜 이너 + 다크 브라운 팬츠', summer: '다크 올리브 셔츠 + 카키 팬츠', autumn: '딥 브라운 코트 + 에스프레소 터틀넥 + 가죽 부츠', winter: '다크 버건디 울코트 + 블랙 이너 + 골드 액세서리' },
   },
   '겨울 브라이트': {
     bestColors: [
-      { hex: '#CC0000', name: '트루 레드' }, { hex: '#0000CD', name: '로얄 블루' },
+      { hex: '#CC0000', name: '트루 레드' },  { hex: '#0000CD', name: '로얄 블루' },
       { hex: '#FFFFFF', name: '퓨어 화이트' }, { hex: '#111111', name: '트루 블랙' },
-      { hex: '#9400D3', name: '바이올렛' }, { hex: '#00CED1', name: '다크 터키즈' },
-      { hex: '#FF00FF', name: '마젠타' },   { hex: '#006400', name: '다크 그린' },
+      { hex: '#9400D3', name: '바이올렛' },   { hex: '#00CED1', name: '다크 터키즈' },
+      { hex: '#FF00FF', name: '마젠타' },     { hex: '#006400', name: '다크 그린' },
     ],
     worstColors: [
       { hex: '#C8A882', name: '카멜 베이지' }, { hex: '#FFDAB9', name: '피치' },
-      { hex: '#C4A0A0', name: '뮤트 로즈' }, { hex: '#D4A574', name: '샌드 베이지' },
+      { hex: '#C4A0A0', name: '뮤트 로즈' },  { hex: '#D4A574', name: '샌드 베이지' },
     ],
     makeup: {
       lip: [{ hex: '#CC0000', name: '트루 레드' }, { hex: '#9400D3', name: '베리 퍼플' }, { hex: '#FF1493', name: '딥 핑크' }],
@@ -296,26 +184,10 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#111111', name: '블랙' }, { hex: '#0000CD', name: '네이비 블루' }],
       blush: [{ hex: '#CC4488', name: '핑크 마젠타' }, { hex: '#9B2335', name: '딥 로즈' }],
     },
-    hair: {
-      recommended: [
-        { name: '블루 블랙', desc: '차갑고 선명한 블루 기반 블랙' },
-        { name: '플래티넘 실버', desc: '밝고 차가운 은발 계열' },
-        { name: '내추럴 블랙', desc: '순수하고 선명한 블랙' },
-      ],
-      avoid: '오렌지 브라운, 골든 블론드, 레드 브라운, 카라멜',
-    },
-    fashion: {
-      main: '트루 화이트, 트루 블랙, 트루 레드', sub: '로얄 블루, 바이올렛',
-      accent: '마젠타, 실버',
-      tip: '블랙 + 레드처럼 명도 대비가 강한 컬러 조합이 겨울 브라이트의 카리스마를 살립니다.',
-    },
+    hair: { recommended: [{ name: '블루 블랙', desc: '차갑고 선명한 블루 기반 블랙' }, { name: '플래티넘 실버', desc: '밝고 차가운 은발 계열' }, { name: '내추럴 블랙', desc: '순수하고 선명한 블랙' }], avoid: '오렌지 브라운, 골든 블론드, 레드 브라운, 카라멜' },
+    fashion: { main: '트루 화이트, 트루 블랙, 트루 레드', sub: '로얄 블루, 바이올렛', accent: '마젠타, 실버', tip: '블랙 + 레드처럼 명도 대비가 강한 컬러 조합이 겨울 브라이트의 카리스마를 살립니다.' },
     attributes: { hue: 'Cool Blue-Pink', value: 'Light-Deep', chroma: 'Bright', clarity: 'Clear', base: 'Pink Base', contrast: 'High' },
-    seasonal: {
-      spring: '화이트 블라우스 + 네이비 팬츠 + 레드 포인트 백',
-      summer: '블루+화이트 스트라이프 마린 룩',
-      autumn: '블랙 코트 + 레드 이너 + 실버 액세서리',
-      winter: '퓨어 화이트 코트 + 블랙 터틀넥 + 바이올렛 스카프',
-    },
+    seasonal: { spring: '화이트 블라우스 + 네이비 팬츠 + 레드 포인트 백', summer: '블루+화이트 스트라이프 마린 룩', autumn: '블랙 코트 + 레드 이너 + 실버 액세서리', winter: '퓨어 화이트 코트 + 블랙 터틀넥 + 바이올렛 스카프' },
   },
   '겨울 딥': {
     bestColors: [
@@ -334,650 +206,644 @@ const TYPE_EXTRA: Record<PersonalColorType, TypeExtra> = {
       eyeshadow: [{ hex: '#2C3E50', name: '스모키 네이비' }, { hex: '#4B0082', name: '딥 퍼플' }],
       blush: [{ hex: '#800020', name: '딥 로즈' }, { hex: '#9B2335', name: '다크 베리' }],
     },
-    hair: {
-      recommended: [
-        { name: '블루 블랙', desc: '가장 깊고 차가운 블루 블랙' },
-        { name: '내추럴 블랙', desc: '깊고 선명한 블랙' },
-        { name: '다크 버건디', desc: '매우 어두운 버건디 계열' },
-      ],
-      avoid: '브라운 계열, 골든 계열, 밝은 색 전반',
-    },
-    fashion: {
-      main: '딥 블랙, 미드나이트 네이비, 버건디', sub: '인디고, 딥 틸',
-      accent: '실버, 딥 골드',
-      tip: '블랙 + 버건디 또는 네이비 + 인디고처럼 어두운 계열 안에서 명도 차이를 활용하면 겨울 딥의 강렬미가 완성됩니다.',
-    },
+    hair: { recommended: [{ name: '블루 블랙', desc: '가장 깊고 차가운 블루 블랙' }, { name: '내추럴 블랙', desc: '깊고 선명한 블랙' }, { name: '다크 버건디', desc: '매우 어두운 버건디 계열' }], avoid: '브라운 계열, 골든 계열, 밝은 색 전반' },
+    fashion: { main: '딥 블랙, 미드나이트 네이비, 버건디', sub: '인디고, 딥 틸', accent: '실버, 딥 골드', tip: '블랙 + 버건디 또는 네이비 + 인디고처럼 어두운 계열 안에서 명도 차이를 활용하면 겨울 딥의 강렬미가 완성됩니다.' },
     attributes: { hue: 'Cool Blue-Red', value: 'Deep', chroma: 'Clear-Rich', clarity: 'Clear', base: 'Pink Base', contrast: 'High' },
-    seasonal: {
-      spring: '네이비 블레이저 + 화이트 이너 + 블랙 팬츠',
-      summer: '딥 버건디 셔츠 + 블랙 팬츠',
-      autumn: '블랙 코트 + 버건디 터틀넥 + 다크 네이비 팬츠',
-      winter: '미드나이트 네이비 코트 + 블랙 + 실버 액세서리',
-    },
+    seasonal: { spring: '네이비 블레이저 + 화이트 이너 + 블랙 팬츠', summer: '딥 버건디 셔츠 + 블랙 팬츠', autumn: '블랙 코트 + 버건디 터틀넥 + 다크 네이비 팬츠', winter: '미드나이트 네이비 코트 + 블랙 + 실버 액세서리' },
   },
 };
 
-// ── Styles ──────────────────────────────────────────────────────
+// ── Hair color approximation ─────────────────────────────────────
 
-const PAGE_W = 595.28;
-const PAGE_H = 841.89;
-const PAD_H  = 50;
-const PAD_V  = 56;
+function hairHex(name: string): string {
+  if (name.includes('블루블랙') || name.includes('블루 블랙')) return '#1A1A2E';
+  if (name.includes('블랙') || name.includes('검정')) return '#252525';
+  if (name.includes('플래티넘') || name.includes('실버')) return '#C8C0BC';
+  if (name.includes('에스프레소')) return '#3C1810';
+  if (name.includes('버건디')) return '#800020';
+  if (name.includes('올리브')) return '#4A4818';
+  if (name.includes('골든') || name.includes('골드')) return '#C89010';
+  if (name.includes('카라멜') || name.includes('카퍼')) return '#C87A3C';
+  if (name.includes('오렌지')) return '#D4600A';
+  if (name.includes('애쉬 그레이') || name.includes('그레이 브라운')) return '#8A8880';
+  if (name.includes('애쉬')) return '#7A7468';
+  if (name.includes('다크') || name.includes('초코') || name.includes('딥')) return '#3C2010';
+  if (name.includes('라이트') || name.includes('밝')) return '#A87840';
+  return '#6B4423';
+}
+
+// ── Season styles ────────────────────────────────────────────────
+
+const SEASON_BG: Record<string, string> = {
+  spring: '#FFF8F0', summer: '#F4F0FC', autumn: '#F8F4E8', winter: '#EEF2F8',
+};
+const SEASON_ICON: Record<string, string> = {
+  spring: '🌸', summer: '☀️', autumn: '🍂', winter: '❄️',
+};
+const SEASON_LABEL: Record<string, string> = {
+  spring: 'SPRING 봄', summer: 'SUMMER 여름', autumn: 'AUTUMN 가을', winter: 'WINTER 겨울',
+};
+
+// ── Styles ───────────────────────────────────────────────────────
+
+const PAD_H = 30;
+const PAD_V = 35;
 
 const S = StyleSheet.create({
   page: {
     fontFamily: 'Pretendard',
-    backgroundColor: '#FAF8F3',
+    backgroundColor: '#FBF9F4',
     paddingHorizontal: PAD_H,
     paddingTop: PAD_V,
-    paddingBottom: 44,
+    paddingBottom: 32,
     position: 'relative',
   },
+  // ── Page header (all non-cover pages) ──
+  pageHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: 20, paddingBottom: 8,
+    borderBottomWidth: 0.5, borderBottomColor: '#DDD8CC', borderBottomStyle: 'solid',
+  },
+  pageHeaderLeft: { fontSize: 7, color: '#AAA', letterSpacing: 1 },
+  pageHeaderRight: { fontSize: 7, color: '#AAA' },
+  // ── Section headings ──
+  sectionBlock: { marginBottom: 14 },
+  sectionNum: { fontSize: 7.5, fontWeight: 700, letterSpacing: 2, color: '#BBB', marginBottom: 2 },
+  sectionTitle: { fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2 },
+  sectionDivider: { height: 0.5, backgroundColor: '#DDD8CC', marginVertical: 16 },
+  subTitle: { fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 8 },
+  // ── Body text ──
+  body: { fontSize: 10, color: '#444', lineHeight: 1.5 },
+  bodySmall: { fontSize: 8.5, color: '#555', lineHeight: 1.5 },
+  caption: { fontSize: 8, color: '#999' },
   // ── Cover ──
-  coverAccentBar: {
-    position: 'absolute',
-    top: 0, left: 0,
-    width: PAGE_W,
-    height: 320,
-    backgroundColor: '#F5F0F8',
-  },
-  coverHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 72,
-  },
-  logoMark: {
-    width: 8, height: 8, borderRadius: 4,
-    marginBottom: 5,
-  },
-  logoText: {
-    fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#2A2A2A',
-  },
-  logoSub: {
-    fontSize: 7.5, color: '#999', letterSpacing: 1, marginTop: 2,
-  },
-  coverMeta: {
-    fontSize: 7.5, color: '#AAA', letterSpacing: 0.5, textAlign: 'right', lineHeight: 1.8,
-  },
-  coverMain: {
-    marginBottom: 48,
-  },
-  coverLabel: {
-    fontSize: 8, fontWeight: 700, letterSpacing: 3, color: '#AAA',
-    marginBottom: 14, textTransform: 'uppercase',
-  },
-  coverTypeEn: {
-    fontSize: 46, fontWeight: 700, color: '#2A2A2A', letterSpacing: -1, lineHeight: 1,
-    marginBottom: 12,
-  },
-  coverTypeKo: {
-    fontSize: 20, fontWeight: 400, color: '#555', marginBottom: 8,
-  },
-  coverDisplayName: {
-    fontSize: 12, color: '#888', marginBottom: 32,
-  },
-  coverPalette: {
-    flexDirection: 'row', gap: 12, marginTop: 8,
-  },
-  coverColorCircle: {
-    width: 52, height: 52, borderRadius: 26,
-  },
-  coverColorLabel: {
-    fontSize: 7.5, color: '#AAA', marginTop: 4, textAlign: 'center',
-  },
-  coverDivider: {
-    height: 1, backgroundColor: '#E8E4DC', marginVertical: 32,
-  },
-  coverAttrRow: {
-    flexDirection: 'row', gap: 32, marginBottom: 8,
-  },
-  coverAttrItem: {
-    flex: 1,
-  },
-  coverAttrLabel: {
-    fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 2,
-  },
-  coverAttrValue: {
-    fontSize: 10, color: '#2A2A2A',
-  },
-  disclaimer: {
-    position: 'absolute',
-    bottom: 28, left: PAD_H, right: PAD_H,
-    borderTopWidth: 1, borderTopColor: '#E8E4DC', borderTopStyle: 'solid',
-    paddingTop: 10,
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
-  },
-  disclaimerText: {
-    fontSize: 7, color: '#BBB', lineHeight: 1.6,
-  },
-  pageNum: {
-    fontSize: 8, color: '#CCC',
-  },
-  // ── Section pages ──
-  sectionNum: {
-    fontSize: 8, fontWeight: 700, letterSpacing: 2, color: '#CCC',
-    marginBottom: 4,
-  },
-  sectionTitle: {
-    fontSize: 18, fontWeight: 700, color: '#2A2A2A', marginBottom: 24,
-    borderBottomWidth: 2, borderBottomStyle: 'solid', paddingBottom: 10,
-  },
-  subSectionTitle: {
-    fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 12, marginTop: 20,
-  },
-  bodyText: {
-    fontSize: 10.5, color: '#444', lineHeight: 1.7,
-  },
-  // ── Color chips ──
-  chipRow: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4,
-  },
-  chipItem: {
-    alignItems: 'center', width: 54,
-  },
+  coverMeta: { fontSize: 7, color: '#AAA', letterSpacing: 0.5, textAlign: 'right', lineHeight: 1.7 },
+  coverNameLine: { fontSize: 22, fontWeight: 700, color: '#2A2A2A', letterSpacing: -0.5, marginBottom: 4 },
+  coverTypeEn: { fontSize: 38, fontWeight: 700, color: '#2A2A2A', letterSpacing: -1, lineHeight: 1, marginBottom: 8 },
+  coverTypeKo: { fontSize: 18, fontWeight: 400, color: '#666', marginBottom: 6 },
+  coverDisplayName: { fontSize: 11, color: '#999', marginBottom: 28 },
+  // ── Chips ──
   chip: {
-    width: 44, height: 44, borderRadius: 22,
-    borderWidth: 1, borderColor: '#E8E4DC', borderStyle: 'solid',
+    width: 48, height: 48, borderRadius: 24,
+    borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
   },
-  chipHex: {
-    fontSize: 6.5, color: '#999', marginTop: 3, textAlign: 'center',
+  chipLg: {
+    width: 60, height: 60, borderRadius: 30,
+    borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
   },
-  chipName: {
-    fontSize: 7.5, color: '#555', marginTop: 1, textAlign: 'center',
+  chipName: { fontSize: 7.5, color: '#555', marginTop: 3, textAlign: 'center', maxWidth: 60 },
+  chipHex: { fontSize: 6, color: '#AAA', textAlign: 'center' },
+  // ── Makeup lip strip ──
+  lipStrip: {
+    height: 14, borderRadius: 7, marginBottom: 5,
+    borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
   },
-  // ── Worst colors (smaller) ──
-  worstChipRow: {
-    flexDirection: 'row', gap: 12,
+  // ── Attribute card ──
+  attrCard: {
+    flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 9,
   },
-  worstChip: {
-    width: 36, height: 36, borderRadius: 18,
-    borderWidth: 1, borderColor: '#E8E4DC', borderStyle: 'solid',
-    opacity: 0.55,
+  attrCardKey: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 3 },
+  attrCardLabel: { fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 },
+  attrCardVal: { fontSize: 8, color: '#555' },
+  // ── Key finding highlight ──
+  keyFindingBox: {
+    backgroundColor: '#F0ECF8', borderRadius: 8,
+    borderLeftWidth: 3, borderLeftColor: '#7C3AED', borderLeftStyle: 'solid',
+    padding: 10, marginTop: 8,
   },
-  // ── Attribute table ──
-  attrTable: {
-    marginTop: 8,
+  keyFindingLabel: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#7C3AED', marginBottom: 3 },
+  keyFindingText: { fontSize: 10, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.4 },
+  // ── Celebrity card ──
+  celebCard: {
+    borderRadius: 8, padding: 12, marginBottom: 0,
+    borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
   },
-  attrRow: {
-    flexDirection: 'row', paddingVertical: 7,
-    borderBottomWidth: 1, borderBottomColor: '#F0ECE4', borderBottomStyle: 'solid',
+  celebName: { fontSize: 13, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 },
+  celebJob: { fontSize: 8, color: '#888', marginBottom: 6 },
+  celebSimilarity: { fontSize: 9, color: '#444', lineHeight: 1.5, marginBottom: 4 },
+  celebLook: { fontSize: 8.5, color: '#666', lineHeight: 1.4 },
+  // ── Fashion color group ──
+  fashionGroupLabel: { fontSize: 7, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 4 },
+  fashionGroupText: { fontSize: 10, color: '#2A2A2A', lineHeight: 1.4 },
+  // ── Tip bullet ──
+  tipRow: { flexDirection: 'row', gap: 6, marginBottom: 5 },
+  tipBullet: { width: 5, height: 5, borderRadius: 2.5, marginTop: 3 },
+  tipText: { flex: 1, fontSize: 9.5, color: '#444', lineHeight: 1.5 },
+  // ── Season card ──
+  seasonCard: { flex: 1, borderRadius: 8, padding: 10 },
+  seasonIcon: { fontSize: 13, marginBottom: 4 },
+  seasonLabel: { fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: '#888', marginBottom: 4 },
+  seasonText: { fontSize: 9, color: '#2A2A2A', lineHeight: 1.5 },
+  // ── Footer ──
+  footer: {
+    position: 'absolute', bottom: 12, left: PAD_H, right: PAD_H,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid',
+    paddingTop: 6,
   },
-  attrKey: {
-    width: 120, fontSize: 9, fontWeight: 700, color: '#888', letterSpacing: 0.5,
-  },
-  attrVal: {
-    flex: 1, fontSize: 10, color: '#2A2A2A',
-  },
-  // ── Chart ──
-  chartWrapper: {
-    marginTop: 8, marginBottom: 16,
-    flexDirection: 'row', gap: 24, alignItems: 'flex-start',
-  },
-  chartLegendBox: {
-    flex: 1, paddingTop: 16,
-  },
-  chartLegendItem: {
-    flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8,
-  },
-  chartDot: {
-    width: 8, height: 8, borderRadius: 4,
-  },
-  chartLegendText: {
-    fontSize: 9, color: '#555',
-  },
-  // ── Makeup ──
-  makeupSection: {
-    marginTop: 6,
-  },
-  makeupRow: {
-    flexDirection: 'row', gap: 8, alignItems: 'center', marginBottom: 10,
-  },
-  makeupLabel: {
-    width: 80, fontSize: 9, fontWeight: 700, color: '#888',
-  },
-  makeupChip: {
-    width: 28, height: 28, borderRadius: 14,
-    borderWidth: 1, borderColor: '#E8E4DC', borderStyle: 'solid',
-  },
-  makeupItemName: {
-    fontSize: 8.5, color: '#444',
-  },
-  makeupItemHex: {
-    fontSize: 7, color: '#AAA',
-  },
-  makeupItemBox: {
-    alignItems: 'center',
-  },
-  // ── Hair ──
-  hairItem: {
-    flexDirection: 'row', gap: 10, marginBottom: 10,
-  },
-  hairDot: {
-    width: 8, height: 8, borderRadius: 4, marginTop: 3,
-  },
-  hairName: {
-    fontSize: 10, fontWeight: 700, color: '#2A2A2A',
-  },
-  hairDesc: {
-    fontSize: 9, color: '#777', marginTop: 1,
-  },
-  // ── Fashion ──
-  fashionGrid: {
-    flexDirection: 'row', gap: 16, marginTop: 8,
-  },
-  fashionCard: {
-    flex: 1, backgroundColor: '#F5F2ED', borderRadius: 8, padding: 12,
-  },
-  fashionCardLabel: {
-    fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 4,
-  },
-  fashionCardValue: {
-    fontSize: 10, color: '#2A2A2A', lineHeight: 1.5,
-  },
-  fashionTip: {
-    marginTop: 14, backgroundColor: '#F0EDE8', borderRadius: 6,
-    padding: 12,
-  },
-  fashionTipLabel: {
-    fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 4,
-  },
-  fashionTipText: {
-    fontSize: 10, color: '#444', lineHeight: 1.6,
-  },
-  // ── Seasonal ──
-  seasonGrid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 8,
-  },
-  seasonCard: {
-    width: '47%', backgroundColor: '#F5F2ED', borderRadius: 8, padding: 12,
-  },
-  seasonLabel: {
-    fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 5,
-  },
-  seasonText: {
-    fontSize: 9.5, color: '#2A2A2A', lineHeight: 1.6,
-  },
-  // ── Q&A ──
-  qaBox: {
-    backgroundColor: '#F5F2ED', borderRadius: 8, padding: 16, marginTop: 12,
-  },
-  qaQuestion: {
-    fontSize: 9, fontWeight: 700, color: '#888', marginBottom: 6,
-  },
-  qaAnswer: {
-    fontSize: 10.5, color: '#2A2A2A', lineHeight: 1.7,
-  },
-  // ── Avoid box ──
-  avoidBox: {
-    borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: '#E0D8CC',
-    paddingLeft: 12, marginTop: 8,
-  },
-  avoidLabel: {
-    fontSize: 8, fontWeight: 700, color: '#AAA', letterSpacing: 1, marginBottom: 3,
-  },
-  avoidText: {
-    fontSize: 9.5, color: '#666',
-  },
-  // ── Divider ──
-  pageDivider: {
-    height: 1, backgroundColor: '#EDE9E1', marginVertical: 18,
-  },
+  footerText: { fontSize: 7, color: '#BBB' },
+  footerPage: { fontSize: 7.5, fontWeight: 700, color: '#CCC' },
+  // ── Custom advice ──
+  adviceBox: { backgroundColor: '#F8F5FC', borderRadius: 8, padding: 14 },
+  adviceLabel: { fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: '#7C3AED', marginBottom: 6 },
+  adviceText: { fontSize: 10, color: '#333', lineHeight: 1.6 },
 });
 
-// ── Helper components ───────────────────────────────────────────
+// ── Shared components ────────────────────────────────────────────
 
-function PageFooter({ accent, num }: { accent: string; num: string }) {
+function PageHeader({ label, page, total }: { label: string; page: number; total: number }) {
   return (
-    <View style={S.disclaimer}>
-      <Text style={S.disclaimerText}>본 리포트는 AI 분석 결과로 참고용이며 전문 진단을 대체하지 않습니다.</Text>
-      <Text style={[S.pageNum, { color: accent }]}>{num}</Text>
+    <View style={S.pageHeader}>
+      <Text style={S.pageHeaderLeft}>COLORLAB · {label}</Text>
+      <Text style={S.pageHeaderRight}>{page} / {total}</Text>
     </View>
   );
 }
 
-function SectionHeader({ num, title, accent }: { num: string; title: string; accent: string }) {
+function Footer({ page, total, accent }: { page: number; total: number; accent: string }) {
   return (
-    <View>
+    <View style={S.footer}>
+      <Text style={S.footerText}>colorlab.kr  ·  본 리포트는 AI 분석에 기반한 참고용 자료입니다</Text>
+      <Text style={[S.footerPage, { color: accent }]}>{page} / {total}</Text>
+    </View>
+  );
+}
+
+function SectionHead({ num, title, accent }: { num: string; title: string; accent: string }) {
+  return (
+    <View style={[S.sectionBlock, { borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid', paddingLeft: 10 }]}>
       <Text style={S.sectionNum}>{num}</Text>
-      <Text style={[S.sectionTitle, { borderBottomColor: accent }]}>{title}</Text>
+      <Text style={S.sectionTitle}>{title}</Text>
     </View>
   );
 }
 
-// ── Page 1: Cover ───────────────────────────────────────────────
+// ── Page 1: Cover ────────────────────────────────────────────────
 
-function CoverPage({
-  colorType, sessionId, createdAt, accent,
-}: {
-  colorType: PersonalColorType;
-  sessionId: string;
-  createdAt: string;
-  accent: string;
+function CoverPage({ colorType, sessionId, createdAt, accent, customerName, greeting, palette }: {
+  colorType: PersonalColorType; sessionId: string; createdAt: string; accent: string;
+  customerName: string; greeting: string;
+  palette: Array<{ hex: string; name: string }>;
 }) {
-  const palette  = TYPE_PALETTE[colorType];
-  const extra    = TYPE_EXTRA[colorType];
-  const { attributes } = extra;
-  const typeEn   = TYPE_EN[colorType];
-  const display  = TYPE_DISPLAY[colorType];
+  const typeEn = TYPE_EN[colorType];
+  const display = TYPE_DISPLAY[colorType];
+  const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
-      {/* Accent background strip */}
-      <View style={[S.coverAccentBar, { backgroundColor: accent + '18' }]} />
-
-      {/* Header */}
-      <View style={S.coverHeader}>
-        <View>
-          <View style={[S.logoMark, { backgroundColor: accent }]} />
-          <Text style={S.logoText}>COLORLAB</Text>
-          <Text style={S.logoSub}>Personal Color Analysis Report</Text>
+      {/* Header row */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 48 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: accent }} />
+          <Text style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: '#2A2A2A' }}>COLORLAB</Text>
         </View>
         <View>
           <Text style={S.coverMeta}>Report ID: {sessionId.slice(0, 8).toUpperCase()}</Text>
           <Text style={S.coverMeta}>Date: {createdAt}</Text>
-          <Text style={S.coverMeta}>Version: 2.0</Text>
         </View>
       </View>
 
-      {/* Main type display */}
-      <View style={S.coverMain}>
-        <Text style={S.coverLabel}>Personal Color Type</Text>
-        <Text style={S.coverTypeEn}>{typeEn}</Text>
-        <Text style={S.coverTypeKo}>{colorType}</Text>
-        <Text style={S.coverDisplayName}>{display}</Text>
+      {/* Name + type */}
+      <Text style={S.coverNameLine}>{name}님의</Text>
+      <Text style={S.coverTypeEn}>{typeEn}</Text>
+      <Text style={S.coverTypeKo}>{colorType}</Text>
+      <Text style={S.coverDisplayName}>{display}</Text>
 
-        {/* Palette circles */}
-        <View style={S.coverPalette}>
-          {palette.map(({ hex, name }) => (
-            <View key={hex} style={{ alignItems: 'center' }}>
-              <View style={[S.coverColorCircle, { backgroundColor: hex }]} />
-              <Text style={S.coverColorLabel}>{name}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Divider */}
-      <View style={S.coverDivider} />
-
-      {/* Attributes summary */}
-      <View style={S.coverAttrRow}>
-        {[
-          { label: 'BASE TONE', value: attributes.base },
-          { label: 'VALUE',     value: attributes.value },
-          { label: 'CHROMA',    value: attributes.chroma },
-          { label: 'CONTRAST',  value: attributes.contrast },
-        ].map(({ label, value }) => (
-          <View key={label} style={S.coverAttrItem}>
-            <Text style={S.coverAttrLabel}>{label}</Text>
-            <Text style={S.coverAttrValue}>{value}</Text>
+      {/* Palette circles */}
+      <View style={{ flexDirection: 'row', gap: 14, marginBottom: 40 }}>
+        {palette.map(({ hex, name: cName }) => (
+          <View key={hex} style={{ alignItems: 'center' }}>
+            <View style={[S.chipLg, { backgroundColor: hex }]} />
+            <Text style={[S.chipName, { marginTop: 5 }]}>{cName}</Text>
           </View>
         ))}
       </View>
 
-      <PageFooter accent={accent} num="1 / 5" />
+      {/* Greeting */}
+      {greeting ? (
+        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 10, padding: 16, marginBottom: 20 }}>
+          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 6 }}>PERSONAL MESSAGE</Text>
+          <Text style={{ fontSize: 11, color: '#333', lineHeight: 1.6 }}>{greeting}</Text>
+        </View>
+      ) : null}
+
+      <Footer page={1} total={6} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 2: Type Analysis ───────────────────────────────────────
+// ── Page 2: Photo Analysis + Type Diagnosis ──────────────────────
 
-function TypeAnalysisPage({
-  colorType, accent,
-}: { colorType: PersonalColorType; accent: string }) {
+function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFinding }: {
+  colorType: PersonalColorType; accent: string; customerName: string;
+  photoImpression?: string; keyFinding?: string;
+}) {
   const extra = TYPE_EXTRA[colorType];
   const { attributes } = extra;
   const [posX, posY] = CHART_POS[colorType];
-  // CHART_POS: posX(-1=Cool, +1=Warm), posY(-1=Deep, +1=Light) → 0~100 범위로 변환
   const warmCool  = Math.round((posX + 1) / 2 * 100);
   const lightDeep = Math.round((1 - posY) / 2 * 100);
+  const name = customerName || '고객';
+
+  const contrastLevel = attributes.contrast.includes('High') ? 3 : attributes.contrast.includes('Medium') ? 2 : 1;
+  const attrCards = [
+    { key: 'HUE',     label: '색상', val: attributes.hue },
+    { key: 'VALUE',   label: '명도', val: attributes.value },
+    { key: 'CHROMA',  label: '채도', val: attributes.chroma },
+    { key: 'CLARITY', label: '청탁', val: attributes.clarity },
+  ];
 
   return (
     <Page size="A4" style={S.page}>
-      <SectionHeader num="01" title="정밀 타입 분석" accent={accent} />
+      <PageHeader label="타입 분석" page={2} total={6} />
 
-      {/* Chart + legend */}
-      <View style={S.chartWrapper}>
-        <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={220} />
-        <View style={S.chartLegendBox}>
-          <Text style={[S.subSectionTitle, { marginTop: 0 }]}>컬러 포지션</Text>
-          <Text style={S.bodyText}>
-            {TYPE_EN[colorType]} 타입은 {warmCool >= 50 ? '웜' : '쿨'}톤 계열이며,
-            {lightDeep <= 50 ? ' 라이트' : ' 딥'} 밝기 영역에 위치합니다.
-            차트의 빨간 점이 {colorType}의 정확한 위치를 나타냅니다.
+      {/* Top: photo impression + chart side by side */}
+      <View style={{ flexDirection: 'row', gap: 16, marginBottom: 14 }}>
+        {/* Left: first impression */}
+        <View style={{ flex: 1 }}>
+          <SectionHead num="01" title={`${name}님의 첫인상`} accent={accent} />
+          <Text style={[S.body, { marginBottom: 8 }]}>
+            {photoImpression || `${name}님은 ${attributes.base}을 가진 ${colorType} 타입으로, ${attributes.value} 명도와 ${attributes.chroma} 채도의 특성을 지니고 있습니다.`}
           </Text>
+          {keyFinding ? (
+            <View style={S.keyFindingBox}>
+              <Text style={S.keyFindingLabel}>KEY FINDING</Text>
+              <Text style={S.keyFindingText}>{keyFinding}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Right: quadrant chart */}
+        <View style={{ alignItems: 'center', paddingTop: 8 }}>
+          <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={196} />
         </View>
       </View>
 
-      {/* Attributes table */}
-      <Text style={S.subSectionTitle}>색의 4속성 분석</Text>
-      <View style={S.attrTable}>
-        {[
-          { key: 'HUE (색상)',       val: attributes.hue },
-          { key: 'VALUE (명도)',      val: attributes.value },
-          { key: 'CHROMA (채도)',     val: attributes.chroma },
-          { key: 'CLARITY (청탁)',    val: attributes.clarity },
-          { key: 'BASE TONE (베이스)', val: attributes.base },
-          { key: 'CONTRAST (대비)',   val: attributes.contrast },
-        ].map(({ key, val }) => (
-          <View key={key} style={S.attrRow}>
-            <Text style={S.attrKey}>{key}</Text>
-            <Text style={S.attrVal}>{val}</Text>
+      <View style={S.sectionDivider} />
+
+      {/* Bottom: type diagnosis */}
+      <SectionHead num="02" title="정밀 분석" accent={accent} />
+
+      {/* 4 attribute cards */}
+      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
+        {attrCards.map(({ key, label, val }) => (
+          <View key={key} style={S.attrCard}>
+            <Text style={S.attrCardKey}>{key}</Text>
+            <Text style={S.attrCardLabel}>{label}</Text>
+            <Text style={S.attrCardVal}>{val}</Text>
           </View>
         ))}
       </View>
 
-      <PageFooter accent={accent} num="2 / 5" />
+      {/* Base + Contrast */}
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 10 }}>
+          <Text style={S.attrCardKey}>BASE TONE</Text>
+          <Text style={[S.attrCardLabel, { color: accent }]}>{attributes.base}</Text>
+        </View>
+        <View style={{ flex: 2, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 10 }}>
+          <Text style={[S.attrCardKey, { marginBottom: 6 }]}>CONTRAST</Text>
+          <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+            {[1, 2, 3].map((lv) => (
+              <View key={lv} style={{ width: 40, height: 8, borderRadius: 4, backgroundColor: lv <= contrastLevel ? accent : '#E0DCCC' }} />
+            ))}
+            <Text style={[S.caption, { marginLeft: 6 }]}>{attributes.contrast}</Text>
+          </View>
+        </View>
+      </View>
+
+      <Footer page={2} total={6} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 3: Palette & Makeup ────────────────────────────────────
+// ── Page 3: Color Palette ────────────────────────────────────────
 
-function PaletteMakeupPage({
-  colorType, accent,
-}: { colorType: PersonalColorType; accent: string }) {
-  const { bestColors, worstColors, makeup } = TYPE_EXTRA[colorType];
+function PalettePage({ colorType, accent, customerName }: { colorType: PersonalColorType; accent: string; customerName: string }) {
+  const { bestColors, worstColors, fashion } = TYPE_EXTRA[colorType];
+  const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
-      <SectionHeader num="02" title="어울리는 컬러 팔레트" accent={accent} />
+      <PageHeader label="컬러 팔레트" page={3} total={6} />
 
-      {/* Best colors */}
-      <Text style={[S.subSectionTitle, { marginTop: 0 }]}>Best Colors · 추천 8가지</Text>
-      <View style={S.chipRow}>
-        {bestColors.map(({ hex, name }) => (
-          <View key={hex} style={S.chipItem}>
+      <SectionHead num="03" title={`${name}님께 어울리는 컬러`} accent={accent} />
+
+      {/* Best 8: 4x2 grid */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginBottom: 6 }}>
+        {bestColors.map(({ hex, name: cName }) => (
+          <View key={hex} style={{ width: '25%', alignItems: 'center', paddingVertical: 8 }}>
             <View style={[S.chip, { backgroundColor: hex }]} />
-            <Text style={S.chipName}>{name}</Text>
+            <Text style={S.chipName}>{cName}</Text>
             <Text style={S.chipHex}>{hex}</Text>
           </View>
         ))}
       </View>
 
-      {/* Worst colors */}
-      <Text style={[S.subSectionTitle, { marginTop: 16 }]}>Worst Colors · 피해야 할 4가지</Text>
-      <View style={S.worstChipRow}>
-        {worstColors.map(({ hex, name }) => (
+      <View style={S.sectionDivider} />
+
+      <SectionHead num="04" title="피해야 할 컬러" accent="#C0B8B0" />
+
+      {/* Worst 4: horizontal */}
+      <View style={{ flexDirection: 'row', gap: 20, marginBottom: 16 }}>
+        {worstColors.map(({ hex, name: cName }) => (
           <View key={hex} style={{ alignItems: 'center' }}>
-            <View style={[S.worstChip, { backgroundColor: hex }]} />
-            <Text style={[S.chipName, { opacity: 0.6 }]}>{name}</Text>
-            <Text style={[S.chipHex, { opacity: 0.6 }]}>{hex}</Text>
+            <View style={[S.chip, { backgroundColor: hex, opacity: 0.5 }]} />
+            <Text style={[S.chipName, { opacity: 0.6 }]}>{cName}</Text>
+            <Text style={[S.chipHex, { opacity: 0.5 }]}>{hex}</Text>
           </View>
         ))}
       </View>
 
-      <View style={S.pageDivider} />
+      <View style={S.sectionDivider} />
 
-      {/* Makeup */}
-      <SectionHeader num="03" title="메이크업 컬러 추천" accent={accent} />
+      {/* Styling note */}
+      <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 12 }}>
+        <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 5 }}>STYLING NOTE</Text>
+        <Text style={S.body}>{fashion.tip}</Text>
+      </View>
 
-      {[
-        { label: '립 컬러',        items: makeup.lip },
-        { label: '파운데이션',      items: makeup.foundation },
-        { label: '아이섀도우',      items: makeup.eyeshadow },
-        { label: '블러셔',         items: makeup.blush },
-      ].map(({ label, items }) => (
-        <View key={label} style={S.makeupRow}>
-          <Text style={S.makeupLabel}>{label}</Text>
-          {items.map(({ hex, name }) => (
-            <View key={hex} style={S.makeupItemBox}>
-              <View style={[S.makeupChip, { backgroundColor: hex }]} />
-              <Text style={S.makeupItemName}>{name}</Text>
-              <Text style={S.makeupItemHex}>{hex}</Text>
+      <Footer page={3} total={6} accent={accent} />
+    </Page>
+  );
+}
+
+// ── Page 4: Makeup + Hair ────────────────────────────────────────
+
+function MakeupHairPage({ colorType, accent }: { colorType: PersonalColorType; accent: string }) {
+  const { makeup, hair } = TYPE_EXTRA[colorType];
+
+  return (
+    <Page size="A4" style={S.page}>
+      <PageHeader label="메이크업 & 헤어" page={4} total={6} />
+
+      <SectionHead num="05" title="메이크업 가이드" accent={accent} />
+
+      <View style={{ flexDirection: 'row', gap: 16, marginBottom: 6 }}>
+        {/* Lip colors */}
+        <View style={{ flex: 1.1 }}>
+          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 8, color: '#2A2A2A' }]}>💄 립 컬러</Text>
+          {makeup.lip.map(({ hex, name }) => (
+            <View key={hex} style={{ marginBottom: 8 }}>
+              <View style={[S.lipStrip, { backgroundColor: hex, width: '100%' }]} />
+              <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A' }}>{name}</Text>
+              <Text style={S.caption}>{hex}</Text>
             </View>
           ))}
         </View>
-      ))}
 
-      <PageFooter accent={accent} num="3 / 5" />
-    </Page>
-  );
-}
+        {/* Other makeup */}
+        <View style={{ flex: 1 }}>
+          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 8, color: '#2A2A2A' }]}>파운데이션</Text>
+          {makeup.foundation.map(({ hex, name }) => (
+            <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 6 }}>
+              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <View>
+                <Text style={{ fontSize: 9, color: '#2A2A2A' }}>{name}</Text>
+                <Text style={S.caption}>{hex}</Text>
+              </View>
+            </View>
+          ))}
 
-// ── Page 4: Hair & Fashion ──────────────────────────────────────
+          <Text style={[S.bodySmall, { fontWeight: 700, marginTop: 10, marginBottom: 8, color: '#2A2A2A' }]}>아이섀도우</Text>
+          {makeup.eyeshadow.map(({ hex, name }) => (
+            <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 6 }}>
+              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <View>
+                <Text style={{ fontSize: 9, color: '#2A2A2A' }}>{name}</Text>
+                <Text style={S.caption}>{hex}</Text>
+              </View>
+            </View>
+          ))}
 
-function HairFashionPage({
-  colorType, accent,
-}: { colorType: PersonalColorType; accent: string }) {
-  const { hair, fashion } = TYPE_EXTRA[colorType];
-
-  return (
-    <Page size="A4" style={S.page}>
-      <SectionHeader num="04" title="헤어 컬러 추천" accent={accent} />
-
-      {/* Recommended hair */}
-      {hair.recommended.map(({ name, desc }, i) => (
-        <View key={i} style={S.hairItem}>
-          <View style={[S.hairDot, { backgroundColor: accent }]} />
-          <View>
-            <Text style={S.hairName}>{name}</Text>
-            <Text style={S.hairDesc}>{desc}</Text>
-          </View>
+          <Text style={[S.bodySmall, { fontWeight: 700, marginTop: 10, marginBottom: 8, color: '#2A2A2A' }]}>블러셔</Text>
+          {makeup.blush.map(({ hex, name }) => (
+            <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 6 }}>
+              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <View>
+                <Text style={{ fontSize: 9, color: '#2A2A2A' }}>{name}</Text>
+                <Text style={S.caption}>{hex}</Text>
+              </View>
+            </View>
+          ))}
         </View>
-      ))}
-
-      {/* Avoid */}
-      <View style={S.avoidBox}>
-        <Text style={S.avoidLabel}>AVOID · 피해야 할 컬러</Text>
-        <Text style={S.avoidText}>{hair.avoid}</Text>
       </View>
 
-      <View style={S.pageDivider} />
+      <View style={S.sectionDivider} />
 
-      {/* Fashion */}
-      <SectionHeader num="05" title="패션 컬러 가이드" accent={accent} />
+      <SectionHead num="06" title="헤어 컬러" accent={accent} />
 
-      <View style={S.fashionGrid}>
-        {[
-          { label: 'MAIN COLOR',   value: fashion.main },
-          { label: 'SUB COLOR',    value: fashion.sub },
-          { label: 'ACCENT COLOR', value: fashion.accent },
-        ].map(({ label, value }) => (
-          <View key={label} style={S.fashionCard}>
-            <Text style={S.fashionCardLabel}>{label}</Text>
-            <Text style={S.fashionCardValue}>{value}</Text>
+      <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+        {hair.recommended.map(({ name, desc }) => (
+          <View key={name} style={{ flex: 1, alignItems: 'center' }}>
+            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: hairHex(name), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 5 }} />
+            <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', textAlign: 'center' }}>{name}</Text>
+            <Text style={[S.caption, { textAlign: 'center', marginTop: 2 }]}>{desc}</Text>
           </View>
         ))}
       </View>
 
-      <View style={[S.fashionTip, { borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: accent }]}>
-        <Text style={S.fashionTipLabel}>STYLING TIP</Text>
-        <Text style={S.fashionTipText}>{fashion.tip}</Text>
+      <View style={[S.adviceBox, { backgroundColor: '#FFF5F5', borderRadius: 8, padding: 10 }]}>
+        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: '#E05555', marginBottom: 3 }}>AVOID</Text>
+        <Text style={{ fontSize: 9, color: '#666' }}>{hair.avoid}</Text>
       </View>
 
-      <PageFooter accent={accent} num="4 / 5" />
+      <Footer page={4} total={6} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 5: Seasonal & Q&A ──────────────────────────────────────
+// ── Page 5: Fashion + Seasonal ───────────────────────────────────
 
-function SeasonalQAPage({
-  colorType, accent, reportContent,
-}: { colorType: PersonalColorType; accent: string; reportContent: string }) {
-  const { seasonal } = TYPE_EXTRA[colorType];
-
-  // Extract section 7 (맞춤 답변) from reportContent
-  const qaMatch = reportContent.match(/\[섹션 7[^\]]*\]([\s\S]*?)(?:\[섹션 \d|$)/);
-  const qaText = qaMatch
-    ? qaMatch[1].trim()
-    : '';
-  const showQA = qaText.length > 0 && qaText !== '해당 질문에는 답변이 불가합니다';
+function FashionSeasonPage({ colorType, accent, customerName }: { colorType: PersonalColorType; accent: string; customerName: string }) {
+  const { fashion, seasonal } = TYPE_EXTRA[colorType];
+  const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
-      <SectionHeader num="06" title="시즌별 스타일링" accent={accent} />
+      <PageHeader label="패션 & 시즌" page={5} total={6} />
 
-      <View style={S.seasonGrid}>
-        {[
-          { label: '🌸 SPRING', text: seasonal.spring },
-          { label: '☀️ SUMMER', text: seasonal.summer },
-          { label: '🍂 AUTUMN', text: seasonal.autumn },
-          { label: '❄️ WINTER', text: seasonal.winter },
-        ].map(({ label, text }) => (
-          <View key={label} style={S.seasonCard}>
-            <Text style={S.seasonLabel}>{label}</Text>
+      <SectionHead num="07" title="패션 컬러 가이드" accent={accent} />
+
+      <View style={{ flexDirection: 'row', gap: 16, marginBottom: 4 }}>
+        {/* Color groups */}
+        <View style={{ width: 160 }}>
+          {[
+            { label: 'MAIN COLOR', val: fashion.main },
+            { label: 'SUB COLOR',  val: fashion.sub },
+            { label: 'ACCENT',     val: fashion.accent },
+          ].map(({ label, val }) => (
+            <View key={label} style={{ marginBottom: 10 }}>
+              <Text style={S.fashionGroupLabel}>{label}</Text>
+              <Text style={S.fashionGroupText}>{val}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Tips */}
+        <View style={{ flex: 1 }}>
+          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 8, color: '#2A2A2A' }]}>코디 팁</Text>
+          {[fashion.tip].map((t, i) => (
+            <View key={i} style={S.tipRow}>
+              <View style={[S.tipBullet, { backgroundColor: accent }]} />
+              <Text style={S.tipText}>{t}</Text>
+            </View>
+          ))}
+          <Text style={[S.bodySmall, { marginTop: 6 }]}>
+            {name}님의 베스트 컬러 조합은 {fashion.main} 계열로, 자연스러운 컬러 레이어링을 시도해보세요.
+          </Text>
+        </View>
+      </View>
+
+      <View style={S.sectionDivider} />
+
+      <SectionHead num="08" title="시즌별 스타일링" accent={accent} />
+
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {(Object.entries({
+          spring: seasonal.spring,
+          summer: seasonal.summer,
+          autumn: seasonal.autumn,
+          winter: seasonal.winter,
+        }) as [string, string][]).map(([key, text]) => (
+          <View key={key} style={[S.seasonCard, { width: '48%', backgroundColor: SEASON_BG[key] }]}>
+            <Text style={S.seasonIcon}>{SEASON_ICON[key]}</Text>
+            <Text style={S.seasonLabel}>{SEASON_LABEL[key]}</Text>
             <Text style={S.seasonText}>{text}</Text>
           </View>
         ))}
       </View>
 
-      {showQA && (
-        <View style={{ marginTop: 24 }}>
-          <SectionHeader num="07" title="당신의 고민에 대한 답변" accent={accent} />
-          <View style={S.qaBox}>
-            <Text style={S.qaQuestion}>AI 맞춤 답변</Text>
-            <Text style={S.qaAnswer}>{qaText}</Text>
-          </View>
+      <Footer page={5} total={6} accent={accent} />
+    </Page>
+  );
+}
+
+// ── Page 6: Celebrities + Custom Advice ─────────────────────────
+
+interface CelebrityItem {
+  name: string;
+  profession: string;
+  similarity: string;
+  iconicLook: string;
+}
+
+function CelebAdvicePage({
+  colorType, accent, customerName, celebrities, customAdvice,
+}: {
+  colorType: PersonalColorType; accent: string; customerName: string;
+  celebrities?: CelebrityItem[];
+  customAdvice?: { answer: string; isRelated: boolean };
+}) {
+  const name = customerName || '고객';
+  const celebBg = accent + '14';
+
+  return (
+    <Page size="A4" style={S.page}>
+      <PageHeader label="셀러브리티 & 맞춤 답변" page={6} total={6} />
+
+      <SectionHead num="09" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
+
+      {celebrities && celebrities.length > 0 ? (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
+          {celebrities.map((celeb) => (
+            <View key={celeb.name} style={[S.celebCard, { backgroundColor: celebBg, width: celebrities.length >= 4 ? '30.5%' : '47%' }]}>
+              <Text style={S.celebName}>{celeb.name}</Text>
+              <Text style={S.celebJob}>{celeb.profession}</Text>
+              <Text style={S.celebSimilarity}>{celeb.similarity}</Text>
+              <Text style={[S.celebLook, { borderTopWidth: 0.5, borderTopColor: '#DDD', borderTopStyle: 'solid', paddingTop: 4 }]}>
+                ✨ {celeb.iconicLook}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 14, marginBottom: 8 }}>
+          <Text style={S.body}>셀러브리티 정보를 불러오는 중입니다. 상세 분석 리포트에서 확인하세요.</Text>
         </View>
       )}
 
-      {/* Footer with full info */}
-      <View style={[S.disclaimer, { flexDirection: 'column', alignItems: 'flex-start', gap: 4 }]}>
-        <View style={{ borderTopWidth: 1, borderTopColor: '#E8E4DC', borderTopStyle: 'solid', width: '100%', paddingTop: 10 }}>
+      {customAdvice !== undefined ? (
+        <>
+          <View style={S.sectionDivider} />
+          <SectionHead num="10" title={`${name}님의 고민에 대한 답변`} accent={accent} />
+          {customAdvice.isRelated ? (
+            <View style={S.adviceBox}>
+              <Text style={S.adviceLabel}>AI 맞춤 조언</Text>
+              <Text style={S.adviceText}>{customAdvice.answer}</Text>
+            </View>
+          ) : (
+            <View style={[S.adviceBox, { backgroundColor: '#F5F5F5' }]}>
+              <Text style={[S.adviceText, { color: '#999' }]}>해당 질문에는 답변이 불가합니다.</Text>
+            </View>
+          )}
+        </>
+      ) : null}
+
+      {/* Final footer with full info */}
+      <View style={[S.footer, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+        <View style={{ borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid', width: '100%', paddingTop: 6 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={S.disclaimerText}>본 리포트는 AI 분석 결과로 참고용이며 전문 진단을 대체하지 않습니다.</Text>
-            <Text style={[S.pageNum, { color: accent }]}>5 / 5</Text>
+            <Text style={S.footerText}>colorlab.kr  ·  본 리포트는 AI 분석에 기반한 참고용 자료입니다</Text>
+            <Text style={[S.footerPage, { color: accent }]}>6 / 6</Text>
           </View>
-          <Text style={[S.disclaimerText, { marginTop: 3 }]}>colorlab.kr  ·  Powered by COLORLAB AI</Text>
+          <Text style={[S.footerText, { marginTop: 2 }]}>Powered by COLORLAB AI  ·  © 2025 컬러랩</Text>
         </View>
       </View>
     </Page>
   );
 }
 
-// ── Main Export ─────────────────────────────────────────────────
+// ── Props & Main export ──────────────────────────────────────────
 
 export interface ReportPDFProps {
-  colorType: PersonalColorType;
-  sessionId: string;
+  colorType:     PersonalColorType;
+  sessionId:     string;
   reportContent: string;
-  createdAt?: string;
+  createdAt?:    string;
+  customerName?: string;
+  personalIntro?: {
+    greeting:       string;
+    photoImpression: string;
+    keyFinding:     string;
+  };
+  celebrities?: CelebrityItem[];
+  customAdvice?: {
+    answer:     string;
+    isRelated:  boolean;
+  };
 }
 
 export default function ReportPDF({
-  colorType,
-  sessionId,
-  reportContent,
-  createdAt,
+  colorType, sessionId, reportContent, createdAt,
+  customerName, personalIntro, celebrities, customAdvice,
 }: ReportPDFProps) {
   const accent = TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED';
   const date   = createdAt ?? new Date().toISOString().slice(0, 10);
+  const name   = customerName?.trim() || '고객';
+  const palette = TYPE_PALETTE[colorType];
 
   return (
-    <Document title={`컬러랩 퍼스널컬러 리포트 · ${colorType}`} author="COLORLAB">
+    <Document title={`${name}님 컬러랩 퍼스널컬러 리포트 · ${colorType}`} author="COLORLAB">
       <CoverPage
-        colorType={colorType}
-        sessionId={sessionId}
-        createdAt={date}
-        accent={accent}
+        colorType={colorType} sessionId={sessionId} createdAt={date}
+        accent={accent} customerName={name}
+        greeting={personalIntro?.greeting ?? ''}
+        palette={[...palette]}
       />
-      <TypeAnalysisPage colorType={colorType} accent={accent} />
-      <PaletteMakeupPage colorType={colorType} accent={accent} />
-      <HairFashionPage colorType={colorType} accent={accent} />
-      <SeasonalQAPage colorType={colorType} accent={accent} reportContent={reportContent} />
+      <AnalysisPage
+        colorType={colorType} accent={accent} customerName={name}
+        photoImpression={personalIntro?.photoImpression}
+        keyFinding={personalIntro?.keyFinding}
+      />
+      <PalettePage colorType={colorType} accent={accent} customerName={name} />
+      <MakeupHairPage colorType={colorType} accent={accent} />
+      <FashionSeasonPage colorType={colorType} accent={accent} customerName={name} />
+      <CelebAdvicePage
+        colorType={colorType} accent={accent} customerName={name}
+        celebrities={celebrities}
+        customAdvice={customAdvice}
+      />
     </Document>
   );
 }
