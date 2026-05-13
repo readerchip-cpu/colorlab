@@ -42,11 +42,25 @@ export async function updateSessionPaid(id: string): Promise<void> {
 export async function saveReportContent(
   id: string,
   content: string,
+  customerName?: string,
 ): Promise<void> {
+  const patch: Record<string, unknown> = { report_content: content };
+  if (customerName !== undefined) patch.customer_name = customerName || null;
+
   const { error } = await adminClient
     .from('test_sessions')
-    .update({ report_content: content })
+    .update(patch)
     .eq('id', id);
 
   if (error) throw error;
 }
+
+/*
+ * ── Supabase 마이그레이션 안내 ──────────────────────────────────
+ * customer_name 컬럼이 없는 경우, Supabase SQL Editor에서 아래 SQL을 실행하세요:
+ *
+ *   ALTER TABLE test_sessions
+ *     ADD COLUMN IF NOT EXISTS customer_name text;
+ *
+ * ──────────────────────────────────────────────────────────────
+ */

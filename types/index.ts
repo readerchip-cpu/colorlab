@@ -63,6 +63,7 @@ export interface TestSession {
   result_type: PersonalColorType | null;
   is_paid: boolean;
   report_content: string | null;
+  customer_name: string | null;
   created_at: string;
 }
 

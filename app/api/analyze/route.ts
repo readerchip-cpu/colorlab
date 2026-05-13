@@ -27,6 +27,8 @@ export async function POST(request: Request) {
     const imageFile = formData.get('image');
     const freeConcernRaw = formData.get('free_concern');
     const freeConcern = typeof freeConcernRaw === 'string' ? freeConcernRaw.trim() : undefined;
+    const customerNameRaw = formData.get('customer_name');
+    const customerName = typeof customerNameRaw === 'string' ? customerNameRaw.trim().slice(0, 10) : '';
 
     // 입력값 검증
     if (typeof sessionId !== 'string' || !sessionId) {
@@ -73,8 +75,8 @@ export async function POST(request: Request) {
     // base64 즉시 해제 (GC 대상)
     imageBase64 = null;
 
-    // DB에 리포트 저장
-    await saveReportContent(sessionId, report);
+    // DB에 리포트 저장 (customer_name 함께)
+    await saveReportContent(sessionId, report, customerName);
 
     // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
     const colorType = session.result_type as PersonalColorType;

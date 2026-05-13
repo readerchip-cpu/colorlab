@@ -42,6 +42,7 @@ export default function UploadZone({ sessionId }: Props) {
   const [phaseIdx, setPhaseIdx] = useState(0);
   const [apiError, setApiError] = useState<string | null>(null);
   const [freeConcern, setFreeConcern] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
   const validate = useCallback((f: File): string | null => {
     if (!(ALLOWED as readonly string[]).includes(f.type))
@@ -105,6 +106,7 @@ export default function UploadZone({ sessionId }: Props) {
       form.append('session_id', sessionId);
       form.append('image', file);
       form.append('free_concern', freeConcern);
+      form.append('customer_name', customerName);
 
       const res = await fetch('/api/analyze', { method: 'POST', body: form });
 
@@ -240,6 +242,27 @@ export default function UploadZone({ sessionId }: Props) {
         </p>
       )}
 
+      {/* 이름 입력 */}
+      <div className="mt-5">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
+          리포트에 표시될 이름을 알려주세요{' '}
+          <span className="text-red-400">*</span>
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value.slice(0, 10))}
+            placeholder="예: 김지은"
+            maxLength={10}
+            className="w-full rounded-2xl border-2 border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-300 focus:border-violet-300 focus:bg-white"
+          />
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-300">
+            {customerName.length}/10
+          </span>
+        </div>
+      </div>
+
       {/* 자유 고민 입력 */}
       <div className="mt-5">
         <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -263,7 +286,7 @@ export default function UploadZone({ sessionId }: Props) {
       {/* 분석 버튼 */}
       <button
         onClick={handleAnalyze}
-        disabled={!file || isAnalyzing}
+        disabled={!file || !customerName.trim() || isAnalyzing}
         className="mt-5 w-full rounded-2xl bg-[#7C3AED] py-4 text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         분석 시작하기 →
