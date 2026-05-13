@@ -1,6 +1,6 @@
 'use client';
 
-import { View, Text, Link, StyleSheet } from '@react-pdf/renderer';
+import { View, Text, StyleSheet } from '@react-pdf/renderer';
 
 interface CelebrityCardProps {
   name: string;
@@ -64,9 +64,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     backgroundColor: '#fff',
-    padding: 8,
+    padding: 10,
     borderRadius: 6,
-    marginBottom: 6,
   },
   iconicLabel: {
     fontSize: 8,
@@ -82,19 +81,11 @@ const styles = StyleSheet.create({
     lineHeight: 1.5,
     flex: 1,
   },
-  searchLink: {
-    fontSize: 8.5,
-    color: '#7C3AED',
-    fontFamily: 'Pretendard',
-    alignSelf: 'flex-end',
-  },
 });
 
 export function CelebrityCard({
   name, profession, similarity, iconicLook, signatureColors,
 }: CelebrityCardProps) {
-  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(name + ' 패션')}&tbm=isch`;
-
   return (
     <View style={[styles.card, { borderLeftColor: signatureColors[0] ?? '#7C3AED' }]}>
       <View style={styles.topRow}>
@@ -115,10 +106,6 @@ export function CelebrityCard({
         <Text style={styles.iconicLabel}>✨ SIGNATURE LOOK</Text>
         <Text style={styles.iconicText}>{iconicLook}</Text>
       </View>
-
-      <Link src={searchUrl} style={styles.searchLink}>
-        🔍 이미지 검색하기 →
-      </Link>
     </View>
   );
 }
