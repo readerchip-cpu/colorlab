@@ -293,6 +293,12 @@ export interface ReportColorItem {
   hex: string;
 }
 
+export interface WorstColorItem {
+  name: string;
+  hex: string;
+  reason: string;
+}
+
 export interface ReportMakeupItem {
   name: string;
   hex: string;
@@ -338,7 +344,7 @@ export interface ReportData {
   };
   palette: {
     best: ReportColorItem[];    // 8개
-    worst: ReportColorItem[];   // 4개
+    worst: WorstColorItem[];    // 4개 (name, hex, reason 포함)
   };
   makeup: {
     lip: ReportMakeupItem[];        // 3개
@@ -449,7 +455,7 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
       (총 8개)
     ],
     "worst": [
-      {"name": "색상명", "hex": "#RRGGBB"},
+      {"name": "색상명", "hex": "#RRGGBB", "reason": "피부 톤에 맞지 않는 이유 (10자 이내)"},
       (총 4개)
     ]
   },

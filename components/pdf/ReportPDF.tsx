@@ -1,11 +1,12 @@
 'use client';
 
 import '@/lib/pdf/font';
-import { Document, Page, View, Text, StyleSheet, Link } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Link, Svg, Path } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
 import { ColorChip } from './ColorChip';
-import { SeasonCard, SeasonIcon } from './SeasonCard';
+import { SeasonCard } from './SeasonCard';
+import { SeasonIcon } from './SeasonIcon';
 import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
 import type { SeasonalStyling } from '@/lib/data/seasonalStyling';
 import { PaletteGrid } from './PaletteGrid';
@@ -549,11 +550,64 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 
       <View style={S.sectionDivider} />
 
-      <SectionHead num="04" title="피해야 할 컬러" accent="#C0B8B0" />
+      {/* 04. 피해야 할 컬러 — 강조 경고 박스 */}
+      <View style={{
+        backgroundColor: '#FFF5F5',
+        borderRadius: 8,
+        borderLeftWidth: 4, borderLeftColor: '#FF3B30', borderLeftStyle: 'solid',
+        padding: 10, marginBottom: 8,
+      }}>
+        {/* 경고 헤더 */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 10 }}>
+          <View style={{
+            width: 18, height: 18, borderRadius: 9,
+            backgroundColor: '#FF3B30',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 11, fontWeight: 700, color: '#fff', lineHeight: 1 }}>!</Text>
+          </View>
+          <Text style={{ fontSize: 12, fontWeight: 700, color: '#FF3B30', fontFamily: 'Pretendard' }}>
+            04. 피해야 할 컬러
+          </Text>
+        </View>
 
-      {/* Worst 4: 2열 2행으로 배치 */}
-      <View style={{ marginBottom: 8 }}>
-        <PaletteGrid colors={worstColors} columns={2} chipSize={44} opacity={0.5} />
+        {/* 피해야 할 컬러 카드 4개 */}
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {worstColors.map(({ hex, name: cName }) => (
+            <View key={hex} style={{
+              flex: 1, alignItems: 'center',
+              backgroundColor: '#fff', padding: 8, borderRadius: 6,
+            }}>
+              {/* 색상 칩 + X 오버레이 */}
+              <View style={{ width: 50, height: 50, position: 'relative', marginBottom: 6 }}>
+                <View style={{
+                  width: 50, height: 50, borderRadius: 25,
+                  backgroundColor: hex, opacity: 0.55,
+                  borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
+                }} />
+                <View style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                  alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Svg width={50} height={50}>
+                    <Path
+                      d="M12 12 L38 38 M38 12 L12 38"
+                      stroke="#FF3B30"
+                      strokeWidth={3.5}
+                      strokeLinecap="round"
+                    />
+                  </Svg>
+                </View>
+              </View>
+              <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', textAlign: 'center', marginBottom: 2 }}>
+                {cName}
+              </Text>
+              <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.4 }}>
+                피부 톤을 칙칙하게 만듭니다
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       <View style={S.sectionDivider} />
