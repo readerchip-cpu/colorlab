@@ -2,22 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
+import ReportPDF from './ReportPDF';
 import type { PersonalColorType } from '@/types';
 
-// PDFViewer, PDFDownloadLink, ReportPDF are all client/browser only
-const PDFViewer = dynamic(
-  () => import('@react-pdf/renderer').then(m => ({ default: m.PDFViewer })),
-  { ssr: false },
-);
-
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then(m => ({ default: m.PDFDownloadLink })),
-  { ssr: false },
-);
-
-const ReportPDF = dynamic(
-  () => import('./ReportPDF'),
+// BlobProvider는 URL.createObjectURL 등 브라우저 API 사용 → SSR 비활성화
+const BlobProvider = dynamic(
+  () => import('@react-pdf/renderer').then(m => ({ default: m.BlobProvider })),
   { ssr: false },
 );
 
@@ -44,51 +36,76 @@ export default function PdfViewerClient({ sessionId, colorType, reportContent, c
   const fileName = `컬러랩-${colorType}-리포트.pdf`;
   const backHref = `/report/${sessionId}`;
 
-  const doc = (
-    <ReportPDF
-      colorType={colorType}
-      sessionId={sessionId}
-      reportContent={reportContent}
-      createdAt={createdAt.slice(0, 10)}
-    />
+  // useMemo로 doc을 안정화 — 재렌더마다 새 객체가 생성되지 않도록
+  const doc = useMemo(
+    () => (
+      <ReportPDF
+        colorType={colorType}
+        sessionId={sessionId}
+        reportContent={reportContent}
+        createdAt={createdAt.slice(0, 10)}
+      />
+    ),
+    [colorType, sessionId, reportContent, createdAt],
   );
 
   return (
-    <div className="flex h-screen flex-col bg-[#FAF8F3]">
-      {/* ── 상단 툴바 ── */}
-      <div className="flex h-14 flex-shrink-0 items-center justify-between border-b border-[#EDE9E1] bg-white px-4 shadow-sm">
-        <Link
-          href={backHref}
-          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          리포트로 돌아가기
-        </Link>
+    <BlobProvider document={doc}>
+      {({ url, loading, error }) => (
+        <div className="flex h-screen flex-col bg-[#FAF8F3]">
 
-        <span className="absolute left-1/2 -translate-x-1/2 text-sm font-bold text-gray-800">
-          {colorType} 분석 리포트
-        </span>
+          {/* ── 상단 툴바 ── */}
+          <div className="relative flex h-14 flex-shrink-0 items-center justify-between border-b border-[#EDE9E1] bg-white px-4 shadow-sm">
+            <Link
+              href={backHref}
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              리포트로 돌아가기
+            </Link>
 
-        {/* PDFDownloadLink — 동적 로드 후 렌더 */}
-        <PDFDownloadLink document={doc} fileName={fileName}>
-          {({ loading }) => (
-            <button
-              disabled={loading}
-              className="flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-violet-700 disabled:opacity-50"
+            <span className="absolute left-1/2 -translate-x-1/2 hidden text-sm font-bold text-gray-800 sm:block">
+              {colorType} 분석 리포트
+            </span>
+
+            {/* 다운로드: blob URL을 href로, download 속성으로 파일명 지정 */}
+            <a
+              href={url ?? undefined}
+              download={fileName}
+              aria-disabled={loading || !url}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-white shadow transition ${
+                loading || !url
+                  ? 'pointer-events-none bg-violet-300'
+                  : 'bg-violet-600 hover:bg-violet-700'
+              }`}
             >
               <Download className="h-4 w-4" />
               {loading ? '생성 중…' : 'PDF 다운로드'}
-            </button>
-          )}
-        </PDFDownloadLink>
-      </div>
+            </a>
+          </div>
 
-      {/* ── PDF 뷰어 ── */}
-      <div className="flex-1 overflow-hidden">
-        <PDFViewer width="100%" height="100%" showToolbar={false} style={{ border: 'none' }}>
-          {doc}
-        </PDFViewer>
-      </div>
-    </div>
+          {/* ── 본문: 로딩 스피너 or PDF iframe ── */}
+          <div className="flex-1 overflow-hidden">
+            {error ? (
+              <div className="flex h-full items-center justify-center text-red-500 text-sm">
+                PDF 생성 중 오류가 발생했습니다. 페이지를 새로고침해 주세요.
+              </div>
+            ) : loading || !url ? (
+              <Spinner />
+            ) : (
+              // blob URL은 브라우저 네이티브 PDF 뷰어로 표시
+              <iframe
+                src={url}
+                title={`${colorType} 분석 리포트`}
+                width="100%"
+                height="100%"
+                style={{ border: 'none' }}
+              />
+            )}
+          </div>
+
+        </div>
+      )}
+    </BlobProvider>
   );
 }
