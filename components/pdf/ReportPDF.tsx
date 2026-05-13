@@ -8,6 +8,8 @@ import { ColorChip } from './ColorChip';
 import { SeasonCard } from './SeasonCard';
 import { PaletteGrid } from './PaletteGrid';
 import { CelebrityCard } from './CelebrityCard';
+import { ProductRecommendation } from './ProductRecommendation';
+import { cosmeticsDatabase } from '@/lib/data/cosmetics';
 import type { PersonalColorType } from '@/types';
 
 // ── Static metadata ──────────────────────────────────────────────
@@ -578,92 +580,97 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 
 // ── Page 4: Makeup + Hair ────────────────────────────────────────
 
-function MakeupHairPage({ colorType, accent }: { colorType: PersonalColorType; accent: string }) {
+function MakeupHairPage({ colorType, accent, customerName }: {
+  colorType: PersonalColorType; accent: string; customerName: string;
+}) {
   const { makeup, hair } = TYPE_EXTRA[colorType];
+  const cosmetics = cosmeticsDatabase[colorType];
+  const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
       <PageHeader label="메이크업 & 헤어" page={4} total={6} />
 
-      <SectionHead num="05" title="메이크업 가이드" accent={accent} />
+      {/* 05: 립스틱 제품 추천 */}
+      <SectionHead num="05" title={`${name}님께 추천하는 립스틱`} accent={accent} />
+      <View style={{ marginBottom: 4 }}>
+        {cosmetics.lipstick.map((p, i) => (
+          <ProductRecommendation key={i} product={p} accentColor={accent} />
+        ))}
+      </View>
 
-      <View style={{ flexDirection: 'row', gap: 16, marginBottom: 6 }}>
-        {/* Lip colors */}
-        <View style={{ flex: 1.1 }}>
-          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 8, color: '#2A2A2A' }]}>💄 립 컬러</Text>
-          {makeup.lip.map(({ hex, name }) => (
-            <View key={hex} style={{ marginBottom: 8 }}>
-              <View style={[S.lipStrip, { backgroundColor: hex, width: '100%' }]} />
-              <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A' }}>{name}</Text>
-              <Text style={S.caption}>{hex}</Text>
-            </View>
-          ))}
-        </View>
+      <View style={S.sectionDivider} />
 
-        {/* Other makeup */}
+      {/* 06: 파운데이션 제품 추천 */}
+      <SectionHead num="06" title={`${name}님께 추천하는 파운데이션`} accent={accent} />
+      <View style={{ marginBottom: 4 }}>
+        {cosmetics.foundation.map((p, i) => (
+          <ProductRecommendation key={i} product={p} accentColor={accent} />
+        ))}
+      </View>
+
+      <View style={S.sectionDivider} />
+
+      {/* 아이섀도우 + 블러셔 (색상 추천만 유지) */}
+      <View style={{ flexDirection: 'row', gap: 16, marginBottom: 8 }}>
         <View style={{ flex: 1 }}>
-          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 8, color: '#2A2A2A' }]}>파운데이션</Text>
-          {makeup.foundation.map(({ hex, name }) => (
-            <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-              <View>
-                <Text style={{ fontSize: 9, color: '#2A2A2A' }}>{name}</Text>
-                <Text style={S.caption}>{hex}</Text>
+          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 5, color: '#2A2A2A' }]}>아이섀도우</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {makeup.eyeshadow.map(({ hex, name: n }) => (
+              <View key={hex} style={{ alignItems: 'center' }}>
+                <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+                <Text style={{ fontSize: 6.5, color: '#666', marginTop: 2, textAlign: 'center' }}>{n}</Text>
               </View>
-            </View>
-          ))}
-
-          <Text style={[S.bodySmall, { fontWeight: 700, marginTop: 10, marginBottom: 8, color: '#2A2A2A' }]}>아이섀도우</Text>
-          {makeup.eyeshadow.map(({ hex, name }) => (
-            <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-              <View>
-                <Text style={{ fontSize: 9, color: '#2A2A2A' }}>{name}</Text>
-                <Text style={S.caption}>{hex}</Text>
+            ))}
+          </View>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 5, color: '#2A2A2A' }]}>블러셔</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {makeup.blush.map(({ hex, name: n }) => (
+              <View key={hex} style={{ alignItems: 'center' }}>
+                <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+                <Text style={{ fontSize: 6.5, color: '#666', marginTop: 2, textAlign: 'center' }}>{n}</Text>
               </View>
-            </View>
-          ))}
-
-          <Text style={[S.bodySmall, { fontWeight: 700, marginTop: 10, marginBottom: 8, color: '#2A2A2A' }]}>블러셔</Text>
-          {makeup.blush.map(({ hex, name }) => (
-            <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-              <View>
-                <Text style={{ fontSize: 9, color: '#2A2A2A' }}>{name}</Text>
-                <Text style={S.caption}>{hex}</Text>
-              </View>
-            </View>
-          ))}
+            ))}
+          </View>
         </View>
       </View>
 
       <View style={S.sectionDivider} />
 
-      <SectionHead num="06" title="헤어 컬러" accent={accent} />
-
-      <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
-        {hair.recommended.map(({ name, desc }) => (
-          <View key={name} style={{ flex: 1, alignItems: 'center' }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: hairHex(name), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 5 }} />
-            <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', textAlign: 'center' }}>{name}</Text>
+      {/* 헤어 컬러 */}
+      <Text style={[S.bodySmall, { fontWeight: 700, marginBottom: 6, color: '#2A2A2A' }]}>헤어 컬러 가이드</Text>
+      <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
+        {hair.recommended.map(({ name: hName, desc }) => (
+          <View key={hName} style={{ flex: 1, alignItems: 'center' }}>
+            <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: hairHex(hName), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 4 }} />
+            <Text style={{ fontSize: 8, fontWeight: 700, color: '#2A2A2A', textAlign: 'center' }}>{hName}</Text>
             <Text style={[S.caption, { textAlign: 'center', marginTop: 2 }]}>{desc}</Text>
           </View>
         ))}
       </View>
 
-      <View style={{ backgroundColor: '#FFF5F5', borderRadius: 6, padding: 8, marginBottom: 10 }}>
-        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: '#E05555', marginBottom: 3 }}>AVOID</Text>
-        <Text style={{ fontSize: 9, color: '#666', lineHeight: 1.5 }}>{hair.avoid}</Text>
+      <View style={{ backgroundColor: '#FFF5F5', borderRadius: 5, padding: 7, marginBottom: 8 }}>
+        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: '#E05555', marginBottom: 2 }}>AVOID</Text>
+        <Text style={{ fontSize: 8.5, color: '#666', lineHeight: 1.5 }}>{hair.avoid}</Text>
       </View>
 
-      {/* Pro tip box */}
+      {/* Pro tip */}
       <View style={{
-        backgroundColor: '#F5F2EC', borderRadius: 6, padding: 10,
+        backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8, marginBottom: 8,
         borderLeftWidth: 2, borderLeftColor: accent, borderLeftStyle: 'solid',
       }}>
-        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 4 }}>PRO TIP</Text>
-        <Text style={{ fontSize: 9.5, color: '#444', lineHeight: 1.7 }}>
-          {colorType} 타입은 베이스 메이크업 단계에서 컬러 컨트롤러(CC크림)로 피부 베이스를 고른 후, 내추럴 피니시 파운데이션을 얇게 레이어링하면 피부의 투명감이 살아납니다. 포인트는 립 컬러 하나로 충분히 연출할 수 있습니다.
+        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 3 }}>PRO TIP</Text>
+        <Text style={{ fontSize: 9, color: '#444', lineHeight: 1.6 }}>
+          {colorType} 타입은 CC크림으로 피부 베이스를 정돈한 후 내추럴 피니시 파운데이션을 얇게 레이어링하면 투명감이 살아납니다. 포인트 메이크업은 립 컬러 하나로 충분합니다.
+        </Text>
+      </View>
+
+      {/* Disclaimer */}
+      <View style={{ borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid', paddingTop: 5 }}>
+        <Text style={{ fontSize: 7, color: '#BBB', lineHeight: 1.5 }}>
+          제품 추천은 일반적인 가이드이며, 실제 사용 시 매장 시연 후 구매를 권장합니다. 제품 정보는 2025년 5월 기준이며, 변경될 수 있습니다.
         </Text>
       </View>
 
@@ -854,7 +861,7 @@ export default function ReportPDF({
         keyFinding={personalIntro?.keyFinding}
       />
       <PalettePage colorType={colorType} accent={accent} customerName={name} />
-      <MakeupHairPage colorType={colorType} accent={accent} />
+      <MakeupHairPage colorType={colorType} accent={accent} customerName={name} />
       <FashionSeasonPage colorType={colorType} accent={accent} customerName={name} />
       <CelebAdvicePage
         colorType={colorType} accent={accent} customerName={name}
