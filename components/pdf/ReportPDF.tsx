@@ -4,6 +4,10 @@ import '@/lib/pdf/font';
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
+import { ColorChip } from './ColorChip';
+import { SeasonCard } from './SeasonCard';
+import { PaletteGrid } from './PaletteGrid';
+import { CelebrityCard } from './CelebrityCard';
 import type { PersonalColorType } from '@/types';
 
 // ── Static metadata ──────────────────────────────────────────────
@@ -232,18 +236,6 @@ function hairHex(name: string): string {
   return '#6B4423';
 }
 
-// ── Season styles ────────────────────────────────────────────────
-
-const SEASON_BG: Record<string, string> = {
-  spring: '#FFF8F0', summer: '#F4F0FC', autumn: '#F8F4E8', winter: '#EEF2F8',
-};
-const SEASON_ICON: Record<string, string> = {
-  spring: '🌸', summer: '☀️', autumn: '🍂', winter: '❄️',
-};
-const SEASON_LABEL: Record<string, string> = {
-  spring: 'SPRING 봄', summer: 'SUMMER 여름', autumn: 'AUTUMN 가을', winter: 'WINTER 겨울',
-};
-
 // ── Styles ───────────────────────────────────────────────────────
 
 const PAD_H = 30;
@@ -412,10 +404,7 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
       {/* Palette circles */}
       <View style={{ flexDirection: 'row', gap: 14, marginBottom: 40 }}>
         {palette.map(({ hex, name: cName }) => (
-          <View key={hex} style={{ alignItems: 'center' }}>
-            <View style={[S.chipLg, { backgroundColor: hex }]} />
-            <Text style={[S.chipName, { marginTop: 5 }]}>{cName}</Text>
-          </View>
+          <ColorChip key={hex} hex={hex} name={cName} size="large" showHex={false} />
         ))}
       </View>
 
@@ -529,30 +518,14 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 
       <SectionHead num="03" title={`${name}님께 어울리는 컬러`} accent={accent} />
 
-      {/* Best 8: 4x2 grid */}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginBottom: 6 }}>
-        {bestColors.map(({ hex, name: cName }) => (
-          <View key={hex} style={{ width: '25%', alignItems: 'center', paddingVertical: 8 }}>
-            <View style={[S.chip, { backgroundColor: hex }]} />
-            <Text style={S.chipName}>{cName}</Text>
-            <Text style={S.chipHex}>{hex}</Text>
-          </View>
-        ))}
-      </View>
+      <PaletteGrid colors={bestColors} columns={4} />
 
       <View style={S.sectionDivider} />
 
       <SectionHead num="04" title="피해야 할 컬러" accent="#C0B8B0" />
 
-      {/* Worst 4: horizontal */}
-      <View style={{ flexDirection: 'row', gap: 20, marginBottom: 16 }}>
-        {worstColors.map(({ hex, name: cName }) => (
-          <View key={hex} style={{ alignItems: 'center' }}>
-            <View style={[S.chip, { backgroundColor: hex, opacity: 0.5 }]} />
-            <Text style={[S.chipName, { opacity: 0.6 }]}>{cName}</Text>
-            <Text style={[S.chipHex, { opacity: 0.5 }]}>{hex}</Text>
-          </View>
-        ))}
+      <View style={{ marginBottom: 16 }}>
+        <PaletteGrid colors={worstColors} columns={4} opacity={0.5} />
       </View>
 
       <View style={S.sectionDivider} />
@@ -700,16 +673,13 @@ function FashionSeasonPage({ colorType, accent, customerName }: { colorType: Per
       <SectionHead num="08" title="시즌별 스타일링" accent={accent} />
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-        {(Object.entries({
-          spring: seasonal.spring,
-          summer: seasonal.summer,
-          autumn: seasonal.autumn,
-          winter: seasonal.winter,
-        }) as [string, string][]).map(([key, text]) => (
-          <View key={key} style={[S.seasonCard, { width: '48%', backgroundColor: SEASON_BG[key] }]}>
-            <Text style={S.seasonIcon}>{SEASON_ICON[key]}</Text>
-            <Text style={S.seasonLabel}>{SEASON_LABEL[key]}</Text>
-            <Text style={S.seasonText}>{text}</Text>
+        {(['spring', 'summer', 'autumn', 'winter'] as const).map((key) => (
+          <View key={key} style={{ width: '48%' }}>
+            <SeasonCard
+              season={key}
+              outfit={seasonal[key]}
+              accentColor={accent}
+            />
           </View>
         ))}
       </View>
@@ -745,16 +715,17 @@ function CelebAdvicePage({
       <SectionHead num="09" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
 
       {celebrities && celebrities.length > 0 ? (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
+        <View style={{ flexDirection: 'column', gap: 8, marginBottom: 4 }}>
           {celebrities.map((celeb) => (
-            <View key={celeb.name} style={[S.celebCard, { backgroundColor: celebBg, width: celebrities.length >= 4 ? '30.5%' : '47%' }]}>
-              <Text style={S.celebName}>{celeb.name}</Text>
-              <Text style={S.celebJob}>{celeb.profession}</Text>
-              <Text style={S.celebSimilarity}>{celeb.similarity}</Text>
-              <Text style={[S.celebLook, { borderTopWidth: 0.5, borderTopColor: '#DDD', borderTopStyle: 'solid', paddingTop: 4 }]}>
-                ✨ {celeb.iconicLook}
-              </Text>
-            </View>
+            <CelebrityCard
+              key={celeb.name}
+              name={celeb.name}
+              profession={celeb.profession}
+              similarity={celeb.similarity}
+              iconicLook={celeb.iconicLook}
+              accentColor={accent}
+              compact={celebrities.length >= 4}
+            />
           ))}
         </View>
       ) : (
