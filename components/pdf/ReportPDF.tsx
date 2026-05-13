@@ -378,9 +378,9 @@ function SectionHead({ num, title, accent }: { num: string; title: string; accen
 
 // ── Page 1: Cover ────────────────────────────────────────────────
 
-function CoverPage({ colorType, sessionId, createdAt, accent, customerName, greeting, palette }: {
+function CoverPage({ colorType, sessionId, createdAt, accent, customerName, greeting, bodyMessage, palette }: {
   colorType: PersonalColorType; sessionId: string; createdAt: string; accent: string;
-  customerName: string; greeting: string;
+  customerName: string; greeting: string; bodyMessage: string;
   palette: Array<{ hex: string; name: string }>;
 }) {
   const typeEn = TYPE_EN[colorType];
@@ -414,11 +414,27 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
         ))}
       </View>
 
-      {/* Greeting */}
+      {/* Personal Message */}
       {greeting ? (
-        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 12, marginBottom: 16 }}>
-          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 5 }}>PERSONAL MESSAGE</Text>
-          <Text style={{ fontSize: 11, color: '#333', lineHeight: 1.7 }}>{greeting}</Text>
+        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 16, marginBottom: 16, alignItems: 'center' }}>
+          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 10, textAlign: 'center' }}>
+            PERSONAL MESSAGE
+          </Text>
+
+          {/* Greeting — Light weight */}
+          <Text style={{ fontSize: 13, fontWeight: 300, color: '#2A2A2A', lineHeight: 1.7, letterSpacing: 0.3, textAlign: 'center' }}>
+            {greeting}
+          </Text>
+
+          {/* Divider + body message */}
+          {bodyMessage ? (
+            <>
+              <View style={{ width: 40, height: 1, backgroundColor: accent, marginVertical: 12 }} />
+              <Text style={{ fontSize: 13, fontWeight: 300, color: '#444', lineHeight: 1.7, letterSpacing: 0.2, textAlign: 'center' }}>
+                {bodyMessage}
+              </Text>
+            </>
+          ) : null}
         </View>
       ) : null}
 
@@ -998,9 +1014,10 @@ export interface ReportPDFProps {
   createdAt?:    string;
   customerName?: string;
   personalIntro?: {
-    greeting:       string;
+    greeting:        string;
+    bodyMessage?:    string;
     photoImpression: string;
-    keyFinding:     string;
+    keyFinding:      string;
   };
   celebrities?: CelebrityItem[];
   customAdvice?: {
@@ -1024,6 +1041,7 @@ export default function ReportPDF({
         colorType={colorType} sessionId={sessionId} createdAt={date}
         accent={accent} customerName={name}
         greeting={personalIntro?.greeting ?? ''}
+        bodyMessage={personalIntro?.bodyMessage ?? ''}
         palette={[...palette]}
       />
       <AnalysisPage
