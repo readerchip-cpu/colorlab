@@ -861,6 +861,16 @@ function CelebAdvicePage({
         </>
       ) : null}
 
+      {/* Celebrity disclaimer */}
+      <View style={{ marginTop: 10, alignItems: 'center' }}>
+        <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.6 }}>
+          셀러브리티 추천은 공개된 정보를 기반으로 한 분석가의 의견이며, 해당 인물의 공식 입장과 무관합니다.
+        </Text>
+        <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.6 }}>
+          이미지 검색 링크를 통해 각 인물의 사진을 확인하실 수 있습니다.
+        </Text>
+      </View>
+
       {/* Final footer with full info */}
       <View style={[S.footer, { flexDirection: 'column', alignItems: 'flex-start' }]}>
         <View style={{ borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid', width: '100%', paddingTop: 6 }}>
