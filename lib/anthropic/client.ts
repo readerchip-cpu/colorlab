@@ -323,6 +323,11 @@ export interface ReportData {
   };
   personalIntro: {
     greeting: string;
+    colorTypeDescription: {
+      summary: string;
+      characteristics: string[];
+      bestFor: string;
+    };
     photoImpression: string;
     keyFinding: string;
   };
@@ -422,7 +427,15 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
   },
   "personalIntro": {
     "greeting": "${name}님께 건네는 따뜻한 첫 인사 (1~2문장)",
-    "bodyMessage": "표지 본문 메시지 — 정확히 2~3줄(100~130자). 내용: ① ${name}님께 발견된 핵심 컬러 톤 언급, ② 이 리포트가 어떤 도움이 될지 안내, ③ 따뜻하고 격려하는 어조로 마무리. 예: '이 리포트에는 ${name}님께 어울리는 컬러 팔레트와 메이크업·헤어·패션 추천이 담겨 있어요. 매일의 선택이 한층 자연스럽고 자신감 있게 바뀌어 갈 거예요.'",
+    "colorTypeDescription": {
+      "summary": "${colorType}의 본질을 한 줄로 압축 — 타입명 포함. 예: '봄 라이트 — 따뜻하고 부드러운 옐로우 베이스의 라이트 톤'",
+      "characteristics": [
+        "색의 4속성 기반 핵심 특징 1 (30자 이내) — Hue 관점. 예: '옐로우 베이스의 따뜻한 색감 (Warm Hue)'",
+        "핵심 특징 2 — Value 관점. 예: '밝고 환한 높은 명도 (High Value)'",
+        "핵심 특징 3 — Chroma·Clarity 관점. 예: '부드러운 채도의 깨끗한 색조 (Soft Chroma · Clear)'"
+      ],
+      "bestFor": "이 톤이 살려주는 인상·매력 한 줄. 예: '맑고 화사한 인상과 부드러운 매력을 자연스럽게 살려줍니다'"
+    },
     "photoImpression": "${name}님 사진에서 받은 첫인상 — 피부 밝기·톤, 전체적 분위기, 어울리는 메이크업 스타일 (2~3문장, 사진 없으면 테스트 응답 기반으로 작성)",
     "keyFinding": "가장 중요한 발견 한 문장 (예: '${name}님은 Yellow Base의 맑고 투명한 Clear 타입입니다.')"
   },

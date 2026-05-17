@@ -343,9 +343,15 @@ function SectionHead({ num, title, accent }: { num: string; title: string; accen
 
 // ── Page 1: Cover ────────────────────────────────────────────────
 
-function CoverPage({ colorType, sessionId, createdAt, accent, customerName, greeting, bodyMessage, palette }: {
+interface ColorTypeDescription {
+  summary: string;
+  characteristics: string[];
+  bestFor: string;
+}
+
+function CoverPage({ colorType, sessionId, createdAt, accent, customerName, greeting, colorTypeDescription, palette }: {
   colorType: PersonalColorType; sessionId: string; createdAt: string; accent: string;
-  customerName: string; greeting: string; bodyMessage: string;
+  customerName: string; greeting: string; colorTypeDescription?: ColorTypeDescription;
   palette: Array<{ hex: string; name: string }>;
 }) {
   const typeEn = TYPE_EN[colorType];
@@ -376,24 +382,46 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
         ))}
       </View>
 
-      {greeting ? (
-        <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 16, marginBottom: 16, alignItems: 'center' }}>
-          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 10, textAlign: 'center' }}>
-            PERSONAL MESSAGE
-          </Text>
+      {/* PERSONAL MESSAGE */}
+      <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 16, marginBottom: 16, alignItems: 'center' }}>
+        <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 10, textAlign: 'center' }}>
+          PERSONAL MESSAGE
+        </Text>
+
+        {/* 인사말 */}
+        {greeting ? (
           <Text style={{ fontSize: 13, fontWeight: 300, color: '#2A2A2A', lineHeight: 1.7, letterSpacing: 0.3, textAlign: 'center' }}>
             {greeting}
           </Text>
-          {bodyMessage ? (
-            <>
-              <View style={{ width: 40, height: 1, backgroundColor: accent, marginVertical: 12 }} />
-              <Text style={{ fontSize: 13, fontWeight: 300, color: '#444', lineHeight: 1.7, letterSpacing: 0.2, textAlign: 'center' }}>
-                {bodyMessage}
-              </Text>
-            </>
-          ) : null}
-        </View>
-      ) : null}
+        ) : null}
+
+        {/* 구분선 */}
+        <View style={{ width: 30, height: 1, backgroundColor: accent, marginVertical: 14 }} />
+
+        {colorTypeDescription ? (
+          <>
+            {/* 한 줄 요약 */}
+            <Text style={{ fontSize: 13, fontWeight: 300, color: '#444', lineHeight: 1.7, letterSpacing: 0.2, textAlign: 'center', marginBottom: 14 }}>
+              {colorTypeDescription.summary}
+            </Text>
+
+            {/* 3가지 특징 */}
+            <View style={{ alignSelf: 'stretch', paddingHorizontal: 20, marginBottom: 14 }}>
+              {colorTypeDescription.characteristics.map((char, i) => (
+                <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                  <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: accent, marginRight: 10, flexShrink: 0 }} />
+                  <Text style={{ fontSize: 11, fontWeight: 300, color: '#555', flex: 1, lineHeight: 1.6 }}>{char}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* bestFor — 강조 */}
+            <Text style={{ fontSize: 11.5, fontWeight: 300, color: accent, textAlign: 'center', lineHeight: 1.6 }}>
+              {colorTypeDescription.bestFor}
+            </Text>
+          </>
+        ) : null}
+      </View>
 
       <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -973,10 +1001,10 @@ export interface ReportPDFProps {
   createdAt?:    string;
   customerName?: string;
   personalIntro?: {
-    greeting:        string;
-    bodyMessage?:    string;
-    photoImpression: string;
-    keyFinding:      string;
+    greeting:              string;
+    colorTypeDescription?: ColorTypeDescription;
+    photoImpression:       string;
+    keyFinding:            string;
   };
   celebrities?: CelebrityItem[];
   customAdvice?: {
@@ -1000,7 +1028,7 @@ export default function ReportPDF({
         colorType={colorType} sessionId={sessionId} createdAt={date}
         accent={accent} customerName={name}
         greeting={personalIntro?.greeting ?? ''}
-        bodyMessage={personalIntro?.bodyMessage ?? ''}
+        colorTypeDescription={personalIntro?.colorTypeDescription}
         palette={[...palette]}
       />
       <AnalysisPage

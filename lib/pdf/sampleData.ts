@@ -26,8 +26,15 @@ export const SAMPLE_PDF_DATA: ReportPDFProps = {
   customerName: '김지은',
   personalIntro: {
     greeting: '지은님, 안녕하세요. 컬러랩에서 분석한 지은님만의 컬러 가이드를 보내드려요.',
-    bodyMessage:
-      '이 리포트에는 지은님께 어울리는 컬러 팔레트와 메이크업·헤어·패션 추천이 담겨 있어요.\n매일의 선택이 한층 자연스럽고 자신감 있게 바뀌어 갈 거예요.',
+    colorTypeDescription: {
+      summary: '봄 라이트 — 따뜻하고 부드러운 옐로우 베이스의 라이트 톤',
+      characteristics: [
+        '옐로우 베이스의 따뜻한 색감 (Warm Hue)',
+        '밝고 환한 높은 명도 (High Value)',
+        '부드러운 채도의 깨끗한 색조 (Soft Chroma · Clear)',
+      ],
+      bestFor: '맑고 화사한 인상과 부드러운 매력을 자연스럽게 살려줍니다.',
+    },
     photoImpression:
       '지은님의 피부톤은 따뜻한 옐로우 베이스로, 부드러운 밝기가 인상적입니다. 자연스러운 햇살 같은 분위기를 가진 분이시네요.',
     keyFinding:
