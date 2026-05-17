@@ -265,12 +265,12 @@ const S = StyleSheet.create({
   pageHeaderRight: { fontSize: 7, color: '#AAA' },
   sectionBlock: { marginBottom: 14 },
   sectionNum: { fontSize: 7.5, fontWeight: 700, letterSpacing: 2, color: '#BBB', marginBottom: 2 },
-  sectionTitle: { fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2 },
+  sectionTitle: { fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.4 },
   sectionDivider: { height: 0.5, backgroundColor: '#DDD8CC', marginVertical: 10 },
   subTitle: { fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 6 },
   body: { fontSize: 10.5, color: '#444', lineHeight: 1.7 },
-  bodySmall: { fontSize: 8.5, color: '#555', lineHeight: 1.6 },
-  caption: { fontSize: 8, color: '#999' },
+  bodySmall: { fontSize: 8.5, color: '#555', lineHeight: 1.7 },
+  caption: { fontSize: 8, color: '#999', lineHeight: 1.5 },
   coverMeta: { fontSize: 7, color: '#AAA', letterSpacing: 0.5, textAlign: 'right', lineHeight: 1.7 },
   coverNameLine: { fontSize: 22, fontWeight: 700, color: '#2A2A2A', letterSpacing: -0.5, marginBottom: 4 },
   coverTypeEn: { fontSize: 38, fontWeight: 700, color: '#2A2A2A', letterSpacing: -1, lineHeight: 1, marginBottom: 8 },
@@ -298,7 +298,7 @@ const S = StyleSheet.create({
     padding: 8, marginTop: 6,
   },
   keyFindingLabel: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#7C3AED', marginBottom: 3 },
-  keyFindingText: { fontSize: 10, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.4 },
+  keyFindingText: { fontSize: 10, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.5 },
   footer: {
     position: 'absolute', bottom: 12, left: PAD_H, right: PAD_H,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
@@ -478,7 +478,13 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
         </View>
         <View style={{ alignItems: 'center', paddingTop: 8 }}>
           <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={196} />
-          <Text style={{ fontSize: 7, color: '#AAA', marginTop: 4, letterSpacing: 0.5 }}>YOUR POSITION</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FF3B30' }} />
+            <Text style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#FF3B30' }}>YOUR POSITION</Text>
+          </View>
+          <Text style={{ fontSize: 9, color: '#666', textAlign: 'center', marginTop: 4 }}>
+            {name}님의 위치는 Warm {warmCool}% · Light {100 - lightDeep}% 입니다.
+          </Text>
         </View>
       </View>
 
@@ -860,21 +866,21 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
               </View>
 
               {/* 우측: 내용 */}
-              <View style={{ flex: 1, padding: 8 }}>
-                <Text style={{ fontSize: 10, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 }}>{look.title}</Text>
-                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+              <View style={{ flex: 1, padding: 10 }}>
+                <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 4, lineHeight: 1.4 }}>{look.title}</Text>
+                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
                   {look.mustHaves.map((item, i) => (
-                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                      <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: stripe }} />
-                      <Text style={{ fontSize: 7, color: '#555' }}>{item.label}</Text>
+                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: stripe }} />
+                      <Text style={{ fontSize: 9, color: '#555' }}>{item.label}</Text>
                     </View>
                   ))}
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   {look.colors.map(({ name: cName, hex }) => (
-                    <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                      <View style={{ width: 9, height: 9, borderRadius: 4.5, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
-                      <Text style={{ fontSize: 6, color: '#777' }}>{cName}</Text>
+                    <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <View style={{ width: 11, height: 11, borderRadius: 5.5, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
+                      <Text style={{ fontSize: 8, color: '#666' }}>{cName}</Text>
                     </View>
                   ))}
                 </View>
