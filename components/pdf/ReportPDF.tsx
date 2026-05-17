@@ -1,7 +1,7 @@
 'use client';
 
 import '@/lib/pdf/font';
-import { Document, Page, View, Text, StyleSheet, Link, Svg, Path } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Link } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
 import { ColorChip } from './ColorChip';
@@ -561,14 +561,12 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {worstColors.map(({ hex, name: cName }) => (
             <View key={hex} style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff', padding: 8, borderRadius: 6 }}>
-              <View style={{ width: 50, height: 50, position: 'relative', marginBottom: 6 }}>
-                <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: hex, opacity: 0.55, borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid' }} />
-                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
-                  <Svg width={50} height={50}>
-                    <Path d="M12 12 L38 38 M38 12 L12 38" stroke="#FF3B30" strokeWidth={3.5} strokeLinecap="round" />
-                  </Svg>
-                </View>
-              </View>
+              <View style={{
+                width: 50, height: 50, borderRadius: 25,
+                backgroundColor: hex, opacity: 0.4,
+                borderWidth: 2, borderColor: '#999', borderStyle: 'dashed',
+                marginBottom: 6,
+              }} />
               <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', textAlign: 'center', marginBottom: 2 }}>{cName}</Text>
               <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.4 }}>피부 톤을 칙칙하게 만듭니다</Text>
             </View>
