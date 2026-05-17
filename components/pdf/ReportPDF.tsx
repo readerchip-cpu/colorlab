@@ -5,16 +5,16 @@ import { Document, Page, View, Text, StyleSheet, Link, Svg, Path } from '@react-
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
 import { ColorChip } from './ColorChip';
-import { SeasonCard } from './SeasonCard';
 import { SeasonIcon } from './SeasonIcon';
 import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
-import type { SeasonalStyling } from '@/lib/data/seasonalStyling';
 import { PaletteGrid } from './PaletteGrid';
 import { CelebrityCard } from './CelebrityCard';
 import { ProductRecommendation } from './ProductRecommendation';
 import { cosmeticsDatabase } from '@/lib/data/cosmetics';
 import { makeupTipsDatabase } from '@/lib/data/makeupTips';
 import type { PersonalColorType } from '@/types';
+
+const TOTAL = 7;
 
 // ── Static metadata ──────────────────────────────────────────────
 
@@ -256,7 +256,6 @@ const S = StyleSheet.create({
     paddingBottom: 24,
     position: 'relative',
   },
-  // ── Page header (all non-cover pages) ──
   pageHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 12, paddingBottom: 8,
@@ -264,23 +263,19 @@ const S = StyleSheet.create({
   },
   pageHeaderLeft: { fontSize: 7, color: '#AAA', letterSpacing: 1 },
   pageHeaderRight: { fontSize: 7, color: '#AAA' },
-  // ── Section headings ──
   sectionBlock: { marginBottom: 14 },
   sectionNum: { fontSize: 7.5, fontWeight: 700, letterSpacing: 2, color: '#BBB', marginBottom: 2 },
   sectionTitle: { fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2 },
   sectionDivider: { height: 0.5, backgroundColor: '#DDD8CC', marginVertical: 10 },
   subTitle: { fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 6 },
-  // ── Body text ──
   body: { fontSize: 10.5, color: '#444', lineHeight: 1.7 },
   bodySmall: { fontSize: 8.5, color: '#555', lineHeight: 1.6 },
   caption: { fontSize: 8, color: '#999' },
-  // ── Cover ──
   coverMeta: { fontSize: 7, color: '#AAA', letterSpacing: 0.5, textAlign: 'right', lineHeight: 1.7 },
   coverNameLine: { fontSize: 22, fontWeight: 700, color: '#2A2A2A', letterSpacing: -0.5, marginBottom: 4 },
   coverTypeEn: { fontSize: 38, fontWeight: 700, color: '#2A2A2A', letterSpacing: -1, lineHeight: 1, marginBottom: 8 },
   coverTypeKo: { fontSize: 18, fontWeight: 400, color: '#666', marginBottom: 6 },
   coverDisplayName: { fontSize: 11, color: '#999', marginBottom: 16 },
-  // ── Chips ──
   chip: {
     width: 48, height: 48, borderRadius: 24,
     borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
@@ -291,19 +286,12 @@ const S = StyleSheet.create({
   },
   chipName: { fontSize: 7.5, color: '#555', marginTop: 3, textAlign: 'center', maxWidth: 60 },
   chipHex: { fontSize: 6, color: '#AAA', textAlign: 'center' },
-  // ── Makeup lip strip ──
-  lipStrip: {
-    height: 14, borderRadius: 7, marginBottom: 5,
-    borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
-  },
-  // ── Attribute card ──
   attrCard: {
     flex: 1, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8,
   },
   attrCardKey: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 3 },
   attrCardLabel: { fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 },
   attrCardVal: { fontSize: 8, color: '#555' },
-  // ── Key finding highlight ──
   keyFindingBox: {
     backgroundColor: '#F0ECF8', borderRadius: 6,
     borderLeftWidth: 3, borderLeftColor: '#7C3AED', borderLeftStyle: 'solid',
@@ -311,28 +299,6 @@ const S = StyleSheet.create({
   },
   keyFindingLabel: { fontSize: 6.5, fontWeight: 700, letterSpacing: 1.2, color: '#7C3AED', marginBottom: 3 },
   keyFindingText: { fontSize: 10, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.4 },
-  // ── Celebrity card ──
-  celebCard: {
-    borderRadius: 8, padding: 12, marginBottom: 0,
-    borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
-  },
-  celebName: { fontSize: 13, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 },
-  celebJob: { fontSize: 8, color: '#888', marginBottom: 6 },
-  celebSimilarity: { fontSize: 9, color: '#444', lineHeight: 1.5, marginBottom: 4 },
-  celebLook: { fontSize: 8.5, color: '#666', lineHeight: 1.4 },
-  // ── Fashion color group ──
-  fashionGroupLabel: { fontSize: 7, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 4 },
-  fashionGroupText: { fontSize: 10, color: '#2A2A2A', lineHeight: 1.4 },
-  // ── Tip bullet ──
-  tipRow: { flexDirection: 'row', gap: 6, marginBottom: 5 },
-  tipBullet: { width: 5, height: 5, borderRadius: 2.5, marginTop: 3 },
-  tipText: { flex: 1, fontSize: 9.5, color: '#444', lineHeight: 1.5 },
-  // ── Season card ──
-  seasonCard: { flex: 1, borderRadius: 8, padding: 10 },
-  seasonIcon: { fontSize: 13, marginBottom: 4 },
-  seasonLabel: { fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: '#888', marginBottom: 4 },
-  seasonText: { fontSize: 9, color: '#2A2A2A', lineHeight: 1.5 },
-  // ── Footer ──
   footer: {
     position: 'absolute', bottom: 12, left: PAD_H, right: PAD_H,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
@@ -341,7 +307,6 @@ const S = StyleSheet.create({
   },
   footerText: { fontSize: 7, color: '#BBB' },
   footerPage: { fontSize: 7.5, fontWeight: 700, color: '#CCC' },
-  // ── Custom advice ──
   adviceBox: { backgroundColor: '#F8F5FC', borderRadius: 6, padding: 10 },
   adviceLabel: { fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: '#7C3AED', marginBottom: 6 },
   adviceText: { fontSize: 10, color: '#333', lineHeight: 1.6 },
@@ -349,20 +314,20 @@ const S = StyleSheet.create({
 
 // ── Shared components ────────────────────────────────────────────
 
-function PageHeader({ label, page, total }: { label: string; page: number; total: number }) {
+function PageHeader({ label, page }: { label: string; page: number }) {
   return (
     <View style={S.pageHeader}>
       <Text style={S.pageHeaderLeft}>COLORLAB · {label}</Text>
-      <Text style={S.pageHeaderRight}>{page} / {total}</Text>
+      <Text style={S.pageHeaderRight}>{page} / {TOTAL}</Text>
     </View>
   );
 }
 
-function Footer({ page, total, accent }: { page: number; total: number; accent: string }) {
+function Footer({ page, accent }: { page: number; accent: string }) {
   return (
     <View style={S.footer}>
       <Text style={S.footerText}>colorlab.kr  ·  본 리포트는 AI 분석에 기반한 참고용 자료입니다</Text>
-      <Text style={[S.footerPage, { color: accent }]}>{page} / {total}</Text>
+      <Text style={[S.footerPage, { color: accent }]}>{page} / {TOTAL}</Text>
     </View>
   );
 }
@@ -389,7 +354,6 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
 
   return (
     <Page size="A4" style={S.page}>
-      {/* Header row */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: accent }} />
@@ -401,32 +365,25 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
         </View>
       </View>
 
-      {/* Name + type */}
       <Text style={S.coverNameLine}>{name}님의</Text>
       <Text style={S.coverTypeEn}>{typeEn}</Text>
       <Text style={S.coverTypeKo}>{colorType}</Text>
       <Text style={S.coverDisplayName}>{display}</Text>
 
-      {/* Palette circles */}
       <View style={{ flexDirection: 'row', gap: 14, marginBottom: 24 }}>
         {palette.map(({ hex, name: cName }) => (
           <ColorChip key={hex} hex={hex} name={cName} size="large" showHex={false} />
         ))}
       </View>
 
-      {/* Personal Message */}
       {greeting ? (
         <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 16, marginBottom: 16, alignItems: 'center' }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 10, textAlign: 'center' }}>
             PERSONAL MESSAGE
           </Text>
-
-          {/* Greeting — Light weight */}
           <Text style={{ fontSize: 13, fontWeight: 300, color: '#2A2A2A', lineHeight: 1.7, letterSpacing: 0.3, textAlign: 'center' }}>
             {greeting}
           </Text>
-
-          {/* Divider + body message */}
           {bodyMessage ? (
             <>
               <View style={{ width: 40, height: 1, backgroundColor: accent, marginVertical: 12 }} />
@@ -438,7 +395,6 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
         </View>
       ) : null}
 
-      {/* Watermark */}
       <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View style={{ height: 0.5, flex: 1, backgroundColor: '#E8E4DC' }} />
@@ -448,12 +404,12 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
         <Text style={{ fontSize: 6.5, color: '#DDD', marginTop: 3, letterSpacing: 1 }}>AI PERSONAL COLOR ANALYSIS · colorlab.kr</Text>
       </View>
 
-      <Footer page={1} total={6} accent={accent} />
+      <Footer page={1} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 2: Photo Analysis + Type Diagnosis ──────────────────────
+// ── Page 2: Analysis ─────────────────────────────────────────────
 
 function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFinding }: {
   colorType: PersonalColorType; accent: string; customerName: string;
@@ -465,8 +421,8 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
   const warmCool  = Math.round((posX + 1) / 2 * 100);
   const lightDeep = Math.round((1 - posY) / 2 * 100);
   const name = customerName || '고객';
-
   const contrastLevel = attributes.contrast.includes('High') ? 3 : attributes.contrast.includes('Medium') ? 2 : 1;
+
   const attrCards = [
     { key: 'HUE',     label: '색상', val: attributes.hue },
     { key: 'VALUE',   label: '명도', val: attributes.value },
@@ -476,11 +432,10 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="타입 분석" page={2} total={6} />
+      <PageHeader label="타입 분석" page={2} />
 
-      {/* Top: photo impression + chart side by side */}
+      {/* 01. 첫인상 + 차트 나란히 */}
       <View style={{ flexDirection: 'row', gap: 16, marginBottom: 14 }}>
-        {/* Left: first impression */}
         <View style={{ flex: 1 }}>
           <SectionHead num="01" title={`${name}님의 첫인상`} accent={accent} />
           <Text style={[S.body, { marginBottom: 8 }]}>
@@ -493,20 +448,19 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
             </View>
           ) : null}
         </View>
-
-        {/* Right: quadrant chart */}
         <View style={{ alignItems: 'center', paddingTop: 8 }}>
           <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={196} />
+          <Text style={{ fontSize: 7, color: '#AAA', marginTop: 4, letterSpacing: 0.5 }}>YOUR POSITION</Text>
         </View>
       </View>
 
       <View style={S.sectionDivider} />
 
-      {/* Bottom: type diagnosis */}
+      {/* 02. 정밀 분석 */}
       <SectionHead num="02" title="정밀 분석" accent={accent} />
 
-      {/* 4 attribute cards */}
-      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
+      {/* 03. 색의 4속성 */}
+      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
         {attrCards.map(({ key, label, val }) => (
           <View key={key} style={S.attrCard}>
             <Text style={S.attrCardKey}>{key}</Text>
@@ -516,7 +470,7 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
         ))}
       </View>
 
-      {/* Base + Contrast */}
+      {/* 베이스 + 컨트라스트 게이지 */}
       <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
         <View style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8 }}>
           <Text style={S.attrCardKey}>BASE TONE</Text>
@@ -533,7 +487,7 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
         </View>
       </View>
 
-      {/* Academic citation box */}
+      {/* Reference */}
       <View style={{
         backgroundColor: '#F0F4F8', borderRadius: 6, padding: 8,
         borderLeftWidth: 2, borderLeftColor: '#8FA8C0', borderLeftStyle: 'solid',
@@ -544,7 +498,7 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
         </Text>
       </View>
 
-      <Footer page={2} total={6} accent={accent} />
+      <Footer page={2} accent={accent} />
     </Page>
   );
 }
@@ -557,70 +511,38 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="컬러 팔레트" page={3} total={6} />
+      <PageHeader label="컬러 팔레트" page={3} />
 
       <SectionHead num="03" title={`${name}님께 어울리는 컬러`} accent={accent} />
-
-      {/* Best 8: 큰 칩, 좁은 gap */}
       <PaletteGrid colors={bestColors} columns={4} chipSize={70} gap={4} />
 
       <View style={S.sectionDivider} />
 
-      {/* 04. 피해야 할 컬러 — 강조 경고 박스 */}
+      {/* 04. 피해야 할 컬러 */}
       <View style={{
-        backgroundColor: '#FFF5F5',
-        borderRadius: 8,
+        backgroundColor: '#FFF5F5', borderRadius: 8,
         borderLeftWidth: 4, borderLeftColor: '#FF3B30', borderLeftStyle: 'solid',
         padding: 10, marginBottom: 8,
       }}>
-        {/* 경고 헤더 */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-          <View style={{
-            width: 18, height: 18, borderRadius: 9,
-            backgroundColor: '#FF3B30',
-            alignItems: 'center', justifyContent: 'center',
-          }}>
+          <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: '#FF3B30', alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ fontSize: 11, fontWeight: 700, color: '#fff', lineHeight: 1 }}>!</Text>
           </View>
-          <Text style={{ fontSize: 12, fontWeight: 700, color: '#FF3B30', fontFamily: 'Pretendard' }}>
-            04. 피해야 할 컬러
-          </Text>
+          <Text style={{ fontSize: 12, fontWeight: 700, color: '#FF3B30', fontFamily: 'Pretendard' }}>04. 피해야 할 컬러</Text>
         </View>
-
-        {/* 피해야 할 컬러 카드 4개 */}
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {worstColors.map(({ hex, name: cName }) => (
-            <View key={hex} style={{
-              flex: 1, alignItems: 'center',
-              backgroundColor: '#fff', padding: 8, borderRadius: 6,
-            }}>
-              {/* 색상 칩 + X 오버레이 */}
+            <View key={hex} style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff', padding: 8, borderRadius: 6 }}>
               <View style={{ width: 50, height: 50, position: 'relative', marginBottom: 6 }}>
-                <View style={{
-                  width: 50, height: 50, borderRadius: 25,
-                  backgroundColor: hex, opacity: 0.55,
-                  borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
-                }} />
-                <View style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                  alignItems: 'center', justifyContent: 'center',
-                }}>
+                <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: hex, opacity: 0.55, borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid' }} />
+                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
                   <Svg width={50} height={50}>
-                    <Path
-                      d="M12 12 L38 38 M38 12 L12 38"
-                      stroke="#FF3B30"
-                      strokeWidth={3.5}
-                      strokeLinecap="round"
-                    />
+                    <Path d="M12 12 L38 38 M38 12 L12 38" stroke="#FF3B30" strokeWidth={3.5} strokeLinecap="round" />
                   </Svg>
                 </View>
               </View>
-              <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', textAlign: 'center', marginBottom: 2 }}>
-                {cName}
-              </Text>
-              <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.4 }}>
-                피부 톤을 칙칙하게 만듭니다
-              </Text>
+              <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', textAlign: 'center', marginBottom: 2 }}>{cName}</Text>
+              <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.4 }}>피부 톤을 칙칙하게 만듭니다</Text>
             </View>
           ))}
         </View>
@@ -628,7 +550,7 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 
       <View style={S.sectionDivider} />
 
-      {/* Styling note - expanded */}
+      {/* Styling note */}
       <View style={{ backgroundColor: '#F5F2EC', borderRadius: 6, padding: 10 }}>
         <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 5 }}>STYLING NOTE</Text>
         <Text style={S.body}>{fashion.tip}</Text>
@@ -646,133 +568,212 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
         </View>
       </View>
 
-      <Footer page={3} total={6} accent={accent} />
+      <Footer page={3} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 4: Makeup + Hair ────────────────────────────────────────
+// ── Page 4: Makeup ───────────────────────────────────────────────
 
-function MakeupHairPage({ colorType, accent, customerName }: {
+function MakeupPage({ colorType, accent, customerName }: {
   colorType: PersonalColorType; accent: string; customerName: string;
 }) {
-  const { makeup, hair } = TYPE_EXTRA[colorType];
+  const { makeup } = TYPE_EXTRA[colorType];
   const cosmetics = cosmeticsDatabase[colorType];
   const tips = makeupTipsDatabase[colorType];
   const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="메이크업 & 헤어" page={4} total={6} />
+      <PageHeader label="메이크업 추천" page={4} />
 
-      {/* 05: 립스틱 제품 추천 — 4개 */}
+      {/* 05. 립스틱 (3개) */}
       <SectionHead num="05" title={`${name}님께 추천하는 립스틱`} accent={accent} />
-      <View style={{ marginBottom: 3 }}>
-        {cosmetics.lipstick.map((p, i) => (
+      <View style={{ marginBottom: 4 }}>
+        {cosmetics.lipstick.slice(0, 3).map((p, i) => (
           <ProductRecommendation key={i} product={p} accentColor={accent} />
         ))}
       </View>
 
       <View style={S.sectionDivider} />
 
-      {/* 06: 파운데이션 제품 추천 — 3개 */}
-      <SectionHead num="06" title={`${name}님께 추천하는 파운데이션`} accent={accent} />
-      <View style={{ marginBottom: 3 }}>
-        {cosmetics.foundation.map((p, i) => (
-          <ProductRecommendation key={i} product={p} accentColor={accent} />
-        ))}
+      {/* 06. 파운데이션(좌) + 아이섀도우(우) */}
+      <View style={{ flexDirection: 'row', gap: 10, marginBottom: 4 }}>
+        {/* 파운데이션 */}
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 5, letterSpacing: 0.3 }}>06. 파운데이션</Text>
+          {cosmetics.foundation.slice(0, 2).map((p, i) => (
+            <ProductRecommendation key={i} product={p} accentColor={accent} />
+          ))}
+        </View>
+        {/* 아이섀도우 */}
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 5, letterSpacing: 0.3 }}>07. 아이섀도우</Text>
+          {makeup.eyeshadow.map(({ hex, name: n }, i) => (
+            <View key={i} style={{
+              flexDirection: 'row', alignItems: 'center', gap: 8,
+              backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8, marginBottom: 5,
+            }}>
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <View>
+                <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 1 }}>{n}</Text>
+                <Text style={{ fontSize: 7.5, color: '#888' }}>{hex}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
 
       <View style={S.sectionDivider} />
 
-      {/* 아이섀도우 + 블러셔 + 헤어 — 3열 컴팩트 */}
+      {/* 블러셔(좌) + 메이크업 팁(우) */}
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
+        {/* 블러셔 */}
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 4 }}>아이섀도우</Text>
-          <View style={{ flexDirection: 'row', gap: 6 }}>
-            {makeup.eyeshadow.map(({ hex, name: n }) => (
-              <View key={hex} style={{ alignItems: 'center' }}>
-                <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-                <Text style={{ fontSize: 6, color: '#666', marginTop: 2, textAlign: 'center' }}>{n}</Text>
+          <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 5, letterSpacing: 0.3 }}>블러셔</Text>
+          {makeup.blush.map(({ hex, name: n }, i) => (
+            <View key={i} style={{
+              flexDirection: 'row', alignItems: 'center', gap: 8,
+              backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8, marginBottom: 5,
+            }}>
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <View>
+                <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 1 }}>{n}</Text>
+                <Text style={{ fontSize: 7.5, color: '#888' }}>{hex}</Text>
               </View>
-            ))}
-          </View>
+            </View>
+          ))}
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 4 }}>블러셔</Text>
-          <View style={{ flexDirection: 'row', gap: 6 }}>
-            {makeup.blush.map(({ hex, name: n }) => (
-              <View key={hex} style={{ alignItems: 'center' }}>
-                <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-                <Text style={{ fontSize: 6, color: '#666', marginTop: 2, textAlign: 'center' }}>{n}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-        <View style={{ flex: 1.2 }}>
-          <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 4 }}>헤어 추천</Text>
-          <View style={{ flexDirection: 'row', gap: 5 }}>
-            {hair.recommended.slice(0, 3).map(({ name: hName }) => (
-              <View key={hName} style={{ alignItems: 'center' }}>
-                <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: hairHex(hName), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-                <Text style={{ fontSize: 5.5, color: '#666', marginTop: 2, textAlign: 'center', maxWidth: 36 }}>{hName}</Text>
-              </View>
-            ))}
-          </View>
-          <Text style={{ fontSize: 6, color: '#E05555', marginTop: 4 }}>✕ {hair.avoid.split(',')[0]}</Text>
+
+        {/* 메이크업 팁 */}
+        <View style={{ flex: 1.4, backgroundColor: '#FBF8F0', borderRadius: 6, padding: 10, borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid' }}>
+          <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6 }}>
+            💡 메이크업 팁
+          </Text>
+          {tips.slice(0, 4).map((tip, i) => (
+            <View key={i} style={{ flexDirection: 'row', gap: 5, marginBottom: 4 }}>
+              <Text style={{ fontSize: 8, color: accent, marginTop: 1 }}>▸</Text>
+              <Text style={{ flex: 1, fontSize: 8, color: '#444', lineHeight: 1.5 }}>{tip}</Text>
+            </View>
+          ))}
         </View>
       </View>
 
-      <View style={S.sectionDivider} />
-
-      {/* 메이크업 팁 */}
-      <View style={{
-        backgroundColor: '#FBF8F0',
-        borderRadius: 6, padding: 10,
-        borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid',
-        marginBottom: 6,
-      }}>
-        <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6 }}>
-          💡 {name}님을 위한 메이크업 팁
-        </Text>
-        {tips.map((tip, i) => (
-          <View key={i} style={{ flexDirection: 'row', gap: 5, marginBottom: 4 }}>
-            <Text style={{ fontSize: 8, color: accent, marginTop: 1 }}>▸</Text>
-            <Text style={{ flex: 1, fontSize: 8.5, color: '#444', lineHeight: 1.55 }}>{tip}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* 구매처 안내 */}
-      <View style={{
-        backgroundColor: '#F0F4F8',
-        borderRadius: 6, padding: 9,
-        marginBottom: 6,
-      }}>
-        <Text style={{ fontSize: 8, fontWeight: 700, color: '#5878A8', marginBottom: 5 }}>
+      {/* 구매처 */}
+      <View style={{ backgroundColor: '#F0F4F8', borderRadius: 6, padding: 9, marginBottom: 6 }}>
+        <Text style={{ fontSize: 8, fontWeight: 700, color: '#5878A8', marginBottom: 4 }}>
           🛍 어디서 구매하나요?
         </Text>
         <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
-          올리브영·시코르·세포라에서 대부분의 제품을 시연 후 구매 가능합니다.
-        </Text>
-        <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
-          제품마다 매장 보유 여부가 다르니 방문 전 확인을 권장합니다. 온라인 구매 시 컬러랩에서 추천한 정확한 호수를 선택하세요.
+          올리브영·시코르·세포라에서 대부분의 제품을 시연 후 구매 가능합니다. 온라인 구매 시 컬러랩에서 추천한 정확한 호수를 선택하세요.
         </Text>
       </View>
 
-      {/* Disclaimer */}
       <View style={{ borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid', paddingTop: 5 }}>
         <Text style={{ fontSize: 7, color: '#BBB', lineHeight: 1.5 }}>
-          제품 추천은 일반적인 가이드이며, 실제 사용 시 매장 시연 후 구매를 권장합니다. 제품 정보는 2025년 5월 기준이며, 변경될 수 있습니다.
+          제품 추천은 일반적인 가이드이며, 실제 사용 시 매장 시연 후 구매를 권장합니다. 제품 정보는 2025년 5월 기준이며 변경될 수 있습니다.
         </Text>
       </View>
 
-      <Footer page={4} total={6} accent={accent} />
+      <Footer page={4} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 5: Fashion + Seasonal ───────────────────────────────────
+// ── Page 5: Hair & Fashion ───────────────────────────────────────
+
+function HairFashionPage({ colorType, accent, customerName }: {
+  colorType: PersonalColorType; accent: string; customerName: string;
+}) {
+  const { hair, fashion } = TYPE_EXTRA[colorType];
+  const name = customerName || '고객';
+
+  const avoidList = hair.avoid.split(',').map((s) => s.trim()).slice(0, 4);
+  const fashionTips = [
+    fashion.tip,
+    `${fashion.main} 계열을 메인 컬러로 코디의 기본을 잡으세요.`,
+    `${fashion.sub} 계열로 레이어링하면 자연스러운 조합이 됩니다.`,
+    `${fashion.accent} 포인트 컬러로 생기를 더해보세요.`,
+  ];
+
+  return (
+    <Page size="A4" style={S.page}>
+      <PageHeader label="헤어 & 패션" page={5} />
+
+      {/* 07. 헤어 컬러 추천 */}
+      <SectionHead num="07" title={`${name}님께 어울리는 헤어 컬러`} accent={accent} />
+
+      {/* 추천 헤어 3개 카드 */}
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+        {hair.recommended.map(({ name: hName, desc }) => (
+          <View key={hName} style={{
+            flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 12, alignItems: 'center',
+          }}>
+            <View style={{
+              width: 48, height: 48, borderRadius: 24,
+              backgroundColor: hairHex(hName),
+              borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid',
+              marginBottom: 8,
+            }} />
+            <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 3, textAlign: 'center' }}>{hName}</Text>
+            <Text style={{ fontSize: 7.5, color: '#666', textAlign: 'center', lineHeight: 1.4 }}>{desc}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* 피해야 할 헤어 */}
+      <View style={{
+        backgroundColor: '#FFF5F5', borderRadius: 6, padding: 10,
+        borderLeftWidth: 3, borderLeftColor: '#FF3B30', borderLeftStyle: 'solid',
+        marginBottom: 14,
+      }}>
+        <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: '#FF3B30', marginBottom: 6 }}>AVOID HAIR COLOR</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {avoidList.map((avoid, i) => (
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: hairHex(avoid), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <Text style={{ fontSize: 8.5, color: '#555' }}>✕ {avoid}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={S.sectionDivider} />
+
+      {/* 08. 패션 컬러 가이드 */}
+      <SectionHead num="08" title="패션 컬러 가이드" accent={accent} />
+
+      {/* 3 컬러 그룹 카드 */}
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+        {([
+          { label: 'MAIN COLOR', val: fashion.main },
+          { label: 'SUB COLOR',  val: fashion.sub },
+          { label: 'ACCENT',     val: fashion.accent },
+        ] as const).map(({ label, val }) => (
+          <View key={label} style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 12 }}>
+            <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 5 }}>{label}</Text>
+            <Text style={{ fontSize: 9.5, color: '#2A2A2A', lineHeight: 1.5, fontWeight: 700 }}>{val}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* 코디 팁 */}
+      <View style={{ backgroundColor: '#F5F2EC', borderRadius: 7, padding: 14 }}>
+        <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.2, color: '#888', marginBottom: 10 }}>STYLING TIPS</Text>
+        {fashionTips.map((tip, i) => (
+          <View key={i} style={{ flexDirection: 'row', gap: 6, marginBottom: 7 }}>
+            <Text style={{ fontSize: 9, color: accent, marginTop: 1 }}>▸</Text>
+            <Text style={{ flex: 1, fontSize: 9.5, color: '#444', lineHeight: 1.55 }}>{tip}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Footer page={5} accent={accent} />
+    </Page>
+  );
+}
+
+// ── Page 6: Seasonal Styling ─────────────────────────────────────
 
 const SEASON_META = [
   { key: 'spring', bg: '#FFF0F5', leftBg: '#FFE0EB', stripe: '#F098B0' },
@@ -781,59 +782,38 @@ const SEASON_META = [
   { key: 'winter', bg: '#EEF4FF', leftBg: '#DDE8FF', stripe: '#5878C8' },
 ] as const;
 
-function FashionSeasonPage({ colorType, accent, customerName }: {
+function SeasonalPage({ colorType, accent, customerName }: {
   colorType: PersonalColorType; accent: string; customerName: string;
 }) {
-  const { fashion } = TYPE_EXTRA[colorType];
   const seasonal = seasonalStylingDatabase[colorType];
   const name = customerName || '고객';
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="패션 & 시즌" page={5} total={6} />
+      <PageHeader label="시즌별 스타일링" page={6} />
 
-      {/* 07: 패션 컬러 가이드 — compact */}
-      <SectionHead num="07" title="패션 컬러 가이드" accent={accent} />
-      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 4 }}>
-        {([
-          { label: 'MAIN COLOR', val: fashion.main },
-          { label: 'SUB COLOR',  val: fashion.sub  },
-          { label: 'ACCENT',     val: fashion.accent },
-        ] as const).map(({ label, val }) => (
-          <View key={label} style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 5, padding: 7 }}>
-            <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1, color: '#AAA', marginBottom: 2 }}>{label}</Text>
-            <Text style={{ fontSize: 9, color: '#2A2A2A', lineHeight: 1.5 }}>{val}</Text>
-          </View>
-        ))}
-      </View>
+      <SectionHead num="09" title={`${name}님의 시즌별 스타일링`} accent={accent} />
 
-      <View style={S.sectionDivider} />
-
-      {/* 08: 시즌별 스타일링 — 큰 카드 4개 */}
-      <SectionHead num="08" title={`${name}님의 시즌별 스타일링`} accent={accent} />
-
-      <View style={{ flexDirection: 'column', gap: 7 }}>
+      <View style={{ flexDirection: 'column', gap: 10, flex: 1 }}>
         {SEASON_META.map(({ key, bg, leftBg, stripe }) => {
           const look = seasonal[key];
           return (
             <View key={key} style={{
+              flex: 1,
               flexDirection: 'row',
               backgroundColor: bg,
-              borderRadius: 7,
+              borderRadius: 8,
               borderTopWidth: 3, borderTopColor: stripe, borderTopStyle: 'solid',
             }}>
-              {/* 좌측 패널 (30%): 시즌 아이콘 + 레이블 */}
+              {/* 좌측 패널 */}
               <View style={{
-                width: '28%', backgroundColor: leftBg,
+                width: '26%', backgroundColor: leftBg,
                 alignItems: 'center', justifyContent: 'center',
-                paddingVertical: 10, paddingHorizontal: 6,
+                paddingVertical: 12, paddingHorizontal: 6,
                 borderRightWidth: 0.5, borderRightColor: stripe + '50', borderRightStyle: 'solid',
               }}>
-                <SeasonIcon season={key} size={42} />
-                <Text style={{
-                  fontSize: 8, fontWeight: 700, color: stripe,
-                  letterSpacing: 0.5, marginTop: 5, textAlign: 'center',
-                }}>
+                <SeasonIcon season={key} size={48} />
+                <Text style={{ fontSize: 8, fontWeight: 700, color: stripe, letterSpacing: 0.5, marginTop: 6, textAlign: 'center' }}>
                   {key === 'spring' ? 'SPRING 봄'
                     : key === 'summer' ? 'SUMMER 여름'
                     : key === 'autumn' ? 'AUTUMN 가을'
@@ -841,23 +821,18 @@ function FashionSeasonPage({ colorType, accent, customerName }: {
                 </Text>
               </View>
 
-              {/* 우측 패널 (70%): 룩 상세 */}
-              <View style={{ flex: 1, padding: 9 }}>
-                {/* 제목 */}
-                <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 3 }}>
+              {/* 우측 패널 */}
+              <View style={{ flex: 1, padding: 10 }}>
+                <Text style={{ fontSize: 12, fontWeight: 700, color: '#2A2A2A', marginBottom: 4 }}>
                   {look.title}
                 </Text>
-
-                {/* 설명 */}
-                <Text style={{ fontSize: 8.5, color: '#444', lineHeight: 1.55, marginBottom: 5 }}>
+                <Text style={{ fontSize: 8.5, color: '#444', lineHeight: 1.6, marginBottom: 6 }}>
                   {look.description}
                 </Text>
-
-                {/* 필수 아이템 */}
-                <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 3 }}>
+                <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1.2, color: '#AAA', marginBottom: 4 }}>
                   MUST HAVE
                 </Text>
-                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 5, flexWrap: 'wrap' }}>
+                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
                   {look.mustHaves.map((item, i) => (
                     <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                       <Text style={{ fontSize: 9 }}>{item.icon}</Text>
@@ -865,17 +840,11 @@ function FashionSeasonPage({ colorType, accent, customerName }: {
                     </View>
                   ))}
                 </View>
-
-                {/* 추천 컬러 칩 */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Text style={{ fontSize: 6, color: '#BBB', letterSpacing: 0.5 }}>추천 컬러</Text>
                   {look.colors.map(({ name: cName, hex }) => (
                     <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                      <View style={{
-                        width: 10, height: 10, borderRadius: 5,
-                        backgroundColor: hex,
-                        borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid',
-                      }} />
+                      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
                       <Text style={{ fontSize: 6.5, color: '#666' }}>{cName}</Text>
                     </View>
                   ))}
@@ -886,12 +855,12 @@ function FashionSeasonPage({ colorType, accent, customerName }: {
         })}
       </View>
 
-      <Footer page={5} total={6} accent={accent} />
+      <Footer page={6} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 6: Celebrities + Custom Advice ─────────────────────────
+// ── Page 7: Celebrities + Custom Advice ─────────────────────────
 
 interface CelebrityItem {
   name: string;
@@ -909,15 +878,16 @@ function CelebAdvicePage({
 }) {
   const name = customerName || '고객';
   const sigColors = TYPE_EXTRA[colorType].bestColors.slice(0, 3).map((c) => c.hex);
+  const showAdvice = customAdvice?.isRelated === true;
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="셀러브리티 & 맞춤 답변" page={6} total={6} />
+      <PageHeader label="셀러브리티 & 맞춤 답변" page={7} />
 
-      <SectionHead num="09" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
+      <SectionHead num="10" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
 
       {celebrities && celebrities.length > 0 ? (
-        <View style={{ flexDirection: 'column', gap: 0, marginBottom: 4 }}>
+        <View style={{ flexDirection: 'column', gap: 0, marginBottom: 6 }}>
           {celebrities.map((celeb) => (
             <CelebrityCard
               key={celeb.name}
@@ -935,68 +905,54 @@ function CelebAdvicePage({
         </View>
       )}
 
-      {customAdvice !== undefined ? (
+      {showAdvice ? (
         <>
           <View style={S.sectionDivider} />
-          <SectionHead num="10" title={`${name}님의 고민에 대한 답변`} accent={accent} />
-          {customAdvice.isRelated ? (
-            <View style={S.adviceBox}>
-              <Text style={S.adviceLabel}>AI 맞춤 조언</Text>
-              <Text style={S.adviceText}>{customAdvice.answer}</Text>
-            </View>
-          ) : (
-            <View style={[S.adviceBox, { backgroundColor: '#F5F5F5' }]}>
-              <Text style={[S.adviceText, { color: '#999' }]}>해당 질문에는 답변이 불가합니다.</Text>
-            </View>
-          )}
+          <SectionHead num="11" title={`${name}님의 고민에 대한 답변`} accent={accent} />
+          <View style={S.adviceBox}>
+            <Text style={S.adviceLabel}>AI 맞춤 조언</Text>
+            <Text style={S.adviceText}>{customAdvice!.answer}</Text>
+          </View>
         </>
-      ) : null}
-
-      {/* More celebrities promo box */}
-      <View style={{
-        marginTop: 10,
-        backgroundColor: accent + '10',
-        borderRadius: 8,
-        padding: 12,
-        borderWidth: 0.5, borderColor: accent + '30', borderStyle: 'solid',
-      }}>
-        <Text style={{ fontSize: 9, fontWeight: 700, color: accent, marginBottom: 6 }}>
-          💡 더 많은 셀러브리티 찾아보기
-        </Text>
-        <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6, marginBottom: 8 }}>
-          매월 새로운 퍼스널컬러 셀럽 분석 콘텐츠를 업데이트합니다.
-          인스타그램과 블로그에서 더 많은 셀럽의 컬러 스타일을 확인해보세요.
-        </Text>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <Link src="https://instagram.com/colorlab.kr" style={{
-            fontSize: 8, color: accent, fontFamily: 'Pretendard',
-          }}>
-            📸 인스타그램 @colorlab.kr
-          </Link>
-          <Link src="https://colorlab.kr/blog" style={{
-            fontSize: 8, color: accent, fontFamily: 'Pretendard',
-          }}>
-            📝 컬러랩 블로그
-          </Link>
+      ) : (
+        /* 어드바이스 없을 때: 프로모 박스 */
+        <View style={{
+          marginTop: 8,
+          backgroundColor: accent + '10',
+          borderRadius: 8, padding: 12,
+          borderWidth: 0.5, borderColor: accent + '30', borderStyle: 'solid',
+        }}>
+          <Text style={{ fontSize: 9, fontWeight: 700, color: accent, marginBottom: 6 }}>
+            💡 더 많은 셀러브리티 찾아보기
+          </Text>
+          <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6, marginBottom: 8 }}>
+            매월 새로운 퍼스널컬러 셀럽 분석 콘텐츠를 업데이트합니다.
+            인스타그램과 블로그에서 더 많은 셀럽의 컬러 스타일을 확인해보세요.
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Link src="https://instagram.com/colorlab.kr" style={{ fontSize: 8, color: accent, fontFamily: 'Pretendard' }}>
+              📸 인스타그램 @colorlab.kr
+            </Link>
+            <Link src="https://colorlab.kr/blog" style={{ fontSize: 8, color: accent, fontFamily: 'Pretendard' }}>
+              📝 컬러랩 블로그
+            </Link>
+          </View>
         </View>
-      </View>
+      )}
 
-      {/* Celebrity disclaimer */}
+      {/* Disclaimer */}
       <View style={{ marginTop: 10, alignItems: 'center' }}>
         <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.6 }}>
           셀러브리티 추천은 공개된 정보를 기반으로 한 분석가의 의견이며, 해당 인물의 공식 입장과 무관합니다.
         </Text>
-        <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.6 }}>
-          이미지 검색 링크를 통해 각 인물의 사진을 확인하실 수 있습니다.
-        </Text>
       </View>
 
-      {/* Final footer with full info */}
+      {/* Final footer */}
       <View style={[S.footer, { flexDirection: 'column', alignItems: 'flex-start' }]}>
         <View style={{ borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid', width: '100%', paddingTop: 6 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={S.footerText}>colorlab.kr  ·  본 리포트는 AI 분석에 기반한 참고용 자료입니다</Text>
-            <Text style={[S.footerPage, { color: accent }]}>6 / 6</Text>
+            <Text style={[S.footerPage, { color: accent }]}>7 / 7</Text>
           </View>
           <Text style={[S.footerText, { marginTop: 2 }]}>Powered by COLORLAB AI  ·  © 2025 컬러랩</Text>
         </View>
@@ -1021,8 +977,8 @@ export interface ReportPDFProps {
   };
   celebrities?: CelebrityItem[];
   customAdvice?: {
-    answer:     string;
-    isRelated:  boolean;
+    answer:    string;
+    isRelated: boolean;
   };
 }
 
@@ -1030,9 +986,9 @@ export default function ReportPDF({
   colorType, sessionId, reportContent, createdAt,
   customerName, personalIntro, celebrities, customAdvice,
 }: ReportPDFProps) {
-  const accent = TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED';
-  const date   = createdAt ?? new Date().toISOString().slice(0, 10);
-  const name   = customerName?.trim() || '고객';
+  const accent  = TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED';
+  const date    = createdAt ?? new Date().toISOString().slice(0, 10);
+  const name    = customerName?.trim() || '고객';
   const palette = TYPE_PALETTE[colorType];
 
   return (
@@ -1050,8 +1006,9 @@ export default function ReportPDF({
         keyFinding={personalIntro?.keyFinding}
       />
       <PalettePage colorType={colorType} accent={accent} customerName={name} />
-      <MakeupHairPage colorType={colorType} accent={accent} customerName={name} />
-      <FashionSeasonPage colorType={colorType} accent={accent} customerName={name} />
+      <MakeupPage colorType={colorType} accent={accent} customerName={name} />
+      <HairFashionPage colorType={colorType} accent={accent} customerName={name} />
+      <SeasonalPage colorType={colorType} accent={accent} customerName={name} />
       <CelebAdvicePage
         colorType={colorType} accent={accent} customerName={name}
         celebrities={celebrities}
