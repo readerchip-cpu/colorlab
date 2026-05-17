@@ -1,7 +1,7 @@
 'use client';
 
 import '@/lib/pdf/font';
-import { Document, Page, View, Text, StyleSheet, Link } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
 import { ColorChip } from './ColorChip';
@@ -943,35 +943,11 @@ function CelebAdvicePage({
             <Text style={S.adviceText}>{customAdvice!.answer}</Text>
           </View>
         </>
-      ) : (
-        /* 어드바이스 없을 때: 프로모 박스 */
-        <View style={{
-          marginTop: 8,
-          backgroundColor: accent + '10',
-          borderRadius: 8, padding: 12,
-          borderWidth: 0.5, borderColor: accent + '30', borderStyle: 'solid',
-        }}>
-          <Text style={{ fontSize: 9, fontWeight: 700, color: accent, marginBottom: 6 }}>
-            💡 더 많은 셀러브리티 찾아보기
-          </Text>
-          <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6, marginBottom: 8 }}>
-            매월 새로운 퍼스널컬러 셀럽 분석 콘텐츠를 업데이트합니다.
-            인스타그램과 블로그에서 더 많은 셀럽의 컬러 스타일을 확인해보세요.
-          </Text>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Link src="https://instagram.com/colorlab.kr" style={{ fontSize: 8, color: accent, fontFamily: 'Pretendard' }}>
-              📸 인스타그램 @colorlab.kr
-            </Link>
-            <Link src="https://colorlab.kr/blog" style={{ fontSize: 8, color: accent, fontFamily: 'Pretendard' }}>
-              📝 컬러랩 블로그
-            </Link>
-          </View>
-        </View>
-      )}
+      ) : null}
 
       {/* Disclaimer */}
-      <View style={{ marginTop: 10, alignItems: 'center' }}>
-        <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.6 }}>
+      <View style={{ marginTop: 12, padding: 8, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#E5E5E5', borderTopStyle: 'solid' }}>
+        <Text style={{ fontSize: 7, color: '#888', textAlign: 'center', lineHeight: 1.4 }}>
           셀러브리티 추천은 공개된 정보를 기반으로 한 분석가의 의견이며, 해당 인물의 공식 입장과 무관합니다.
         </Text>
       </View>
