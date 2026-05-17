@@ -11,6 +11,8 @@ export interface CosmeticProduct {
 export interface TypeCosmetics {
   lipstick: CosmeticProduct[];
   foundation: CosmeticProduct[];
+  eyeshadow: CosmeticProduct[];
+  blusher: CosmeticProduct[];
 }
 
 export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
@@ -26,6 +28,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션', shade: '#14C 바닐라 아이보리',  hex: '#F0C898', price: 32000 },
       { brand: '클리오',  product: '킬커버 파운웨어 쿠션',    shade: '#3호 린넨',             hex: '#EDCBA8', price: 28000 },
     ],
+    eyeshadow: [
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',    shade: '#06 피치 글로우',       hex: '#F4C4A8', price: 22000 },
+      { brand: '롬앤',    product: '베러 댄 팔레트',          shade: '#01 봄봄 러블리',       hex: '#F8D8C0', price: 25000 },
+      { brand: '에뛰드',  product: '플레이 컬러 아이즈',      shade: '#피치 팜',              hex: '#FFDAB9', price: 25000 },
+    ],
+    blusher: [
+      { brand: '롬앤',    product: '베러 댄 치크',            shade: '#01 듀이 피치',         hex: '#FFB7B2', price: 13000 },
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',        shade: '#OR201 코랄 누드',      hex: '#F5A882', price: 11000 },
+      { brand: '페리페라', product: '잉크 코튼 블러 치크',     shade: '#01 피치 클라우드',     hex: '#FFD0C0', price: 13000 },
+    ],
   },
 
   '봄 브라이트': {
@@ -39,6 +51,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '클리오',  product: '킬커버 파운웨어 쿠션',    shade: '#2.5호 내추럴 베이지',  hex: '#F2C8A0', price: 28000 },
       { brand: '헤라',    product: '블랙 쿠션',               shade: '#21W 웜 라이트',        hex: '#F0C890', price: 60000 },
       { brand: '미샤',    product: 'M 쿠션 파운데이션',        shade: '#21호 밝은 베이지',     hex: '#F5D0A0', price: 12000 },
+    ],
+    eyeshadow: [
+      { brand: '클리오',  product: '프로 아이 팔레트',         shade: '#03 코랄 & 오렌지',     hex: '#FF8C69', price: 32000 },
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#08 오렌지 글리터',     hex: '#FFB040', price: 22000 },
+      { brand: '에뛰드',  product: '플레이 컬러 아이즈',       shade: '#인투 더 코랄',         hex: '#FF7050', price: 25000 },
+    ],
+    blusher: [
+      { brand: '페리페라', product: '잉크 코튼 블러 치크',     shade: '#03 코랄 클라우드',     hex: '#FF8C69', price: 13000 },
+      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#04 선셋 코랄',         hex: '#FFA07A', price: 13000 },
+      { brand: '데이지크', product: '물빛 치크',               shade: '#03 살몬 코랄',         hex: '#FF9080', price: 18000 },
     ],
   },
 
@@ -54,6 +76,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#12C 쿨 바닐라',        hex: '#F0D8E8', price: 32000 },
       { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#1호 라이트',           hex: '#F5E0E0', price: 28000 },
     ],
+    eyeshadow: [
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',     shade: '#02 핑크 라벤더',       hex: '#E8C0D8', price: 22000 },
+      { brand: '데이지크', product: '쉐도우 팔레트',            shade: '#02 블러섬',            hex: '#D8B8E0', price: 25000 },
+      { brand: '에뛰드',  product: '플레이 컬러 아이즈',       shade: '#체리 블라섬',          hex: '#F0C8D8', price: 25000 },
+    ],
+    blusher: [
+      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#02 블러쉬 로즈',       hex: '#E8B0C8', price: 13000 },
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#PK002 소프트 로즈',    hex: '#F0C0D8', price: 11000 },
+      { brand: '데이지크', product: '물빛 치크',                shade: '#01 핑크 라일락',       hex: '#D8B8E8', price: 18000 },
+    ],
   },
 
   '여름 뮤트': {
@@ -67,6 +99,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#22C 쿨 베이지',        hex: '#E8D5DF', price: 32000 },
       { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#2호 핑크 베이지',      hex: '#EDCCD8', price: 28000 },
       { brand: '맥',      product: '스튜디오 픽스 파운데이션',  shade: '#NC15 핑크 아이보리',   hex: '#ECD5D0', price: 55000 },
+    ],
+    eyeshadow: [
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',     shade: '#04 뮤트 모브',         hex: '#B8A8C8', price: 22000 },
+      { brand: '롬앤',    product: '베러 댄 팔레트',           shade: '#04 스모키 라일락',     hex: '#C0B0C8', price: 25000 },
+      { brand: '클리오',  product: '프로 아이 팔레트',         shade: '#05 로즈 스모키',       hex: '#B0A0B8', price: 32000 },
+    ],
+    blusher: [
+      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#05 모브 로즈',         hex: '#C4A0A0', price: 13000 },
+      { brand: '페리페라', product: '잉크 코튼 블러 치크',      shade: '#05 뮤트 모브',         hex: '#B8A8B8', price: 13000 },
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#PP101 라벤더 뮤트',    hex: '#C0A8C0', price: 11000 },
     ],
   },
 
@@ -82,6 +124,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#23W 웜 베이지',        hex: '#EDBB99', price: 32000 },
       { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#4호 베이지',           hex: '#E8B890', price: 28000 },
     ],
+    eyeshadow: [
+      { brand: '데이지크', product: '쉐도우 팔레트',            shade: '#05 어텀 테라',         hex: '#C4A87A', price: 25000 },
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#10 카멜 & 베이지',     hex: '#C8A882', price: 22000 },
+      { brand: '롬앤',    product: '베러 댄 팔레트',            shade: '#06 어스 앤 테라',      hex: '#A0785A', price: 25000 },
+    ],
+    blusher: [
+      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#06 피치 어스',         hex: '#D4A574', price: 13000 },
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#OR301 어스 피치',      hex: '#E5AA70', price: 11000 },
+      { brand: '페리페라', product: '잉크 코튼 블러 치크',      shade: '#06 너드 베이지',       hex: '#C8A882', price: 13000 },
+    ],
   },
 
   '가을 딥': {
@@ -95,6 +147,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '헤라',    product: '블랙 쿠션',               shade: '#25W 딥 웜',            hex: '#E0B080', price: 60000 },
       { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#5호 딥 베이지',        hex: '#DAAA80', price: 28000 },
       { brand: '맥',      product: '스튜디오 픽스 파운데이션',  shade: '#NC30 웜 베이지',       hex: '#D8A878', price: 55000 },
+    ],
+    eyeshadow: [
+      { brand: '헤라',    product: '아이즈 쉐도우 팔레트',     shade: '#02 브라운 스모키',     hex: '#5C3020', price: 45000 },
+      { brand: '데이지크', product: '쉐도우 팔레트',            shade: '#06 딥 테라',           hex: '#7B4030', price: 25000 },
+      { brand: '클리오',  product: '프로 아이 팔레트',          shade: '#07 딥 브라운',         hex: '#6B3A2A', price: 32000 },
+    ],
+    blusher: [
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#BR401 테라코타',       hex: '#A0522D', price: 11000 },
+      { brand: '롬앤',    product: '베러 댄 치크',              shade: '#07 테라 브릭',         hex: '#8B4513', price: 13000 },
+      { brand: '클리오',  product: '누드 솔리스타',             shade: '#07 브릭 테라',         hex: '#9A4030', price: 22000 },
     ],
   },
 
@@ -110,6 +172,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '에스쁘아',  product: 'No Wear 파운데이션 쿠션', shade: '#11C 아이보리 쿨',      hex: '#F5E0E8', price: 32000 },
       { brand: '맥',       product: '스튜디오 픽스 파운데이션', shade: '#NW13 쿨 핑크',         hex: '#EDD5DF', price: 55000 },
     ],
+    eyeshadow: [
+      { brand: '헤라',     product: '아이즈 쉐도우 팔레트',    shade: '#05 블랙 스모키',       hex: '#2A2A3A', price: 45000 },
+      { brand: '클리오',   product: '프로 아이 팔레트',         shade: '#08 블루 스모키',       hex: '#1A2040', price: 32000 },
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#12 그레이 스모키',     hex: '#505060', price: 22000 },
+    ],
+    blusher: [
+      { brand: '롬앤',     product: '베러 댄 치크',             shade: '#08 로즈 마젠타',       hex: '#CC4488', price: 13000 },
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#RD101 딥 로즈',        hex: '#C83070', price: 11000 },
+      { brand: '페리페라', product: '잉크 코튼 블러 치크',      shade: '#08 비비드 핑크',       hex: '#E02080', price: 13000 },
+    ],
   },
 
   '겨울 딥': {
@@ -123,6 +195,16 @@ export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
       { brand: '헤라',     product: '블랙 쿠션',              shade: '#25C 쿨 딥',            hex: '#D8C0CC', price: 60000 },
       { brand: '맥',       product: '스튜디오 픽스 파운데이션', shade: '#NW25 딥 쿨 베이지',    hex: '#D0B8C8', price: 55000 },
       { brand: '에스쁘아',  product: 'No Wear 파운데이션 쿠션', shade: '#24C 딥 쿨',            hex: '#CCBAD0', price: 32000 },
+    ],
+    eyeshadow: [
+      { brand: '헤라',     product: '아이즈 쉐도우 팔레트',    shade: '#06 딥 스모키 퍼플',    hex: '#2A1040', price: 45000 },
+      { brand: '클리오',   product: '프로 아이 팔레트',         shade: '#09 딥 퍼플 네이비',    hex: '#1A1850', price: 32000 },
+      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#15 버건디 스모키',     hex: '#500018', price: 22000 },
+    ],
+    blusher: [
+      { brand: '롬앤',     product: '베러 댄 치크',             shade: '#09 딥 베리',           hex: '#800040', price: 13000 },
+      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#PK501 다크 베리',      hex: '#780030', price: 11000 },
+      { brand: '클리오',   product: '누드 솔리스타',             shade: '#09 버건디 로즈',       hex: '#6A1028', price: 22000 },
     ],
   },
 };
