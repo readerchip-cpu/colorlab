@@ -668,16 +668,16 @@ function FashionPage({ colorType, accent, customerName }: {
         borderWidth: 1, borderColor: accent + '30', borderStyle: 'solid',
       }}>
         <Text style={{ fontSize: 8, fontWeight: 700, color: accent, letterSpacing: 1, marginBottom: 8 }}>
-          ✨ {name}님을 위한 추천 코디 조합
+          {name}님을 위한 추천 코디 조합
         </Text>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {[
-            { title: '데일리 베이직', desc: `${fashion.main} 톤 아이템으로 기본 코디 완성`, icon: '👕' },
-            { title: '레이어드 룩', desc: `${fashion.sub} 아우터로 포인트`, icon: '🧥' },
-            { title: '컬러 포인트', desc: `${fashion.accent} 액세서리로 완성`, icon: '💍' },
-          ].map(({ title, desc, icon }) => (
+            { title: '데일리 베이직', desc: `${fashion.main} 톤 아이템으로 기본 코디 완성` },
+            { title: '레이어드 룩', desc: `${fashion.sub} 아우터로 포인트` },
+            { title: '컬러 포인트', desc: `${fashion.accent} 액세서리로 완성` },
+          ].map(({ title, desc }) => (
             <View key={title} style={{ flex: 1, backgroundColor: '#F9F8F5', borderRadius: 6, padding: 8 }}>
-              <Text style={{ fontSize: 11, marginBottom: 4 }}>{icon}</Text>
+              <View style={{ width: 18, height: 3, borderRadius: 1.5, backgroundColor: accent, marginBottom: 6 }} />
               <Text style={{ fontSize: 8, fontWeight: 700, color: '#2A2A2A', marginBottom: 3 }}>{title}</Text>
               <Text style={{ fontSize: 7.5, color: '#666', lineHeight: 1.4 }}>{desc}</Text>
             </View>
@@ -743,11 +743,11 @@ function MakeupPage({ colorType, accent, customerName }: {
         </View>
         <View style={{ flex: 1.3, backgroundColor: '#FBF8F0', borderRadius: 6, padding: 10, borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid' }}>
           <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6 }}>
-            💡 메이크업 팁
+            메이크업 팁
           </Text>
           {tips.slice(0, 4).map((tip, i) => (
             <View key={i} style={{ flexDirection: 'row', gap: 5, marginBottom: 4 }}>
-              <Text style={{ fontSize: 8, color: accent, marginTop: 1 }}>▸</Text>
+              <Text style={{ fontSize: 8, color: accent, marginTop: 1 }}>-</Text>
               <Text style={{ flex: 1, fontSize: 8, color: '#444', lineHeight: 1.5 }}>{tip}</Text>
             </View>
           ))}
@@ -757,7 +757,7 @@ function MakeupPage({ colorType, accent, customerName }: {
       {/* 구매처 */}
       <View style={{ backgroundColor: '#F0F4F8', borderRadius: 6, padding: 9, marginBottom: 6 }}>
         <Text style={{ fontSize: 8, fontWeight: 700, color: '#5878A8', marginBottom: 4 }}>
-          🛍 어디서 구매하나요?
+          어디서 구매하나요?
         </Text>
         <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
           올리브영·시코르·세포라에서 대부분의 제품을 시연 후 구매 가능합니다. 온라인 구매 시 컬러랩에서 추천한 정확한 호수를 선택하세요.
@@ -826,7 +826,7 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
           {avoidList.map((avoid, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: hairHex(avoid), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-              <Text style={{ fontSize: 8, color: '#555' }}>✕ {avoid}</Text>
+              <Text style={{ fontSize: 8, color: '#555' }}>x {avoid}</Text>
             </View>
           ))}
         </View>
@@ -864,8 +864,8 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
                 <Text style={{ fontSize: 10, fontWeight: 700, color: '#2A2A2A', marginBottom: 2 }}>{look.title}</Text>
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                   {look.mustHaves.map((item, i) => (
-                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                      <Text style={{ fontSize: 8 }}>{item.icon}</Text>
+                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                      <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: stripe }} />
                       <Text style={{ fontSize: 7, color: '#555' }}>{item.label}</Text>
                     </View>
                   ))}

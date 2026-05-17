@@ -103,7 +103,7 @@ export function CelebrityCard({
       <Text style={styles.similarity}>{similarity}</Text>
 
       <View style={styles.iconicBox}>
-        <Text style={styles.iconicLabel}>✨ SIGNATURE LOOK</Text>
+        <Text style={styles.iconicLabel}>SIGNATURE LOOK</Text>
         <Text style={styles.iconicText}>{iconicLook}</Text>
       </View>
     </View>
