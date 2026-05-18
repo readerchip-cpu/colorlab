@@ -503,18 +503,24 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
       {/* 02. 정밀 분석 */}
       <SectionHead num="02" title="정밀 분석" accent={accent} />
 
-      {/* 03. 색의 4속성 — 강조 카드 */}
+      {/* 03. 색의 4속성 — 값 최우선 강조 카드 */}
       <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
         {attrCards.map(({ key, label, val }) => (
           <View key={key} style={{
-            flex: 1, borderRadius: 8, padding: 10, minHeight: 120,
-            backgroundColor: accent + '14',
-            borderWidth: 0.5, borderColor: accent + '40', borderStyle: 'solid',
+            flex: 1, borderRadius: 8, padding: 14, minHeight: 150,
+            backgroundColor: accent + '0F',
+            borderWidth: 0.5, borderColor: accent + '35', borderStyle: 'solid',
           }}>
-            <View style={{ height: 3, width: '50%', backgroundColor: accent, borderRadius: 2, marginBottom: 8 }} />
-            <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: accent, marginBottom: 3, fontFamily: 'Pretendard' }}>{key}</Text>
-            <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 4, fontFamily: 'Pretendard' }}>{label}</Text>
-            <Text style={{ fontSize: 13, fontWeight: 700, color: accent, letterSpacing: 0.3, lineHeight: 1.3, fontFamily: 'Pretendard' }}>{val}</Text>
+            {/* 강조 바 */}
+            <View style={{ height: 4, width: '50%', backgroundColor: accent, borderRadius: 2, marginBottom: 8 }} />
+            {/* 영문 라벨 — 가장 작고 흐리게 */}
+            <Text style={{ fontSize: 8, fontWeight: 400, letterSpacing: 2, color: '#888', marginBottom: 2, fontFamily: 'Pretendard' }}>{key}</Text>
+            {/* 한글명 — 작고 흐리게 */}
+            <Text style={{ fontSize: 9, fontWeight: 400, color: '#999', marginBottom: 8, fontFamily: 'Pretendard' }}>{label}</Text>
+            {/* 구분선 */}
+            <View style={{ height: 1, width: '40%', backgroundColor: accent + '4D', marginBottom: 8 }} />
+            {/* 사용자 값 — 가장 크고 강렬하게 */}
+            <Text style={{ fontSize: 18, fontWeight: 700, color: accent, letterSpacing: 0.3, lineHeight: 1.3, fontFamily: 'Pretendard' }}>{val}</Text>
           </View>
         ))}
       </View>
