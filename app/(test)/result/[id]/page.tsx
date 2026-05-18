@@ -167,7 +167,7 @@ export default async function ResultPage({ params }: Props) {
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-100 bg-white/95 px-5 pb-8 pt-3 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95">
         <Link
           href={`/upload/${params.id}`}
-          className="mx-auto block max-w-xl rounded-2xl bg-[#7C3AED] py-4 text-center text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90"
+          className="mx-auto block max-w-xl rounded-2xl bg-[#7C3AED] py-4 text-center text-lg md:text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90"
         >
           사진으로 정밀 진단받기 →
         </Link>

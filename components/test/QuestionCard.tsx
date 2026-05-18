@@ -36,7 +36,7 @@ function TextOptions({
             key={opt.value}
             onClick={() => onSelect(opt.value)}
             className={cn(
-              'w-full rounded-2xl border-2 px-5 py-4 text-left text-sm font-medium transition-all duration-150',
+              'w-full rounded-2xl border-2 px-5 py-4 text-left text-base md:text-sm font-medium transition-all duration-150',
               active
                 ? 'border-[#7C3AED] bg-violet-50 text-[#7C3AED] dark:bg-violet-900/30 dark:text-purple-400'
                 : 'border-gray-100 bg-white text-gray-700 hover:border-violet-200 hover:bg-violet-50/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-violet-700 dark:hover:bg-violet-900/20',
@@ -130,7 +130,7 @@ function MultiSelectOptions({
             key={opt.value}
             onClick={() => onToggle(opt.value)}
             className={cn(
-              'flex w-full items-center gap-3 rounded-2xl border-2 px-5 py-4 text-left text-sm font-medium transition-all duration-150',
+              'flex w-full items-center gap-3 rounded-2xl border-2 px-5 py-4 text-left text-base md:text-sm font-medium transition-all duration-150',
               active
                 ? 'border-[#7C3AED] bg-violet-50 text-[#7C3AED] dark:bg-violet-900/30 dark:text-purple-400'
                 : 'border-gray-100 bg-white text-gray-700 hover:border-violet-200 hover:bg-violet-50/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-violet-700 dark:hover:bg-violet-900/20',
@@ -184,7 +184,7 @@ export default function QuestionCard({ question, selectedValue, onSelect }: Prop
 
       <h2
         className={cn(
-          'text-xl font-bold leading-snug tracking-tight text-gray-900 dark:text-gray-100',
+          'text-2xl md:text-xl font-bold leading-snug tracking-tight text-gray-900 dark:text-gray-100',
           isMulti ? 'mb-2' : 'mb-8',
         )}
       >

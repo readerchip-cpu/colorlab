@@ -186,7 +186,7 @@ export default function LandingPage() {
 
           <Link
             href="/test"
-            className="inline-block rounded-2xl bg-[#7C3AED] px-10 py-4 text-base font-bold text-white shadow-xl shadow-violet-300 transition-all hover:-translate-y-0.5 hover:shadow-violet-400 active:translate-y-0"
+            className="inline-block rounded-2xl bg-[#7C3AED] px-10 py-5 md:py-4 text-lg md:text-base font-bold text-white shadow-xl shadow-violet-300 transition-all hover:-translate-y-0.5 hover:shadow-violet-400 active:translate-y-0"
           >
             지금 무료로 진단 시작하기 →
           </Link>
@@ -333,7 +333,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-lg">
           <Link
             href="/test"
-            className="inline-block rounded-2xl bg-[#7C3AED] px-10 py-4 text-base font-bold text-white shadow-xl shadow-violet-200 transition-all hover:-translate-y-0.5 hover:opacity-95"
+            className="inline-block rounded-2xl bg-[#7C3AED] px-10 py-5 md:py-4 text-lg md:text-base font-bold text-white shadow-xl shadow-violet-200 transition-all hover:-translate-y-0.5 hover:opacity-95"
           >
             지금 무료로 진단 시작하기 →
           </Link>

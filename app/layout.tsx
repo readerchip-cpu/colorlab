@@ -67,7 +67,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1, // 모바일 핀치줌 제한 (뷰티 앱 UX 관행)
+  maximumScale: 5,
+  userScalable: true,
   themeColor: '#7C3AED',
 };
 

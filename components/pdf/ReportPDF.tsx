@@ -440,9 +440,9 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
 
 // ── Page 2: Analysis ─────────────────────────────────────────────
 
-function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFinding }: {
+function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFinding, keyInsight }: {
   colorType: PersonalColorType; accent: string; customerName: string;
-  photoImpression?: string; keyFinding?: string;
+  photoImpression?: string; keyFinding?: string; keyInsight?: string;
 }) {
   const extra = TYPE_EXTRA[colorType];
   const { attributes } = extra;
@@ -451,6 +451,15 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
   const lightDeep = Math.round((1 - posY) / 2 * 100);
   const name = customerName || '고객';
   const contrastLevel = attributes.contrast.includes('High') ? 3 : attributes.contrast.includes('Medium') ? 2 : 1;
+  const contrastLabel = contrastLevel === 3 ? 'High' : contrastLevel === 2 ? 'Medium' : 'Low';
+  const contrastDesc = contrastLevel === 1
+    ? '비슷한 명도끼리 매칭이 자연스러움'
+    : contrastLevel === 2
+    ? '적당한 명도 차이로 세련된 스타일링 가능'
+    : '강한 명도 차이로 선명한 스타일링 적합';
+  const baseToneDesc = attributes.base.includes('Yellow')
+    ? '옐로우 베이스의 따뜻한 피부 톤'
+    : '핑크 베이스의 시원한 피부 톤';
 
   const attrCards = [
     { key: 'HUE',     label: '색상', val: attributes.hue },
@@ -494,33 +503,62 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
       {/* 02. 정밀 분석 */}
       <SectionHead num="02" title="정밀 분석" accent={accent} />
 
-      {/* 03. 색의 4속성 */}
-      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
+      {/* 03. 색의 4속성 — 강조 카드 */}
+      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
         {attrCards.map(({ key, label, val }) => (
-          <View key={key} style={S.attrCard}>
-            <Text style={S.attrCardKey}>{key}</Text>
-            <Text style={S.attrCardLabel}>{label}</Text>
-            <Text style={S.attrCardVal}>{val}</Text>
+          <View key={key} style={{
+            flex: 1, borderRadius: 8, padding: 10, minHeight: 120,
+            backgroundColor: accent + '14',
+            borderWidth: 0.5, borderColor: accent + '40', borderStyle: 'solid',
+          }}>
+            <View style={{ height: 3, width: '50%', backgroundColor: accent, borderRadius: 2, marginBottom: 8 }} />
+            <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1.2, color: accent, marginBottom: 3, fontFamily: 'Pretendard' }}>{key}</Text>
+            <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 4, fontFamily: 'Pretendard' }}>{label}</Text>
+            <Text style={{ fontSize: 13, fontWeight: 700, color: accent, letterSpacing: 0.3, lineHeight: 1.3, fontFamily: 'Pretendard' }}>{val}</Text>
           </View>
         ))}
       </View>
 
-      {/* 베이스 + 컨트라스트 게이지 */}
-      <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
-        <View style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8 }}>
-          <Text style={S.attrCardKey}>BASE TONE</Text>
-          <Text style={[S.attrCardLabel, { color: accent }]}>{attributes.base}</Text>
+      {/* 베이스 + 컨트라스트 */}
+      <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
+        <View style={{ width: '35%', backgroundColor: accent + '14', borderRadius: 8, padding: 10, borderWidth: 0.5, borderColor: accent + '40', borderStyle: 'solid' }}>
+          <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6, fontFamily: 'Pretendard' }}>BASE TONE</Text>
+          <Text style={{ fontSize: 16, fontWeight: 700, color: accent, lineHeight: 1.2, fontFamily: 'Pretendard' }}>{attributes.base}</Text>
+          <Text style={{ fontSize: 8, color: '#666', marginTop: 6, lineHeight: 1.5, fontFamily: 'Pretendard' }}>{baseToneDesc}</Text>
         </View>
-        <View style={{ flex: 2, backgroundColor: '#F5F2EC', borderRadius: 6, padding: 8 }}>
-          <Text style={[S.attrCardKey, { marginBottom: 6 }]}>CONTRAST</Text>
-          <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+        <View style={{ flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 10 }}>
+          <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: '#888', marginBottom: 4, fontFamily: 'Pretendard' }}>CONTRAST</Text>
+          <Text style={{ fontSize: 16, fontWeight: 700, color: accent, lineHeight: 1.2, fontFamily: 'Pretendard' }}>{contrastLabel} Contrast</Text>
+          <View style={{ flexDirection: 'row', gap: 4, marginTop: 8, marginBottom: 3 }}>
             {[1, 2, 3].map((lv) => (
-              <View key={lv} style={{ width: 40, height: 8, borderRadius: 4, backgroundColor: lv <= contrastLevel ? accent : '#E0DCCC' }} />
+              <View key={lv} style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: lv === contrastLevel ? accent : (lv < contrastLevel ? accent + '50' : '#E0DCCC') }} />
             ))}
-            <Text style={[S.caption, { marginLeft: 6 }]}>{attributes.contrast}</Text>
           </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+            {['Low', 'Mid', 'High'].map((lbl, i) => (
+              <Text key={lbl} style={{ fontSize: 6, fontFamily: 'Pretendard', color: (i + 1) === contrastLevel ? accent : '#BBB', fontWeight: (i + 1) === contrastLevel ? 700 : 400 }}>{lbl}</Text>
+            ))}
+          </View>
+          <Text style={{ fontSize: 8, color: '#666', lineHeight: 1.4, fontFamily: 'Pretendard' }}>{contrastDesc}</Text>
         </View>
       </View>
+
+      {/* KEY INSIGHT */}
+      {keyInsight ? (
+        <View style={{
+          backgroundColor: accent + '0A',
+          borderRadius: 8,
+          borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid',
+          padding: 12, marginBottom: 10,
+        }}>
+          <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6, fontFamily: 'Pretendard' }}>
+            {name}님의 핵심 인사이트
+          </Text>
+          <Text style={{ fontSize: 11, color: '#444', lineHeight: 1.7, fontFamily: 'Pretendard' }}>
+            {keyInsight}
+          </Text>
+        </View>
+      ) : null}
 
       {/* Reference */}
       <View style={{
@@ -986,6 +1024,7 @@ export interface ReportPDFProps {
     colorTypeDescription?: ColorTypeDescription;
     photoImpression:       string;
     keyFinding:            string;
+    keyInsight?:           string;
   };
   celebrities?: CelebrityItem[];
   customAdvice?: {
@@ -1016,6 +1055,7 @@ export default function ReportPDF({
         colorType={colorType} accent={accent} customerName={name}
         photoImpression={personalIntro?.photoImpression}
         keyFinding={personalIntro?.keyFinding}
+        keyInsight={personalIntro?.keyInsight}
       />
       <PalettePage colorType={colorType} accent={accent} customerName={name} />
       <FashionPage colorType={colorType} accent={accent} customerName={name} />

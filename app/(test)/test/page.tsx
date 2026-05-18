@@ -128,7 +128,7 @@ export default function TestPage() {
               <button
                 onClick={handleNext}
                 disabled={!hasMultiSelection}
-                className="w-full rounded-2xl bg-[#7C3AED] py-4 text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full rounded-2xl bg-[#7C3AED] py-4 text-lg md:text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 다음
               </button>

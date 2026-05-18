@@ -35,6 +35,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   /* 모바일 가로 스크롤 차단 */
   overflow-x: hidden;
+  /* 한글 단어 단위 줄바꿈 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ────────────────────────────────────────────────────────────
