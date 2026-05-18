@@ -10,6 +10,7 @@ import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
 import { PaletteGrid } from './PaletteGrid';
 import { CelebrityCard } from './CelebrityCard';
 import { ProductRecommendation } from './ProductRecommendation';
+import { IconLabel } from './IconLabel';
 import { cosmeticsDatabase } from '@/lib/data/cosmetics';
 import { makeupTipsDatabase } from '@/lib/data/makeupTips';
 import type { PersonalColorType } from '@/types';
@@ -480,9 +481,9 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
           <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={196} />
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10 }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FF3B30' }} />
-            <Text style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#FF3B30' }}>YOUR POSITION</Text>
+            <Text style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#FF3B30', fontFamily: 'Pretendard' }}>YOUR POSITION</Text>
           </View>
-          <Text style={{ fontSize: 9, color: '#666', textAlign: 'center', marginTop: 4 }}>
+          <Text style={{ fontSize: 9, color: '#666', textAlign: 'center', marginTop: 4, fontFamily: 'Pretendard' }}>
             {name}님의 위치는 Warm {warmCool}% · Light {100 - lightDeep}% 입니다.
           </Text>
         </View>
@@ -678,14 +679,14 @@ function FashionPage({ colorType, accent, customerName }: {
         </Text>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {[
-            { title: '데일리 베이직', desc: `${fashion.main} 톤 아이템으로 기본 코디 완성` },
-            { title: '레이어드 룩', desc: `${fashion.sub} 아우터로 포인트` },
-            { title: '컬러 포인트', desc: `${fashion.accent} 액세서리로 완성` },
-          ].map(({ title, desc }) => (
+            { icon: 'daily' as const, title: '데일리 베이직', desc: `${fashion.main} 톤 아이템으로 기본 코디 완성` },
+            { icon: 'layer' as const, title: '레이어드 룩', desc: `${fashion.sub} 아우터로 포인트` },
+            { icon: 'accent' as const, title: '컬러 포인트', desc: `${fashion.accent} 액세서리로 완성` },
+          ].map(({ icon, title, desc }) => (
             <View key={title} style={{ flex: 1, backgroundColor: '#F9F8F5', borderRadius: 6, padding: 8 }}>
               <View style={{ width: 18, height: 3, borderRadius: 1.5, backgroundColor: accent, marginBottom: 6 }} />
-              <Text style={{ fontSize: 8, fontWeight: 700, color: '#2A2A2A', marginBottom: 3 }}>{title}</Text>
-              <Text style={{ fontSize: 7.5, color: '#666', lineHeight: 1.4 }}>{desc}</Text>
+              <IconLabel icon={icon} label={title} fontSize={8} />
+              <Text style={{ fontSize: 7.5, color: '#666', lineHeight: 1.4, marginTop: 3 }}>{desc}</Text>
             </View>
           ))}
         </View>
@@ -762,9 +763,9 @@ function MakeupPage({ colorType, accent, customerName }: {
 
       {/* 구매처 */}
       <View style={{ backgroundColor: '#F0F4F8', borderRadius: 6, padding: 9, marginBottom: 6 }}>
-        <Text style={{ fontSize: 8, fontWeight: 700, color: '#5878A8', marginBottom: 4 }}>
-          어디서 구매하나요?
-        </Text>
+        <View style={{ marginBottom: 4 }}>
+          <IconLabel icon="shop" label="어디서 구매하나요?" fontSize={8} />
+        </View>
         <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
           올리브영·시코르·세포라에서 대부분의 제품을 시연 후 구매 가능합니다. 온라인 구매 시 컬러랩에서 추천한 정확한 호수를 선택하세요.
         </Text>
@@ -867,20 +868,20 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
 
               {/* 우측: 내용 */}
               <View style={{ flex: 1, padding: 10 }}>
-                <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 4, lineHeight: 1.4 }}>{look.title}</Text>
+                <Text style={{ fontSize: 13, fontWeight: 700, color: '#2A2A2A', marginBottom: 4, lineHeight: 1.4, fontFamily: 'Pretendard' }}>{look.title}</Text>
                 <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
                   {look.mustHaves.map((item, i) => (
                     <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                       <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: stripe }} />
-                      <Text style={{ fontSize: 9, color: '#555' }}>{item.label}</Text>
+                      <Text style={{ fontSize: 10, color: '#555', fontFamily: 'Pretendard' }}>{item.label}</Text>
                     </View>
                   ))}
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   {look.colors.map(({ name: cName, hex }) => (
                     <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                      <View style={{ width: 11, height: 11, borderRadius: 5.5, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
-                      <Text style={{ fontSize: 8, color: '#666' }}>{cName}</Text>
+                      <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
+                      <Text style={{ fontSize: 9.5, color: '#666', fontFamily: 'Pretendard' }}>{cName}</Text>
                     </View>
                   ))}
                 </View>
