@@ -15,7 +15,7 @@ import { cosmeticsDatabase } from '@/lib/data/cosmetics';
 import { makeupTipsDatabase } from '@/lib/data/makeupTips';
 import type { PersonalColorType } from '@/types';
 
-const TOTAL = 7;
+const TOTAL = 6;
 
 // ── Static metadata ──────────────────────────────────────────────
 
@@ -503,38 +503,49 @@ function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFin
       {/* 02. 정밀 분석 */}
       <SectionHead num="02" title="정밀 분석" accent={accent} />
 
-      {/* 03. 색의 4속성 — 화이트 배경 + 좌측 accent 라인 */}
-      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
-        {attrCards.map(({ key, label, val }) => (
-          <View key={key} style={{
-            flex: 1, borderRadius: 8, padding: 14, minHeight: 150,
-            backgroundColor: '#FAFAFA',
-            borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid',
-          }}>
-            {/* 강조 바 */}
-            <View style={{ height: 4, width: '50%', backgroundColor: accent, borderRadius: 2, marginBottom: 8 }} />
-            {/* 영문 라벨 — accent 컬러 */}
-            <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, color: accent, marginBottom: 2, fontFamily: 'Pretendard' }}>{key}</Text>
-            {/* 한글명 — 작고 회색 */}
-            <Text style={{ fontSize: 9, fontWeight: 400, color: '#888', marginBottom: 8, fontFamily: 'Pretendard' }}>{label}</Text>
-            {/* 구분선 */}
-            <View style={{ height: 1, width: '40%', backgroundColor: accent + '4D', marginBottom: 8 }} />
-            {/* 사용자 값 — 진한 차콜 (최대 가독성) */}
-            <Text style={{ fontSize: 18, fontWeight: 700, color: '#2A2A2A', letterSpacing: 0.3, lineHeight: 1.3, fontFamily: 'Pretendard' }}>{val}</Text>
-          </View>
-        ))}
+      {/* [블록 1] 색의 4속성 통합 카드 */}
+      <View style={{
+        backgroundColor: '#FAFAFA', borderRadius: 8, marginBottom: 10,
+        borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid',
+        padding: 16,
+      }}>
+        <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 10, fontFamily: 'Pretendard' }}>
+          색의 4속성 (Four Attributes)
+        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          {attrCards.map(({ key, label, val }, i) => (
+            <View key={key} style={{
+              flex: 1, paddingHorizontal: 12,
+              borderLeftWidth: i > 0 ? 0.5 : 0,
+              borderLeftColor: '#E0DCCC', borderLeftStyle: 'solid',
+            }}>
+              <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, color: accent, fontFamily: 'Pretendard' }}>{key}</Text>
+              <Text style={{ fontSize: 9, color: '#666', marginTop: 2, marginBottom: 6, fontFamily: 'Pretendard' }}>{label}</Text>
+              <View style={{ height: 1, width: '60%', backgroundColor: accent + '4D', marginBottom: 8 }} />
+              <Text style={{ fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.3, fontFamily: 'Pretendard' }}>{val}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
-      {/* 베이스 + 컨트라스트 */}
-      <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
-        <View style={{ width: '35%', backgroundColor: '#FAFAFA', borderRadius: 8, padding: 10, borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid' }}>
-          <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6, fontFamily: 'Pretendard' }}>BASE TONE</Text>
-          <Text style={{ fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2, fontFamily: 'Pretendard' }}>{attributes.base}</Text>
+      {/* [블록 2] 베이스 톤 + 컨트라스트 통합 카드 */}
+      <View style={{
+        backgroundColor: '#FAFAFA', borderRadius: 8, marginBottom: 10,
+        borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid',
+        flexDirection: 'row',
+      }}>
+        <View style={{ flex: 1, padding: 14, borderRightWidth: 0.5, borderRightColor: '#E0DCCC', borderRightStyle: 'solid' }}>
+          <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, color: accent, fontFamily: 'Pretendard' }}>BASE TONE</Text>
+          <Text style={{ fontSize: 9, color: '#666', marginTop: 2, marginBottom: 6, fontFamily: 'Pretendard' }}>베이스 톤</Text>
+          <View style={{ height: 1, width: '60%', backgroundColor: accent + '4D', marginBottom: 8 }} />
+          <Text style={{ fontSize: 18, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2, fontFamily: 'Pretendard' }}>{attributes.base}</Text>
           <Text style={{ fontSize: 8, color: '#666', marginTop: 6, lineHeight: 1.5, fontFamily: 'Pretendard' }}>{baseToneDesc}</Text>
         </View>
-        <View style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 8, padding: 10, borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid' }}>
-          <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 4, fontFamily: 'Pretendard' }}>CONTRAST</Text>
-          <Text style={{ fontSize: 16, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2, fontFamily: 'Pretendard' }}>{contrastLabel} Contrast</Text>
+        <View style={{ flex: 1, padding: 14 }}>
+          <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, color: accent, fontFamily: 'Pretendard' }}>CONTRAST</Text>
+          <Text style={{ fontSize: 9, color: '#666', marginTop: 2, marginBottom: 6, fontFamily: 'Pretendard' }}>컨트라스트</Text>
+          <View style={{ height: 1, width: '60%', backgroundColor: accent + '4D', marginBottom: 8 }} />
+          <Text style={{ fontSize: 18, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2, fontFamily: 'Pretendard' }}>{contrastLabel} Contrast</Text>
           <View style={{ flexDirection: 'row', gap: 4, marginTop: 8, marginBottom: 3 }}>
             {[1, 2, 3].map((lv) => (
               <View key={lv} style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: lv === contrastLevel ? accent : (lv < contrastLevel ? accent + '50' : '#E0DCCC') }} />
@@ -765,98 +776,7 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
   );
 }
 
-// ── Page 4: Fashion Color Guide ──────────────────────────────────
-
-function FashionPage({ colorType, accent, customerName }: {
-  colorType: PersonalColorType; accent: string; customerName: string;
-}) {
-  const { fashion, bestColors } = TYPE_EXTRA[colorType];
-  const name = customerName || '고객';
-
-  const fashionTips = [
-    fashion.tip,
-    `${fashion.main} 계열을 메인 컬러로 코디의 기본을 잡으세요.`,
-    `${fashion.sub} 계열로 레이어링하면 자연스럽고 세련된 조합이 됩니다.`,
-    `${fashion.accent} 포인트 컬러로 룩에 생기를 더해보세요.`,
-  ];
-
-  const colorGroups = [
-    { label: 'MAIN COLOR', val: fashion.main,   colors: bestColors.slice(0, 3) },
-    { label: 'SUB COLOR',  val: fashion.sub,    colors: bestColors.slice(3, 6) },
-    { label: 'ACCENT',     val: fashion.accent, colors: bestColors.slice(6, 8) },
-  ];
-
-  return (
-    <Page size="A4" style={S.page}>
-      <PageHeader label="패션 컬러 가이드" page={4} />
-
-      <SectionHead num="04" title={`${name}님의 패션 컬러 가이드`} accent={accent} />
-
-      {/* 3 컬러 그룹 카드 (칩 포함) */}
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
-        {colorGroups.map(({ label, val, colors }) => (
-          <View key={label} style={{
-            flex: 1, backgroundColor: '#F5F2EC', borderRadius: 10, padding: 14,
-            borderTopWidth: 3, borderTopColor: accent, borderTopStyle: 'solid',
-          }}>
-            <Text style={{ fontSize: 6.5, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 6 }}>{label}</Text>
-            <Text style={{ fontSize: 10, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.5, marginBottom: 10 }}>{val}</Text>
-            <View style={{ flexDirection: 'row', gap: 5 }}>
-              {colors.map(({ hex, name: cn }) => (
-                <View key={hex} style={{ alignItems: 'center' }}>
-                  <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 2 }} />
-                  <Text style={{ fontSize: 5.5, color: '#888', textAlign: 'center', maxWidth: 28 }}>{cn}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        ))}
-      </View>
-
-      <View style={S.sectionDivider} />
-
-      {/* 코디 팁 */}
-      <View style={{ backgroundColor: '#F5F2EC', borderRadius: 8, padding: 16, marginBottom: 12 }}>
-        <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1.5, color: '#888', marginBottom: 12 }}>STYLING TIPS</Text>
-        {fashionTips.map((tip, i) => (
-          <View key={i} style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
-            <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: accent, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Text style={{ fontSize: 8, fontWeight: 700, color: '#fff' }}>{i + 1}</Text>
-            </View>
-            <Text style={{ flex: 1, fontSize: 10, color: '#444', lineHeight: 1.6 }}>{tip}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* 코디 조합 박스 */}
-      <View style={{
-        backgroundColor: '#fff', borderRadius: 8, padding: 14,
-        borderWidth: 1, borderColor: accent + '30', borderStyle: 'solid',
-      }}>
-        <Text style={{ fontSize: 8, fontWeight: 700, color: accent, letterSpacing: 1, marginBottom: 8 }}>
-          {name}님을 위한 추천 코디 조합
-        </Text>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          {[
-            { icon: 'daily' as const, title: '데일리 베이직', desc: `${fashion.main} 톤 아이템으로 기본 코디 완성` },
-            { icon: 'layer' as const, title: '레이어드 룩', desc: `${fashion.sub} 아우터로 포인트` },
-            { icon: 'accent' as const, title: '컬러 포인트', desc: `${fashion.accent} 액세서리로 완성` },
-          ].map(({ icon, title, desc }) => (
-            <View key={title} style={{ flex: 1, backgroundColor: '#F9F8F5', borderRadius: 6, padding: 8 }}>
-              <View style={{ width: 18, height: 3, borderRadius: 1.5, backgroundColor: accent, marginBottom: 6 }} />
-              <IconLabel icon={icon} label={title} fontSize={8} />
-              <Text style={{ fontSize: 7.5, color: '#666', lineHeight: 1.4, marginTop: 3 }}>{desc}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      <Footer page={4} accent={accent} />
-    </Page>
-  );
-}
-
-// ── Page 5: Makeup ───────────────────────────────────────────────
+// ── Page 4: Makeup ───────────────────────────────────────────────
 
 function MakeupPage({ colorType, accent, customerName }: {
   colorType: PersonalColorType; accent: string; customerName: string;
@@ -867,10 +787,10 @@ function MakeupPage({ colorType, accent, customerName }: {
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="메이크업 추천" page={5} />
+      <PageHeader label="메이크업 추천" page={4} />
 
-      {/* 05. 립스틱 (3개) */}
-      <SectionHead num="05" title={`${name}님께 추천하는 립스틱`} accent={accent} />
+      {/* 06. 립스틱 (3개) */}
+      <SectionHead num="06" title={`${name}님께 추천하는 립스틱`} accent={accent} />
       <View style={{ marginBottom: 4 }}>
         {cosmetics.lipstick.slice(0, 3).map((p, i) => (
           <ProductRecommendation key={i} product={p} accentColor={accent} />
@@ -880,7 +800,7 @@ function MakeupPage({ colorType, accent, customerName }: {
       <View style={S.sectionDivider} />
 
       {/* 06. 베이스 추천: 파운데이션(좌) + 아이섀도우(우) */}
-      <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 6, letterSpacing: 0.3 }}>06. 베이스 추천</Text>
+      <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 6, letterSpacing: 0.3 }}>07. 베이스 추천</Text>
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 4 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>파운데이션</Text>
@@ -899,7 +819,7 @@ function MakeupPage({ colorType, accent, customerName }: {
       <View style={S.sectionDivider} />
 
       {/* 07. 포인트 메이크업: 블러셔(좌) + 팁(우) */}
-      <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 6, letterSpacing: 0.3 }}>07. 포인트 메이크업</Text>
+      <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 6, letterSpacing: 0.3 }}>08. 포인트 메이크업</Text>
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>블러셔</Text>
@@ -936,12 +856,12 @@ function MakeupPage({ colorType, accent, customerName }: {
         </Text>
       </View>
 
-      <Footer page={5} accent={accent} />
+      <Footer page={4} accent={accent} />
     </Page>
   );
 }
 
-// ── Page 6: Hair + Seasonal Styling ─────────────────────────────
+// ── Page 5: Hair + Fashion + Seasonal Styling ────────────────────
 
 const SEASON_META = [
   { key: 'spring', bg: '#FFF0F5', leftBg: '#FFE0EB', stripe: '#F098B0' },
@@ -950,49 +870,54 @@ const SEASON_META = [
   { key: 'winter', bg: '#EEF4FF', leftBg: '#DDE8FF', stripe: '#5878C8' },
 ] as const;
 
-function HairSeasonalPage({ colorType, accent, customerName }: {
+function HairFashionSeasonalPage({ colorType, accent, customerName }: {
   colorType: PersonalColorType; accent: string; customerName: string;
 }) {
-  const { hair } = TYPE_EXTRA[colorType];
+  const { hair, fashion, bestColors } = TYPE_EXTRA[colorType];
   const seasonal = seasonalStylingDatabase[colorType];
   const name = customerName || '고객';
   const avoidList = hair.avoid.split(',').map((s) => s.trim()).slice(0, 4);
 
+  const colorGroups = [
+    { label: 'MAIN COLOR', val: fashion.main,   colors: bestColors.slice(0, 3) },
+    { label: 'SUB COLOR',  val: fashion.sub,    colors: bestColors.slice(3, 6) },
+    { label: 'ACCENT',     val: fashion.accent, colors: bestColors.slice(6, 8) },
+  ];
+
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="헤어 & 시즌 스타일링" page={6} />
+      <PageHeader label="헤어 & 패션 & 시즌 스타일링" page={5} />
 
-      {/* 08. 헤어 컬러 추천 (compact) */}
-      <SectionHead num="08" title={`${name}님께 어울리는 헤어 컬러`} accent={accent} />
+      {/* 09. 헤어 컬러 (compact) */}
+      <SectionHead num="09" title={`${name}님께 어울리는 헤어 컬러`} accent={accent} />
 
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 6 }}>
         {hair.recommended.map(({ name: hName, desc }) => (
           <View key={hName} style={{
-            flex: 1, backgroundColor: '#F5F2EC', borderRadius: 7, padding: 10, alignItems: 'center',
+            flex: 1, backgroundColor: '#F5F2EC', borderRadius: 7, padding: 8, alignItems: 'center',
           }}>
             <View style={{
-              width: 40, height: 40, borderRadius: 20,
+              width: 34, height: 34, borderRadius: 17,
               backgroundColor: hairHex(hName),
-              borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 6,
+              borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 5,
             }} />
-            <Text style={{ fontSize: 8.5, fontWeight: 700, color: '#2A2A2A', marginBottom: 2, textAlign: 'center' }}>{hName}</Text>
-            <Text style={{ fontSize: 7, color: '#666', textAlign: 'center', lineHeight: 1.3 }}>{desc}</Text>
+            <Text style={{ fontSize: 8, fontWeight: 700, color: '#2A2A2A', marginBottom: 2, textAlign: 'center' }}>{hName}</Text>
+            <Text style={{ fontSize: 6.5, color: '#666', textAlign: 'center', lineHeight: 1.3 }}>{desc}</Text>
           </View>
         ))}
       </View>
 
-      {/* 피해야 할 헤어 */}
       <View style={{
-        backgroundColor: '#FFF5F5', borderRadius: 6, padding: 8,
+        backgroundColor: '#FFF5F5', borderRadius: 6, padding: 7,
         borderLeftWidth: 3, borderLeftColor: '#FF3B30', borderLeftStyle: 'solid',
-        marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 10,
+        marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 8,
       }}>
         <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: '#FF3B30', flexShrink: 0 }}>AVOID</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, flex: 1 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, flex: 1 }}>
           {avoidList.map((avoid, i) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: hairHex(avoid), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
-              <Text style={{ fontSize: 8, color: '#555' }}>x {avoid}</Text>
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+              <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: hairHex(avoid), borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid' }} />
+              <Text style={{ fontSize: 7.5, color: '#555' }}>x {avoid}</Text>
             </View>
           ))}
         </View>
@@ -1000,10 +925,43 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
 
       <View style={S.sectionDivider} />
 
-      {/* 09. 시즌별 스타일링 (compact 4 cards) */}
-      <SectionHead num="09" title={`${name}님의 시즌별 스타일링`} accent={accent} />
+      {/* 10. 패션 컬러 */}
+      <SectionHead num="10" title={`${name}님의 패션 컬러`} accent={accent} />
 
-      <View style={{ flexDirection: 'column', gap: 7, flex: 1 }}>
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 7 }}>
+        {colorGroups.map(({ label, val, colors }) => (
+          <View key={label} style={{
+            flex: 1, backgroundColor: '#F5F2EC', borderRadius: 8, padding: 10,
+            borderTopWidth: 3, borderTopColor: accent, borderTopStyle: 'solid',
+          }}>
+            <Text style={{ fontSize: 6, fontWeight: 700, letterSpacing: 1.5, color: '#AAA', marginBottom: 4 }}>{label}</Text>
+            <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.4, marginBottom: 8 }}>{val}</Text>
+            <View style={{ flexDirection: 'row', gap: 4 }}>
+              {colors.map(({ hex, name: cn }) => (
+                <View key={hex} style={{ alignItems: 'center' }}>
+                  <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: hex, borderWidth: 0.5, borderColor: '#DDD', borderStyle: 'solid', marginBottom: 2 }} />
+                  <Text style={{ fontSize: 5, color: '#888', textAlign: 'center', maxWidth: 26 }}>{cn}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ))}
+      </View>
+
+      <View style={{
+        backgroundColor: accent + '08', borderRadius: 6, padding: 8,
+        borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid',
+        marginBottom: 10,
+      }}>
+        <Text style={{ fontSize: 8.5, color: '#444', lineHeight: 1.5, fontFamily: 'Pretendard' }}>{fashion.tip}</Text>
+      </View>
+
+      <View style={S.sectionDivider} />
+
+      {/* 11. 시즌별 스타일링 */}
+      <SectionHead num="11" title={`${name}님의 시즌별 스타일링`} accent={accent} />
+
+      <View style={{ flexDirection: 'column', gap: 6, flex: 1 }}>
         {SEASON_META.map(({ key, bg, leftBg, stripe }) => {
           const look = seasonal[key];
           return (
@@ -1012,35 +970,32 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
               backgroundColor: bg, borderRadius: 7,
               borderTopWidth: 3, borderTopColor: stripe, borderTopStyle: 'solid',
             }}>
-              {/* 좌측: 아이콘 + 시즌명 */}
               <View style={{
-                width: '22%', backgroundColor: leftBg,
+                width: '20%', backgroundColor: leftBg,
                 alignItems: 'center', justifyContent: 'center',
-                paddingVertical: 8,
+                paddingVertical: 6,
                 borderRightWidth: 0.5, borderRightColor: stripe + '50', borderRightStyle: 'solid',
               }}>
-                <SeasonIcon season={key} size={36} />
-                <Text style={{ fontSize: 7, fontWeight: 700, color: stripe, letterSpacing: 0.3, marginTop: 4, textAlign: 'center' }}>
+                <SeasonIcon season={key} size={30} />
+                <Text style={{ fontSize: 6.5, fontWeight: 700, color: stripe, letterSpacing: 0.3, marginTop: 3, textAlign: 'center' }}>
                   {key === 'spring' ? 'SPRING' : key === 'summer' ? 'SUMMER' : key === 'autumn' ? 'AUTUMN' : 'WINTER'}
                 </Text>
               </View>
-
-              {/* 우측: 내용 */}
-              <View style={{ flex: 1, padding: 10 }}>
-                <Text style={{ fontSize: 13, fontWeight: 700, color: '#2A2A2A', marginBottom: 4, lineHeight: 1.4, fontFamily: 'Pretendard' }}>{look.title}</Text>
-                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+              <View style={{ flex: 1, padding: 8 }}>
+                <Text style={{ fontSize: 11, fontWeight: 700, color: '#2A2A2A', marginBottom: 3, lineHeight: 1.4, fontFamily: 'Pretendard' }}>{look.title}</Text>
+                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                   {look.mustHaves.map((item, i) => (
-                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                      <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: stripe }} />
-                      <Text style={{ fontSize: 10, color: '#555', fontFamily: 'Pretendard' }}>{item.label}</Text>
+                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                      <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: stripe }} />
+                      <Text style={{ fontSize: 8.5, color: '#555', fontFamily: 'Pretendard' }}>{item.label}</Text>
                     </View>
                   ))}
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
                   {look.colors.map(({ name: cName, hex }) => (
-                    <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                      <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
-                      <Text style={{ fontSize: 9.5, color: '#666', fontFamily: 'Pretendard' }}>{cName}</Text>
+                    <View key={hex} style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: hex, borderWidth: 0.3, borderColor: '#CCC', borderStyle: 'solid' }} />
+                      <Text style={{ fontSize: 8, color: '#666', fontFamily: 'Pretendard' }}>{cName}</Text>
                     </View>
                   ))}
                 </View>
@@ -1050,7 +1005,7 @@ function HairSeasonalPage({ colorType, accent, customerName }: {
         })}
       </View>
 
-      <Footer page={6} accent={accent} />
+      <Footer page={5} accent={accent} />
     </Page>
   );
 }
@@ -1077,9 +1032,9 @@ function CelebAdvicePage({
 
   return (
     <Page size="A4" style={S.page}>
-      <PageHeader label="셀러브리티 & 맞춤 답변" page={7} />
+      <PageHeader label="셀러브리티 & 맞춤 답변" page={6} />
 
-      <SectionHead num="10" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
+      <SectionHead num="12" title={`${name}님과 같은 톤의 셀러브리티`} accent={accent} />
 
       {celebrities && celebrities.length > 0 ? (
         <View style={{ flexDirection: 'column', gap: 0, marginBottom: 6 }}>
@@ -1103,7 +1058,7 @@ function CelebAdvicePage({
       {showAdvice ? (
         <>
           <View style={S.sectionDivider} />
-          <SectionHead num="11" title={`${name}님의 고민에 대한 답변`} accent={accent} />
+          <SectionHead num="13" title={`${name}님의 고민에 대한 답변`} accent={accent} />
           <View style={S.adviceBox}>
             <Text style={S.adviceLabel}>AI 맞춤 조언</Text>
             <Text style={S.adviceText}>{customAdvice!.answer}</Text>
@@ -1123,7 +1078,7 @@ function CelebAdvicePage({
         <View style={{ borderTopWidth: 0.5, borderTopColor: '#DDD8CC', borderTopStyle: 'solid', width: '100%', paddingTop: 6 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={S.footerText}>colorlab.kr  ·  본 리포트는 AI 분석에 기반한 참고용 자료입니다</Text>
-            <Text style={[S.footerPage, { color: accent }]}>7 / 7</Text>
+            <Text style={[S.footerPage, { color: accent }]}>6 / 6</Text>
           </View>
           <Text style={[S.footerText, { marginTop: 2 }]}>Powered by COLORLAB AI  ·  © 2025 컬러랩</Text>
         </View>
@@ -1179,9 +1134,8 @@ export default function ReportPDF({
         keyInsight={personalIntro?.keyInsight}
       />
       <PalettePage colorType={colorType} accent={accent} customerName={name} />
-      <FashionPage colorType={colorType} accent={accent} customerName={name} />
       <MakeupPage colorType={colorType} accent={accent} customerName={name} />
-      <HairSeasonalPage colorType={colorType} accent={accent} customerName={name} />
+      <HairFashionSeasonalPage colorType={colorType} accent={accent} customerName={name} />
       <CelebAdvicePage
         colorType={colorType} accent={accent} customerName={name}
         celebrities={celebrities}
