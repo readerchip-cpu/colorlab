@@ -372,7 +372,7 @@ function CoverPage({ colorType, sessionId, createdAt, accent, customerName, gree
         </View>
       </View>
 
-      <Text style={S.coverNameLine}>{name}님의</Text>
+      <Text style={[S.coverNameLine, { fontSize: 28, color: accent }]}>{name}님의</Text>
       <Text style={S.coverTypeEn}>{typeEn}</Text>
       <Text style={S.coverTypeKo}>{colorType}</Text>
       <Text style={S.coverDisplayName}>{display}</Text>
@@ -1064,7 +1064,36 @@ function CelebAdvicePage({
             <Text style={S.adviceText}>{customAdvice!.answer}</Text>
           </View>
         </>
-      ) : null}
+      ) : (
+        <>
+          <View style={S.sectionDivider} />
+          <View style={{
+            backgroundColor: accent + '08', borderRadius: 10, padding: 16,
+            borderLeftWidth: 4, borderLeftColor: accent, borderLeftStyle: 'solid',
+          }}>
+            <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 10, fontFamily: 'Pretendard' }}>
+              {name}님을 위한 컬러랩 스타일링 가이드
+            </Text>
+            {[
+              TYPE_EXTRA[colorType].fashion.tip,
+              `메인 컬러 ${TYPE_EXTRA[colorType].fashion.main} 계열을 베이스로 코디를 시작하세요.`,
+              `${TYPE_EXTRA[colorType].fashion.sub} 컬러로 레이어링하면 자연스러운 조합이 완성됩니다.`,
+              `포인트 컬러 ${TYPE_EXTRA[colorType].fashion.accent}를 액세서리나 백으로 활용해보세요.`,
+              TYPE_EXTRA[colorType].attributes.base.includes('Yellow')
+                ? '금 소재 액세서리(골드·브라스)가 피부 톤과 가장 잘 어울립니다.'
+                : '실버·화이트 골드 소재 액세서리가 쿨한 피부 톤을 돋보이게 합니다.',
+              `헤어는 ${TYPE_EXTRA[colorType].hair.recommended[0].name} 계열을 1순위로 추천드려요.`,
+            ].map((tip, i) => (
+              <View key={i} style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+                <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: accent, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Text style={{ fontSize: 8, fontWeight: 700, color: '#fff', fontFamily: 'Pretendard' }}>{i + 1}</Text>
+                </View>
+                <Text style={{ flex: 1, fontSize: 9.5, color: '#444', lineHeight: 1.6, fontFamily: 'Pretendard' }}>{tip}</Text>
+              </View>
+            ))}
+          </View>
+        </>
+      )}
 
       {/* Disclaimer */}
       <View style={{ marginTop: 12, padding: 8, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#E5E5E5', borderTopStyle: 'solid' }}>

@@ -14,11 +14,12 @@ const C = {
 } as const;
 
 interface SendReportData {
-  sessionId: string;
-  typeName:   string;   // 영문 타입명 (예: Spring Light)
-  typeNameKr: string;   // 한글 타입명 (예: 봄 라이트)
-  reportUrl:  string;   // 웹 결과 페이지
-  pdfUrl:     string;   // PDF 직접 다운로드 링크
+  sessionId:     string;
+  typeName:      string;   // 영문 타입명 (예: Spring Light)
+  typeNameKr:    string;   // 한글 타입명 (예: 봄 라이트)
+  reportUrl:     string;   // 웹 결과 페이지
+  pdfUrl:        string;   // PDF 직접 다운로드 링크
+  customerName?: string;   // 사용자 이름 (선택)
 }
 
 function buildHtml(data: SendReportData): string {
@@ -170,7 +171,7 @@ export async function sendReport(
   await resend.emails.send({
     from: process.env.FROM_EMAIL!,
     to,
-    subject: `[컬러랩] ${data.typeNameKr} 분석 리포트가 준비됐어요`,
+    subject: `[컬러랩] ${data.customerName ? `${data.customerName}님의 ` : ''}${data.typeNameKr} 분석 리포트가 준비됐어요`,
     html: buildHtml(data),
   });
 }

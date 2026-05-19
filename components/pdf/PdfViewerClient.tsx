@@ -31,7 +31,9 @@ export default function PdfViewerClient({
   sessionId, colorType, reportContent, createdAt,
   customerName, personalIntro, celebrities, customAdvice,
 }: Props) {
-  const fileName = `컬러랩-${colorType}-리포트.pdf`;
+  const safeName = (customerName ?? '').replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 20);
+  const dateStr = createdAt.slice(0, 10).replace(/-/g, '');
+  const fileName = safeName ? `컬러랩_${safeName}_${dateStr}.pdf` : `컬러랩_${colorType.replace(/\s/g, '_')}_${dateStr}.pdf`;
   const backHref = `/report/${sessionId}`;
 
   // useMemo로 doc을 안정화 — 재렌더마다 새 객체가 생성되지 않도록
