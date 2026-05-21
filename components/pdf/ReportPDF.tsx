@@ -11,7 +11,7 @@ import { PaletteGrid } from './PaletteGrid';
 import { CelebrityCard } from './CelebrityCard';
 import { ProductRecommendation } from './ProductRecommendation';
 import { IconLabel } from './IconLabel';
-import { cosmeticsDatabase } from '@/lib/data/cosmetics';
+import { getProductsByType } from '@/lib/data/cosmetics';
 import { makeupTipsDatabase } from '@/lib/data/makeupTips';
 import type { PersonalColorType } from '@/types';
 
@@ -781,7 +781,10 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
 function MakeupPage({ colorType, accent, customerName }: {
   colorType: PersonalColorType; accent: string; customerName: string;
 }) {
-  const cosmetics = cosmeticsDatabase[colorType];
+  const lipProducts        = getProductsByType(colorType, 'lipstick',   3);
+  const foundationProducts = getProductsByType(colorType, 'foundation', 2);
+  const eyeshadowProducts  = getProductsByType(colorType, 'eyeshadow',  2);
+  const blusherProducts    = getProductsByType(colorType, 'blusher',    2);
   const tips = makeupTipsDatabase[colorType];
   const name = customerName || '고객';
 
@@ -792,39 +795,39 @@ function MakeupPage({ colorType, accent, customerName }: {
       {/* 06. 립스틱 (3개) */}
       <SectionHead num="06" title={`${name}님께 추천하는 립스틱`} accent={accent} />
       <View style={{ marginBottom: 4 }}>
-        {cosmetics.lipstick.slice(0, 3).map((p, i) => (
-          <ProductRecommendation key={i} product={p} accentColor={accent} />
+        {lipProducts.map((p, i) => (
+          <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
         ))}
       </View>
 
       <View style={S.sectionDivider} />
 
-      {/* 06. 베이스 추천: 파운데이션(좌) + 아이섀도우(우) */}
+      {/* 07. 베이스 추천: 파운데이션(좌) + 아이섀도우(우) */}
       <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 6, letterSpacing: 0.3 }}>07. 베이스 추천</Text>
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 4 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>파운데이션</Text>
-          {cosmetics.foundation.slice(0, 2).map((p, i) => (
-            <ProductRecommendation key={i} product={p} accentColor={accent} />
+          {foundationProducts.map((p, i) => (
+            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
           ))}
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>아이섀도우</Text>
-          {cosmetics.eyeshadow.slice(0, 2).map((p, i) => (
-            <ProductRecommendation key={i} product={p} accentColor={accent} />
+          {eyeshadowProducts.map((p, i) => (
+            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
           ))}
         </View>
       </View>
 
       <View style={S.sectionDivider} />
 
-      {/* 07. 포인트 메이크업: 블러셔(좌) + 팁(우) */}
+      {/* 08. 포인트 메이크업: 블러셔(좌) + 팁(우) */}
       <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', marginBottom: 6, letterSpacing: 0.3 }}>08. 포인트 메이크업</Text>
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>블러셔</Text>
-          {cosmetics.blusher.slice(0, 2).map((p, i) => (
-            <ProductRecommendation key={i} product={p} accentColor={accent} />
+          {blusherProducts.map((p, i) => (
+            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
           ))}
         </View>
         <View style={{ flex: 1.3, backgroundColor: '#FBF8F0', borderRadius: 6, padding: 10, borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid' }}>

@@ -4,7 +4,12 @@ import { getTestSession, saveReportContent } from '@/lib/utils/session';
 import { getEmailBySessionId } from '@/lib/utils/payment';
 import { sendReport } from '@/lib/email/sendReport';
 import { TYPE_EN } from '@/lib/colorData';
+import { validateProductCoverage } from '@/lib/data/cosmetics';
 import type { PersonalColorType } from '@/types';
+
+if (process.env.NODE_ENV === 'development') {
+  validateProductCoverage();
+}
 
 // Anthropic API 호출 시간을 고려해 60초로 설정
 export const maxDuration = 60;

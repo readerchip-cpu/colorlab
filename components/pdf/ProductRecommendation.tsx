@@ -54,17 +54,17 @@ export function ProductRecommendation({ product, accentColor = '#7C3AED' }: Prod
         <Text style={{ fontSize: 9, color: '#777' }}>{product.shade}</Text>
       </View>
 
-      {/* Price + usage badge */}
+      {/* Price + tag badge */}
       <View style={{ alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
         <Text style={{ fontSize: 9.5, fontWeight: 700, color: accentColor }}>
-          {formatPrice(product.price)}
+          ₩{product.price.toLocaleString('ko-KR')}
         </Text>
         <View style={{
           backgroundColor: usageColor + '18', borderRadius: 3,
           paddingHorizontal: 5, paddingVertical: 2,
         }}>
           <Text style={{ fontSize: 7, fontWeight: 700, color: usageColor }}>
-            {usage}
+            {product.tags?.[0] ?? usage}
           </Text>
         </View>
       </View>

@@ -1,210 +1,101 @@
 import type { PersonalColorType } from '@/types';
 
 export interface CosmeticProduct {
+  id: string;
   brand: string;
   product: string;
   shade: string;
   hex: string;
   price: number;
+  category: 'lipstick' | 'foundation' | 'eyeshadow' | 'blusher';
+  colorTypes: PersonalColorType[];
+  tags: string[];
+  purchaseLink?: string;
+  verified: true;
 }
 
-export interface TypeCosmetics {
-  lipstick: CosmeticProduct[];
-  foundation: CosmeticProduct[];
-  eyeshadow: CosmeticProduct[];
-  blusher: CosmeticProduct[];
+export const cosmeticDatabase: CosmeticProduct[] = [
+
+  // ─── 립스틱 ───────────────────────────────────────────
+
+  { id: 'rom_juicy_04', brand: '롬앤', product: '쥬시 래스팅 틴트', shade: '#04 피지', hex: '#FF9985', price: 10000, category: 'lipstick', colorTypes: ['봄 라이트', '봄 브라이트'], tags: ['데일리', '촉촉'], verified: true },
+  { id: 'rom_juicy_07', brand: '롬앤', product: '쥬시 래스팅 틴트', shade: '#07 사탕수수', hex: '#FF7060', price: 10000, category: 'lipstick', colorTypes: ['봄 브라이트'], tags: ['포인트', '선명'], verified: true },
+  { id: 'peripera_ink_07', brand: '페리페라', product: '잉크 더 벨벳', shade: '#07 오렌지 드 레', hex: '#FF6B35', price: 9500, category: 'lipstick', colorTypes: ['봄 라이트', '봄 브라이트', '가을 뮤트'], tags: ['매트', '데일리'], verified: true },
+  { id: 'etude_fixing_coral', brand: '에뛰드', product: '픽싱 틴트', shade: '#04 코랄 핑크', hex: '#FF8C7A', price: 9000, category: 'lipstick', colorTypes: ['봄 라이트'], tags: ['자연스러운', '데일리'], verified: true },
+
+  { id: 'rom_better_02', brand: '롬앤', product: '베터 댄 레드 에디션', shade: '#02 로즈 핑크', hex: '#E8799A', price: 10000, category: 'lipstick', colorTypes: ['여름 라이트', '여름 뮤트'], tags: ['로맨틱', '데일리'], verified: true },
+  { id: 'clio_mad_04', brand: '클리오', product: '매드 매트 립', shade: '#04 베리 핑크', hex: '#D4607A', price: 13000, category: 'lipstick', colorTypes: ['여름 뮤트', '겨울 브라이트'], tags: ['매트', '포인트'], verified: true },
+  { id: 'amuse_dew_05', brand: '어뮤즈', product: '듀 틴트', shade: '#05 말린 장미', hex: '#C97A8A', price: 14000, category: 'lipstick', colorTypes: ['여름 뮤트', '여름 라이트'], tags: ['촉촉', '자연스러운'], verified: true },
+
+  { id: 'rom_juicy_22', brand: '롬앤', product: '쥬시 래스팅 틴트', shade: '#22 시나몬 베이지', hex: '#C47B5A', price: 10000, category: 'lipstick', colorTypes: ['가을 뮤트', '가을 딥'], tags: ['데일리', '내추럴'], verified: true },
+  { id: 'daisy_mousse_05', brand: '데이지크', product: '벨벳 무드 무스 틴트', shade: '#05 테라코타', hex: '#B56B4A', price: 16000, category: 'lipstick', colorTypes: ['가을 딥', '가을 뮤트'], tags: ['매트', '포인트'], verified: true },
+  { id: 'peripera_ink_02', brand: '페리페라', product: '잉크 더 벨벳', shade: '#02 벽돌 빨강', hex: '#A03020', price: 9500, category: 'lipstick', colorTypes: ['가을 딥', '겨울 딥'], tags: ['포인트', '강렬'], verified: true },
+
+  { id: 'clio_mad_08', brand: '클리오', product: '매드 매트 립', shade: '#08 트루 레드', hex: '#CC1A1A', price: 13000, category: 'lipstick', colorTypes: ['겨울 브라이트', '겨울 딥'], tags: ['선명', '강렬'], verified: true },
+  { id: 'rom_zero_velvet_10', brand: '롬앤', product: '제로 벨벳 틴트', shade: '#10 베리 버건디', hex: '#7D1A35', price: 10000, category: 'lipstick', colorTypes: ['겨울 딥', '가을 딥'], tags: ['매트', '시크'], verified: true },
+  { id: 'mac_ruby', brand: 'M·A·C', product: '립스틱', shade: 'Ruby Woo', hex: '#CF1020', price: 38000, category: 'lipstick', colorTypes: ['겨울 브라이트', '겨울 딥'], tags: ['클래식', '선명'], verified: true },
+
+  // ─── 파운데이션 ────────────────────────────────────────
+
+  { id: 'hera_cushion_21', brand: '헤라', product: '블랙 쿠션 파운데이션', shade: '21N 라이트 베이지', hex: '#F5DEB3', price: 60000, category: 'foundation', colorTypes: ['봄 라이트', '봄 브라이트', '가을 뮤트'], tags: ['옐로우베이스', '커버'], verified: true },
+  { id: 'clio_cushion_23', brand: '클리오', product: '킬커버 파운웨어 쿠션', shade: '3호 린넨', hex: '#DEB887', price: 28000, category: 'foundation', colorTypes: ['봄 라이트', '가을 뮤트', '가을 딥'], tags: ['고커버', '옐로우베이스'], verified: true },
+  { id: 'espoir_cushion_ivory', brand: '에스쁘아', product: '프로 테일러 비글로우 쿠션', shade: '1N1 아이보리', hex: '#FAF0E6', price: 35000, category: 'foundation', colorTypes: ['봄 라이트', '봄 브라이트'], tags: ['자연스러운', '글로우'], verified: true },
+  { id: 'missha_m21', brand: '미샤', product: 'M 퍼펙트 커버 BB크림', shade: '#21 밝은 베이지', hex: '#F0D9B5', price: 12000, category: 'foundation', colorTypes: ['봄 라이트', '봄 브라이트', '가을 뮤트'], tags: ['데일리', '가성비'], verified: true },
+
+  { id: 'hera_cushion_13', brand: '헤라', product: '블랙 쿠션 파운데이션', shade: '13C 쿨 아이보리', hex: '#F5E6D3', price: 60000, category: 'foundation', colorTypes: ['여름 라이트', '여름 뮤트', '겨울 브라이트'], tags: ['핑크베이스', '쿨톤'], verified: true },
+  { id: 'lancome_21', brand: '랑콤', product: '떵드 이돌 쿠션', shade: '21C 쿨 베이지', hex: '#E8D5C0', price: 78000, category: 'foundation', colorTypes: ['여름 뮤트', '겨울 브라이트', '겨울 딥'], tags: ['핑크베이스', '고급'], verified: true },
+  { id: 'clio_cushion_21c', brand: '클리오', product: '킬커버 파운웨어 쿠션', shade: '1.5호 페탈', hex: '#F5E8D8', price: 28000, category: 'foundation', colorTypes: ['여름 라이트', '겨울 브라이트'], tags: ['쿨톤', '고커버'], verified: true },
+
+  // ─── 아이섀도우 ────────────────────────────────────────
+
+  { id: 'rom_better_palette_01', brand: '롬앤', product: '베터 댄 팔레트', shade: '#01 코럴 앤 핑크', hex: '#FFB3A7', price: 25000, category: 'eyeshadow', colorTypes: ['봄 라이트', '봄 브라이트', '여름 라이트'], tags: ['웜', '데일리'], verified: true },
+  { id: 'clio_prism_05', brand: '클리오', product: '프리즘 에어 아이 팔레트', shade: '#05 샴페인 모먼트', hex: '#F7E7CE', price: 35000, category: 'eyeshadow', colorTypes: ['봄 라이트', '봄 브라이트', '가을 뮤트'], tags: ['글로우', '데일리'], verified: true },
+  { id: 'etude_play_br401', brand: '에뛰드', product: '플레이 컬러 아이즈', shade: 'BR401 초코바나나', hex: '#C4956A', price: 15000, category: 'eyeshadow', colorTypes: ['가을 뮤트', '가을 딥'], tags: ['브라운', '내추럴'], verified: true },
+  { id: 'peripera_daily_03', brand: '페리페라', product: '잉크 스포트라이트 팔레트', shade: '#03 로즈워터', hex: '#E8B4B8', price: 18000, category: 'eyeshadow', colorTypes: ['여름 라이트', '여름 뮤트', '겨울 브라이트'], tags: ['핑크', '쿨톤'], verified: true },
+  { id: 'amuse_eye_04', brand: '어뮤즈', product: '비건 아이 팔레트', shade: '#04 뉴트럴 모카', hex: '#8B6F6F', price: 28000, category: 'eyeshadow', colorTypes: ['가을 딥', '겨울 딥', '여름 뮤트'], tags: ['뉴트럴', '깊은'], verified: true },
+  { id: 'daisy_eye_icy', brand: '데이지크', product: '글램 아이 팔레트', shade: '아이시 파우더', hex: '#C8D8E8', price: 22000, category: 'eyeshadow', colorTypes: ['겨울 브라이트', '겨울 딥', '여름 라이트'], tags: ['쿨', '시크'], verified: true },
+
+  // ─── 블러셔 ────────────────────────────────────────────
+
+  { id: 'rom_better_cheek_01', brand: '롬앤', product: '베터 댄 치크', shade: '#01 피치 플로팅', hex: '#FFCBA4', price: 13000, category: 'blusher', colorTypes: ['봄 라이트', '봄 브라이트'], tags: ['피치', '데일리'], verified: true },
+  { id: 'etude_blusher_or201', brand: '에뛰드', product: '러블리쿠키 블러셔', shade: 'OR201 코코넛 라떼', hex: '#E8B890', price: 11000, category: 'blusher', colorTypes: ['봄 라이트', '가을 뮤트'], tags: ['코랄', '자연스러운'], verified: true },
+  { id: 'clio_nudism_02', brand: '클리오', product: '누디즘 블러셔', shade: '#02 피치 블룸', hex: '#FFB5A0', price: 18000, category: 'blusher', colorTypes: ['봄 브라이트', '여름 라이트'], tags: ['생기', '데일리'], verified: true },
+  { id: 'amuse_blusher_rose', brand: '어뮤즈', product: '듀 블러셔', shade: '#03 로즈 모닝', hex: '#E8A0B0', price: 16000, category: 'blusher', colorTypes: ['여름 라이트', '여름 뮤트', '겨울 브라이트'], tags: ['로즈', '쿨톤'], verified: true },
+  { id: 'daisy_blusher_02', brand: '데이지크', product: '블러리 무드 블러셔', shade: '#02 테라코타 선셋', hex: '#C07850', price: 18000, category: 'blusher', colorTypes: ['가을 뮤트', '가을 딥'], tags: ['어스', '내추럴'], verified: true },
+  { id: 'peripera_blusher_12', brand: '페리페라', product: '잉크 무드 드롭퍼 블러셔', shade: '#12 베리 초크', hex: '#B06080', price: 14000, category: 'blusher', colorTypes: ['겨울 딥', '겨울 브라이트', '여름 뮤트'], tags: ['베리', '시크'], verified: true },
+  { id: 'rom_blusher_mauve', brand: '롬앤', product: '베터 댄 치크', shade: '#07 더스티 모브', hex: '#B08098', price: 13000, category: 'blusher', colorTypes: ['겨울 딥', '여름 뮤트'], tags: ['모브', '차분'], verified: true },
+];
+
+/** 타입 + 카테고리별 제품 반환 — DB에 없는 제품은 절대 포함하지 않음 */
+export function getProductsByType(
+  colorType: PersonalColorType,
+  category: CosmeticProduct['category'],
+  count: number = 3,
+): CosmeticProduct[] {
+  return cosmeticDatabase
+    .filter(p => p.category === category && p.colorTypes.includes(colorType))
+    .slice(0, count);
 }
 
-export const cosmeticsDatabase: Record<PersonalColorType, TypeCosmetics> = {
-  '봄 라이트': {
-    lipstick: [
-      { brand: '롬앤',    product: '쥬시 래스팅 틴트',       shade: '#12 미스티 피치',       hex: '#F4A090', price: 10000 },
-      { brand: '페리페라', product: '잉크 더 벨벳',           shade: '#22 코랄 핑크',         hex: '#F09080', price: 9000  },
-      { brand: '어뮤즈',  product: '듀 벨벳 틴트',           shade: '#07 누드 오렌지',       hex: '#E8907A', price: 15000 },
-      { brand: '에뛰드',  product: '픽싱 틴트',              shade: '#OR201 피치 코랄',      hex: '#F5A080', price: 9000  },
-    ],
-    foundation: [
-      { brand: '헤라',    product: '실크 글로우 쿠션',        shade: '#21N 라이트 베이지',    hex: '#F5D5B5', price: 58000 },
-      { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션', shade: '#14C 바닐라 아이보리',  hex: '#F0C898', price: 32000 },
-      { brand: '클리오',  product: '킬커버 파운웨어 쿠션',    shade: '#3호 린넨',             hex: '#EDCBA8', price: 28000 },
-    ],
-    eyeshadow: [
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',    shade: '#06 피치 글로우',       hex: '#F4C4A8', price: 22000 },
-      { brand: '롬앤',    product: '베러 댄 팔레트',          shade: '#01 봄봄 러블리',       hex: '#F8D8C0', price: 25000 },
-      { brand: '에뛰드',  product: '플레이 컬러 아이즈',      shade: '#피치 팜',              hex: '#FFDAB9', price: 25000 },
-    ],
-    blusher: [
-      { brand: '롬앤',    product: '베러 댄 치크',            shade: '#01 듀이 피치',         hex: '#FFB7B2', price: 13000 },
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',        shade: '#OR201 코랄 누드',      hex: '#F5A882', price: 11000 },
-      { brand: '페리페라', product: '잉크 코튼 블러 치크',     shade: '#01 피치 클라우드',     hex: '#FFD0C0', price: 13000 },
-    ],
-  },
+/** 개발 환경에서 타입별·카테고리별 최소 2개 제품 확보 여부 검증 */
+export function validateProductCoverage(): void {
+  const types: PersonalColorType[] = [
+    '봄 라이트', '봄 브라이트',
+    '여름 라이트', '여름 뮤트',
+    '가을 뮤트', '가을 딥',
+    '겨울 브라이트', '겨울 딥',
+  ];
+  const categories = ['lipstick', 'foundation', 'eyeshadow', 'blusher'] as const;
 
-  '봄 브라이트': {
-    lipstick: [
-      { brand: '페리페라', product: '잉크 더 벨벳',           shade: '#01 코랄 페스타',       hex: '#FF7050', price: 9000  },
-      { brand: '롬앤',    product: '쥬시 래스팅 틴트',        shade: '#06 피그 피그',         hex: '#FF8040', price: 10000 },
-      { brand: '어뮤즈',  product: '듀 글로우 틴트',          shade: '#02 코랄 오렌지',       hex: '#FF7040', price: 15000 },
-      { brand: '클리오',  product: '킬 레드 틴트',            shade: '#01 레드 오렌지',       hex: '#FF5030', price: 13000 },
-    ],
-    foundation: [
-      { brand: '클리오',  product: '킬커버 파운웨어 쿠션',    shade: '#2.5호 내추럴 베이지',  hex: '#F2C8A0', price: 28000 },
-      { brand: '헤라',    product: '블랙 쿠션',               shade: '#21W 웜 라이트',        hex: '#F0C890', price: 60000 },
-      { brand: '미샤',    product: 'M 쿠션 파운데이션',        shade: '#21호 밝은 베이지',     hex: '#F5D0A0', price: 12000 },
-    ],
-    eyeshadow: [
-      { brand: '클리오',  product: '프로 아이 팔레트',         shade: '#03 코랄 & 오렌지',     hex: '#FF8C69', price: 32000 },
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#08 오렌지 글리터',     hex: '#FFB040', price: 22000 },
-      { brand: '에뛰드',  product: '플레이 컬러 아이즈',       shade: '#인투 더 코랄',         hex: '#FF7050', price: 25000 },
-    ],
-    blusher: [
-      { brand: '페리페라', product: '잉크 코튼 블러 치크',     shade: '#03 코랄 클라우드',     hex: '#FF8C69', price: 13000 },
-      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#04 선셋 코랄',         hex: '#FFA07A', price: 13000 },
-      { brand: '데이지크', product: '물빛 치크',               shade: '#03 살몬 코랄',         hex: '#FF9080', price: 18000 },
-    ],
-  },
-
-  '여름 라이트': {
-    lipstick: [
-      { brand: '롬앤',    product: '쥬시 래스팅 틴트',        shade: '#14 아라우카리아 핑크', hex: '#E8B0C8', price: 10000 },
-      { brand: '데이지크', product: '워터 벨벳 틴트',          shade: '#21 라일락 핑크',       hex: '#D8B0D0', price: 12000 },
-      { brand: '어뮤즈',  product: '듀 벨벳 틴트',            shade: '#05 로즈 퀀텀',         hex: '#D8A0C0', price: 15000 },
-      { brand: '에뛰드',  product: '픽싱 틴트',               shade: '#PK002 소프트 핑크',    hex: '#F0C0D8', price: 9000  },
-    ],
-    foundation: [
-      { brand: '헤라',    product: '실크 글로우 쿠션',         shade: '#21C 쿨 아이보리',      hex: '#F5E0EE', price: 58000 },
-      { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#12C 쿨 바닐라',        hex: '#F0D8E8', price: 32000 },
-      { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#1호 라이트',           hex: '#F5E0E0', price: 28000 },
-    ],
-    eyeshadow: [
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',     shade: '#02 핑크 라벤더',       hex: '#E8C0D8', price: 22000 },
-      { brand: '데이지크', product: '쉐도우 팔레트',            shade: '#02 블러섬',            hex: '#D8B8E0', price: 25000 },
-      { brand: '에뛰드',  product: '플레이 컬러 아이즈',       shade: '#체리 블라섬',          hex: '#F0C8D8', price: 25000 },
-    ],
-    blusher: [
-      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#02 블러쉬 로즈',       hex: '#E8B0C8', price: 13000 },
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#PK002 소프트 로즈',    hex: '#F0C0D8', price: 11000 },
-      { brand: '데이지크', product: '물빛 치크',                shade: '#01 핑크 라일락',       hex: '#D8B8E8', price: 18000 },
-    ],
-  },
-
-  '여름 뮤트': {
-    lipstick: [
-      { brand: '롬앤',    product: '쥬시 래스팅 틴트',        shade: '#23 핑크 무드',         hex: '#C4A0B0', price: 10000 },
-      { brand: '데이지크', product: '워터 벨벳 틴트',          shade: '#24 모브 로즈',         hex: '#B8A0B8', price: 12000 },
-      { brand: '어뮤즈',  product: '듀 벨벳 틴트',            shade: '#09 모브 핑크',         hex: '#C0A0B8', price: 15000 },
-      { brand: '에뛰드',  product: '픽싱 틴트',               shade: '#PK401 뮤트 모브',      hex: '#B0A0C0', price: 9000  },
-    ],
-    foundation: [
-      { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#22C 쿨 베이지',        hex: '#E8D5DF', price: 32000 },
-      { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#2호 핑크 베이지',      hex: '#EDCCD8', price: 28000 },
-      { brand: '맥',      product: '스튜디오 픽스 파운데이션',  shade: '#NC15 핑크 아이보리',   hex: '#ECD5D0', price: 55000 },
-    ],
-    eyeshadow: [
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',     shade: '#04 뮤트 모브',         hex: '#B8A8C8', price: 22000 },
-      { brand: '롬앤',    product: '베러 댄 팔레트',           shade: '#04 스모키 라일락',     hex: '#C0B0C8', price: 25000 },
-      { brand: '클리오',  product: '프로 아이 팔레트',         shade: '#05 로즈 스모키',       hex: '#B0A0B8', price: 32000 },
-    ],
-    blusher: [
-      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#05 모브 로즈',         hex: '#C4A0A0', price: 13000 },
-      { brand: '페리페라', product: '잉크 코튼 블러 치크',      shade: '#05 뮤트 모브',         hex: '#B8A8B8', price: 13000 },
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#PP101 라벤더 뮤트',    hex: '#C0A8C0', price: 11000 },
-    ],
-  },
-
-  '가을 뮤트': {
-    lipstick: [
-      { brand: '롬앤',    product: '쥬시 래스팅 틴트',        shade: '#16 무화과 피그',       hex: '#C8A882', price: 10000 },
-      { brand: '페리페라', product: '잉크 더 벨벳',            shade: '#14 테라코타 피그',     hex: '#A0785A', price: 9000  },
-      { brand: '데이지크', product: '워터 벨벳 틴트',          shade: '#15 카멜 누드',         hex: '#C4A070', price: 12000 },
-      { brand: '클리오',  product: '킬 레드 틴트',             shade: '#06 브릭 누드',         hex: '#B08060', price: 13000 },
-    ],
-    foundation: [
-      { brand: '헤라',    product: '블랙 쿠션',               shade: '#23N 내추럴 베이지',    hex: '#E5BB99', price: 60000 },
-      { brand: '에스쁘아', product: 'No Wear 파운데이션 쿠션',  shade: '#23W 웜 베이지',        hex: '#EDBB99', price: 32000 },
-      { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#4호 베이지',           hex: '#E8B890', price: 28000 },
-    ],
-    eyeshadow: [
-      { brand: '데이지크', product: '쉐도우 팔레트',            shade: '#05 어텀 테라',         hex: '#C4A87A', price: 25000 },
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#10 카멜 & 베이지',     hex: '#C8A882', price: 22000 },
-      { brand: '롬앤',    product: '베러 댄 팔레트',            shade: '#06 어스 앤 테라',      hex: '#A0785A', price: 25000 },
-    ],
-    blusher: [
-      { brand: '롬앤',    product: '베러 댄 치크',             shade: '#06 피치 어스',         hex: '#D4A574', price: 13000 },
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#OR301 어스 피치',      hex: '#E5AA70', price: 11000 },
-      { brand: '페리페라', product: '잉크 코튼 블러 치크',      shade: '#06 너드 베이지',       hex: '#C8A882', price: 13000 },
-    ],
-  },
-
-  '가을 딥': {
-    lipstick: [
-      { brand: '롬앤',    product: '쥬시 래스팅 틴트',        shade: '#22 다크 오크',         hex: '#7B4030', price: 10000 },
-      { brand: '맥',      product: '립스틱',                  shade: '#Cognac 브릭 레드',     hex: '#8B3A28', price: 38000 },
-      { brand: '클리오',  product: '킬 레드 틴트',             shade: '#07 딥 브릭',           hex: '#7A3020', price: 13000 },
-      { brand: '나스',    product: '오다시어스 립스틱',         shade: '#Lhassa 딥 브라운 레드', hex: '#6B2820', price: 45000 },
-    ],
-    foundation: [
-      { brand: '헤라',    product: '블랙 쿠션',               shade: '#25W 딥 웜',            hex: '#E0B080', price: 60000 },
-      { brand: '클리오',  product: '킬커버 파운웨어 쿠션',     shade: '#5호 딥 베이지',        hex: '#DAAA80', price: 28000 },
-      { brand: '맥',      product: '스튜디오 픽스 파운데이션',  shade: '#NC30 웜 베이지',       hex: '#D8A878', price: 55000 },
-    ],
-    eyeshadow: [
-      { brand: '헤라',    product: '아이즈 쉐도우 팔레트',     shade: '#02 브라운 스모키',     hex: '#5C3020', price: 45000 },
-      { brand: '데이지크', product: '쉐도우 팔레트',            shade: '#06 딥 테라',           hex: '#7B4030', price: 25000 },
-      { brand: '클리오',  product: '프로 아이 팔레트',          shade: '#07 딥 브라운',         hex: '#6B3A2A', price: 32000 },
-    ],
-    blusher: [
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#BR401 테라코타',       hex: '#A0522D', price: 11000 },
-      { brand: '롬앤',    product: '베러 댄 치크',              shade: '#07 테라 브릭',         hex: '#8B4513', price: 13000 },
-      { brand: '클리오',  product: '누드 솔리스타',             shade: '#07 브릭 테라',         hex: '#9A4030', price: 22000 },
-    ],
-  },
-
-  '겨울 브라이트': {
-    lipstick: [
-      { brand: '롬앤',     product: '쥬시 래스팅 틴트',       shade: '#01 뱀파이어 딸기',     hex: '#CC0000', price: 10000 },
-      { brand: '입생로랑',  product: '루쥬 퓨르 꾸뛰르',       shade: '#1 레 파리지엔 레드',   hex: '#CC1818', price: 55000 },
-      { brand: '맥',       product: '루비 우 립스틱',          shade: '#루비 우 트루 레드',    hex: '#C80000', price: 38000 },
-      { brand: '클리오',   product: '킬 레드 틴트',            shade: '#03 레드 벨벳',         hex: '#C80028', price: 13000 },
-    ],
-    foundation: [
-      { brand: '헤라',     product: '실크 글로우 쿠션',        shade: '#17C 쿨 아이보리',      hex: '#F0E0EC', price: 58000 },
-      { brand: '에스쁘아',  product: 'No Wear 파운데이션 쿠션', shade: '#11C 아이보리 쿨',      hex: '#F5E0E8', price: 32000 },
-      { brand: '맥',       product: '스튜디오 픽스 파운데이션', shade: '#NW13 쿨 핑크',         hex: '#EDD5DF', price: 55000 },
-    ],
-    eyeshadow: [
-      { brand: '헤라',     product: '아이즈 쉐도우 팔레트',    shade: '#05 블랙 스모키',       hex: '#2A2A3A', price: 45000 },
-      { brand: '클리오',   product: '프로 아이 팔레트',         shade: '#08 블루 스모키',       hex: '#1A2040', price: 32000 },
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#12 그레이 스모키',     hex: '#505060', price: 22000 },
-    ],
-    blusher: [
-      { brand: '롬앤',     product: '베러 댄 치크',             shade: '#08 로즈 마젠타',       hex: '#CC4488', price: 13000 },
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#RD101 딥 로즈',        hex: '#C83070', price: 11000 },
-      { brand: '페리페라', product: '잉크 코튼 블러 치크',      shade: '#08 비비드 핑크',       hex: '#E02080', price: 13000 },
-    ],
-  },
-
-  '겨울 딥': {
-    lipstick: [
-      { brand: '롬앤',     product: '쥬시 래스팅 틴트',       shade: '#24 로즈 가든',         hex: '#800020', price: 10000 },
-      { brand: '맥',       product: '립스틱',                 shade: '#더 루트비어 버건디',   hex: '#6A1020', price: 38000 },
-      { brand: '입생로랑',  product: '루쥬 퓨르 꾸뛰르',       shade: '#4 루즈 반드 버건디',   hex: '#780018', price: 55000 },
-      { brand: '나스',      product: '오다시어스 립스틱',       shade: '#Vera 딥 버건디',       hex: '#5A1020', price: 45000 },
-    ],
-    foundation: [
-      { brand: '헤라',     product: '블랙 쿠션',              shade: '#25C 쿨 딥',            hex: '#D8C0CC', price: 60000 },
-      { brand: '맥',       product: '스튜디오 픽스 파운데이션', shade: '#NW25 딥 쿨 베이지',    hex: '#D0B8C8', price: 55000 },
-      { brand: '에스쁘아',  product: 'No Wear 파운데이션 쿠션', shade: '#24C 딥 쿨',            hex: '#CCBAD0', price: 32000 },
-    ],
-    eyeshadow: [
-      { brand: '헤라',     product: '아이즈 쉐도우 팔레트',    shade: '#06 딥 스모키 퍼플',    hex: '#2A1040', price: 45000 },
-      { brand: '클리오',   product: '프로 아이 팔레트',         shade: '#09 딥 퍼플 네이비',    hex: '#1A1850', price: 32000 },
-      { brand: '어뮤즈',  product: '오 더 쉐도우 팔레트',      shade: '#15 버건디 스모키',     hex: '#500018', price: 22000 },
-    ],
-    blusher: [
-      { brand: '롬앤',     product: '베러 댄 치크',             shade: '#09 딥 베리',           hex: '#800040', price: 13000 },
-      { brand: '에뛰드',  product: '러블리쿠키 블러셔',         shade: '#PK501 다크 베리',      hex: '#780030', price: 11000 },
-      { brand: '클리오',   product: '누드 솔리스타',             shade: '#09 버건디 로즈',       hex: '#6A1028', price: 22000 },
-    ],
-  },
-};
+  types.forEach(type => {
+    categories.forEach(cat => {
+      const count = cosmeticDatabase.filter(
+        p => p.category === cat && p.colorTypes.includes(type),
+      ).length;
+      if (count < 2) {
+        console.warn(`⚠️ 제품 부족: ${type} - ${cat} (${count}개, 최소 2개 필요)`);
+      }
+    });
+  });
+  console.log('✅ 제품 DB 검증 완료');
+}

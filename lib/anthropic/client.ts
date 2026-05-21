@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { PersonalColorType, TestAnswers } from '@/types';
+import { getProductsByType, type CosmeticProduct } from '@/lib/data/cosmetics';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -352,11 +353,11 @@ export interface ReportData {
     worst: WorstColorItem[];    // 4개 (name, hex, reason 포함)
   };
   makeup: {
-    lip: ReportMakeupItem[];        // 3개
-    foundation: ReportMakeupItem[]; // 2개
-    eyeshadow: ReportMakeupItem[];  // 2개
-    blusher: ReportMakeupItem[];    // 2개
-    tips: string[];                 // 4-5개 맞춤 팁
+    lipstick:   CosmeticProduct[]; // 3개 — DB에서 주입
+    foundation: CosmeticProduct[]; // 2개 — DB에서 주입
+    eyeshadow:  CosmeticProduct[]; // 2개 — DB에서 주입
+    blusher:    CosmeticProduct[]; // 2개 — DB에서 주입
+    tips: string[];                // 4-5개 맞춤 팁 (Claude 생성)
   };
   hair: {
     recommended: Array<{ name: string; description: string }>;  // 3개
@@ -391,6 +392,14 @@ export async function generateReportData(
   const today = new Date().toISOString().slice(0, 10);
   const reportId = `CL-${Date.now().toString(36).toUpperCase()}`;
   const name = customerName?.trim() || '고객';
+
+  // ⭐ DB에서 실제 제품 사전 로드 — AI가 생성하지 않음
+  const realProducts = {
+    lipstick:   getProductsByType(colorType, 'lipstick',   3),
+    foundation: getProductsByType(colorType, 'foundation', 2),
+    eyeshadow:  getProductsByType(colorType, 'eyeshadow',  2),
+    blusher:    getProductsByType(colorType, 'blusher',    2),
+  };
 
   const photoInstruction = imageBase64
     ? `첨부 사진에서 ${name}님의 피부 색상(Hue)·명도(Value)·채도(Chroma)·분위기를 분석하여 personalIntro.photoImpression 및 분석 데이터에 반영하세요.`
@@ -474,22 +483,10 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     ]
   },
   "makeup": {
-    "lip": [
-      {"name": "색상명", "hex": "#RRGGBB", "description": "추천 이유 한 문장"},
-      (총 3개)
-    ],
-    "foundation": [
-      {"name": "쉐이드명", "hex": "#RRGGBB", "description": "설명"},
-      (총 2개)
-    ],
-    "eyeshadow": [
-      {"name": "색상명", "hex": "#RRGGBB", "description": "설명"},
-      (총 2개)
-    ],
-    "blusher": [
-      {"name": "색상명", "hex": "#RRGGBB", "description": "설명"},
-      (총 2개)
-    ],
+    "lipstick": [],
+    "foundation": [],
+    "eyeshadow": [],
+    "blusher": [],
     "tips": [
       "${name}님께 맞는 베이스 메이크업 팁 (1문장)",
       "립 컬러 선택 팁 (1문장)",
@@ -588,5 +585,13 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     ? raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
     : raw;
 
-  return JSON.parse(jsonText) as ReportData;
+  const data = JSON.parse(jsonText) as ReportData;
+
+  // ⭐ AI가 생성한 빈 제품 배열을 DB 실제 제품으로 교체
+  data.makeup.lipstick   = realProducts.lipstick;
+  data.makeup.foundation = realProducts.foundation;
+  data.makeup.eyeshadow  = realProducts.eyeshadow;
+  data.makeup.blusher    = realProducts.blusher;
+
+  return data;
 }
