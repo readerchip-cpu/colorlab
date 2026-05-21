@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Camera, Palette, BookOpen, Star } from 'lucide-react';
+import BusinessInfo from '@/components/BusinessInfo';
 import { TYPE_PALETTE } from '@/lib/colorData';
 import type { PersonalColorType } from '@/types';
 
@@ -371,6 +372,10 @@ export default function LandingPage() {
             <Link href="/terms" className="text-gray-500 transition-colors hover:text-violet-600 dark:text-gray-400 dark:hover:text-purple-400">
               이용약관
             </Link>
+          </div>
+
+          <div className="mb-4 border-t border-gray-100 pt-4 dark:border-gray-700">
+            <BusinessInfo />
           </div>
 
           <p className="text-[11px] text-gray-400 dark:text-gray-500">

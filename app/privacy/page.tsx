@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import BusinessInfo from '@/components/BusinessInfo';
 
 export const metadata: Metadata = {
   title: '개인정보처리방침 | 컬러랩',
@@ -204,8 +205,16 @@ export default function PrivacyPage() {
           </P>
         </Section>
 
+        {/* 사업자 정보 */}
+        <div className="mt-10 rounded-2xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800/50">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+            사업자 정보
+          </p>
+          <BusinessInfo />
+        </div>
+
         {/* 하단 네비게이션 */}
-        <div className="mt-10 flex items-center justify-between border-t border-gray-100 pt-6 text-xs text-gray-400">
+        <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-6 text-xs text-gray-400">
           <span>시행일: {LAST_UPDATED}</span>
           <Link href="/terms" className="text-[#7C3AED] hover:underline">
             이용약관 →
