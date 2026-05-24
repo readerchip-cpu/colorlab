@@ -53,19 +53,16 @@ function validateCover(data: ReportPDFProps): PageValidationResult {
 
 function validateAnalysis(data: ReportPDFProps): PageValidationResult {
   const warnings: string[] = [];
-  // TYPE_EXTRA[colorType] 항상 존재 → 4속성·베이스·컨트라스트 보장
-  let height = 60  // 페이지 헤더
-    + 220          // 첫인상 + 4분면 차트
-    + 15           // 구분선
-    + 40           // 정밀분석 섹션 제목
-    + 120          // 4속성 통합 카드
-    + 120          // BASE+CONTRAST 통합 카드
-    + 80;          // REFERENCE 박스
+  // Reference 박스 제거됨, 차트 196→160으로 압축
+  let height = 55  // 페이지 헤더
+    + 195          // 첫인상 + 4분면 차트(160)
+    + 14           // 구분선
+    + 35           // 정밀분석 섹션 제목
+    + 105          // 4속성 통합 카드
+    + 105;         // BASE+CONTRAST 통합 카드
 
   if (data.personalIntro?.keyInsight) {
-    height += 90;
-  } else {
-    warnings.push('personalIntro.keyInsight 가 없습니다. KEY INSIGHT 박스가 표시되지 않아 빈 공간이 생길 수 있습니다.');
+    height += 75;
   }
 
   return {
@@ -114,14 +111,14 @@ function validateMakeup(_data: ReportPDFProps): PageValidationResult {
 }
 
 function validateHairFashionSeasonal(_data: ReportPDFProps): PageValidationResult {
-  // TYPE_EXTRA.hair + fashion + seasonalStylingDatabase 항상 존재
-  const height = 40   // 헤더
-    + 120             // 헤어 3카드 + avoid
-    + 15              // 구분선
-    + 130             // 패션 컬러 3카드 + 팁
-    + 15              // 구분선
-    + 40              // 시즌 섹션 제목
-    + 320;            // 4계절 카드 (flex: 1)
+  // 2×2 텍스트 전용 시즌 카드로 압축
+  const height = 35   // 헤더
+    + 110             // 헤어 3카드 + avoid
+    + 14              // 구분선
+    + 115             // 패션 컬러 3카드 + 팁
+    + 14              // 구분선
+    + 35              // 시즌 섹션 제목
+    + 160;            // 2×2 텍스트 카드 (2행 × 75pt)
 
   return {
     pageNumber: 5,
