@@ -1,19 +1,11 @@
 export async function GET() {
-  const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
-  const secretKey = process.env.TOSS_SECRET_KEY;
+  const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
+  const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
+  const apiSecret = process.env.PORTONE_API_SECRET;
 
   return Response.json({
-    client: {
-      exists: !!clientKey,
-      length: clientKey?.length || 0,
-      first15: clientKey?.substring(0, 15) || "없음",
-      startsCorrectly: clientKey?.startsWith("test_ck_") || false,
-    },
-    secret: {
-      exists: !!secretKey,
-      length: secretKey?.length || 0,
-      first15: secretKey?.substring(0, 15) || "없음",
-      startsCorrectly: secretKey?.startsWith("test_sk_") || false,
-    },
+    storeId: { exists: !!storeId, first10: storeId?.substring(0, 10) || '없음' },
+    channelKey: { exists: !!channelKey, first10: channelKey?.substring(0, 10) || '없음' },
+    apiSecret: { exists: !!apiSecret },
   });
 }

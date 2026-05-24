@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTestSession } from '@/lib/utils/session';
 import { getSeasonFromType, getToneFromType } from '@/lib/colorLogic';
-import { TYPE_DISPLAY, SEASON_GRADIENT, TYPE_PALETTE } from '@/lib/colorData';
+import { TYPE_DISPLAY, SEASON_GRADIENT, TYPE_PALETTE, TYPE_DESCRIPTION } from '@/lib/colorData';
 import ColorPalette from '@/components/result/ColorPalette';
 import LockedContent from '@/components/result/LockedContent';
 import ShareModal from '@/components/share/ShareModal';
@@ -59,6 +59,7 @@ export default async function ResultPage({ params }: Props) {
   const displayName = TYPE_DISPLAY[colorType];
   const palette = TYPE_PALETTE[colorType];
   const gradient = SEASON_GRADIENT[season];
+  const aiDescription = session.report_content || TYPE_DESCRIPTION[colorType];
 
   return (
     <main className="min-h-screen bg-white pb-28 dark:bg-gray-900">
@@ -88,22 +89,16 @@ export default async function ResultPage({ params }: Props) {
       {/* ── 2. 대표 컬러 팔레트 ── */}
       <ColorPalette palette={palette} />
 
-      {/* 섹션 구분선 */}
-      <div className="mx-auto max-w-xl px-5">
-        <div className="border-t border-gray-100 dark:border-gray-700" />
-      </div>
-
       {/* ── 3. AI 서사형 설명 ── */}
-      {session.report_content && (
-        <section className="mx-auto max-w-xl px-5 py-10">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
-            AI 분석
-          </p>
-          <p className="font-serif text-[17px] leading-[2] tracking-wide text-gray-700 dark:text-gray-300">
-            {session.report_content}
-          </p>
-        </section>
-      )}
+      <section className="mx-auto max-w-xl px-5 py-10">
+        <div className="mb-10 border-t border-gray-100 dark:border-gray-700" />
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+          AI 분석
+        </p>
+        <p className="font-serif text-[17px] leading-[2] tracking-wide text-gray-700 dark:text-gray-300">
+          {aiDescription}
+        </p>
+      </section>
 
       {/* 섹션 구분선 */}
       <div className="mx-auto max-w-xl px-5">
@@ -111,7 +106,7 @@ export default async function ResultPage({ params }: Props) {
       </div>
 
       {/* ── 4. 잠긴 콘텐츠 (블러) ── */}
-      <LockedContent />
+      <LockedContent colorType={colorType} />
 
       {/* ── 5. 페이월 CTA ── */}
       <section className="mx-auto max-w-xl px-5 py-6">

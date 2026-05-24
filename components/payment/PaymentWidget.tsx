@@ -1,8 +1,6 @@
 'use client';
 
-import { loadPaymentWidget, ANONYMOUS } from '@tosspayments/payment-widget-sdk';
-import { useEffect, useRef, useState } from 'react';
-import type { PaymentWidgetInstance } from '@tosspayments/payment-widget-sdk';
+import { useState } from 'react';
 import { createPendingPayment } from '@/app/actions/payment';
 import { cn } from '@/lib/utils/cn';
 
@@ -11,63 +9,76 @@ interface Props {
   amount: number;
 }
 
-const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type PayMethod = 'CARD' | 'KAKAO' | 'NAVER';
 
 export default function PaymentWidget({ sessionId, amount }: Props) {
-  const widgetRef = useRef<PaymentWidgetInstance | null>(null);
-  const [ready, setReady] = useState(false);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMethod, setLoadingMethod] = useState<PayMethod | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function initWidget() {
-      const paymentWidget = await loadPaymentWidget(clientKey, ANONYMOUS);
-      paymentWidget.renderPaymentMethods('#payment-method', { value: amount });
-      paymentWidget.renderAgreement('#agreement');
-      widgetRef.current = paymentWidget;
-      setReady(true);
-    }
-    initWidget().catch(console.error);
-  }, [amount]);
+  const isLoading = loadingMethod !== null;
 
-  const handlePay = async () => {
-    setError(null);
-
-    if (!email.trim()) {
-      setEmailError('이메일을 입력해주세요.');
-      return;
-    }
-    if (!EMAIL_RE.test(email)) {
-      setEmailError('올바른 이메일 형식이 아니에요.');
-      return;
-    }
+  const validateEmail = (): boolean => {
+    if (!email.trim()) { setEmailError('이메일을 입력해주세요.'); return false; }
+    if (!EMAIL_RE.test(email)) { setEmailError('올바른 이메일 형식이 아니에요.'); return false; }
     setEmailError('');
+    return true;
+  };
 
-    if (!widgetRef.current) return;
-    setIsLoading(true);
+  const handlePay = async (method: PayMethod) => {
+    if (!validateEmail()) return;
+    setError(null);
+    setLoadingMethod(method);
 
     try {
-      const orderId = `colorlab_${sessionId}_${Date.now()}`;
+      const paymentId = `colorlab_${sessionId}_${Date.now()}`;
+      await createPendingPayment({ sessionId, orderId: paymentId, amount, email });
 
-      await createPendingPayment({ sessionId, orderId, amount, email });
+      const PortOne = await import('@portone/browser-sdk/v2');
+      const { Currency, EasyPayProvider } = PortOne.Entity;
 
-      await widgetRef.current.requestPayment({
-        orderId,
+      const channelKey =
+        method === 'KAKAO'
+          ? process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_KAKAO!
+          : method === 'NAVER'
+            ? process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_NAVER!
+            : process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!;
+
+      const common = {
+        storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
+        channelKey,
+        paymentId,
         orderName: '컬러랩 퍼스널컬러 정밀 분석',
-        successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm`,
-        failUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/fail`,
-        customerEmail: email,
-      });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '';
-      if (!msg.includes('USER_CANCEL')) {
-        setError('결제 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+        totalAmount: amount,
+        currency: Currency.KRW,
+        redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm`,
+        customer: { email, fullName: '컬러랩 고객' },
+      };
+
+      const response =
+        method === 'KAKAO'
+          ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: EasyPayProvider.KAKAOPAY } })
+          : method === 'NAVER'
+            ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: EasyPayProvider.NAVERPAY } })
+            : await PortOne.requestPayment({ ...common, payMethod: 'CARD' });
+
+      // 팝업 방식(데스크탑 카드)은 response 객체가 반환됨
+      if (response) {
+        if (response.code) {
+          if (response.code !== 'PAYMENT_CANCELLED') {
+            setError(response.message || '결제 중 오류가 발생했어요.');
+          }
+        } else {
+          window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm?paymentId=${response.paymentId}&txId=${response.txId}`;
+        }
       }
-      setIsLoading(false);
+      // response undefined → 리다이렉트 방식 (이미 페이지 이동 중)
+    } catch {
+      setError('결제 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setLoadingMethod(null);
     }
   };
 
@@ -98,32 +109,75 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         {emailError ? (
           <p className="mt-1.5 text-xs text-red-500">{emailError}</p>
         ) : (
-          <p className="mt-1.5 text-xs text-gray-400">
-            결제 완료 후 리포트 링크를 발송해드려요
-          </p>
+          <p className="mt-1.5 text-xs text-gray-400">결제 완료 후 리포트 링크를 발송해드려요</p>
         )}
       </div>
 
-      {/* Toss 위젯 렌더링 영역 */}
-      <div
-        id="payment-method"
-        className={cn('mb-4', !ready && 'h-52 animate-pulse rounded-xl bg-gray-50')}
-      />
-      <div id="agreement" className="mb-6" />
+      {/* 간편결제 버튼 */}
+      <div className="mb-3 space-y-2.5">
+        <button
+          onClick={() => handlePay('KAKAO')}
+          disabled={isLoading}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-sm font-bold text-[#3C1E1E] transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          {loadingMethod === 'KAKAO' ? '처리 중...' : <><KakaoIcon />카카오페이</>}
+        </button>
 
+        <button
+          onClick={() => handlePay('NAVER')}
+          disabled={isLoading}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#03C75A] py-3.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          {loadingMethod === 'NAVER' ? '처리 중...' : <><NaverIcon />네이버페이</>}
+        </button>
+      </div>
+
+      {/* 구분선 */}
+      <div className="mb-3 flex items-center gap-3">
+        <div className="h-px flex-1 bg-gray-100" />
+        <span className="text-xs text-gray-400">또는</span>
+        <div className="h-px flex-1 bg-gray-100" />
+      </div>
+
+      {/* 카드 결제 버튼 */}
+      <button
+        onClick={() => handlePay('CARD')}
+        disabled={isLoading}
+        className="w-full rounded-2xl bg-[#7C3AED] py-4 text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:opacity-50"
+      >
+        {loadingMethod === 'CARD' ? '결제 처리 중...' : `신용·체크카드  ₩${amount.toLocaleString()}`}
+      </button>
+
+      {/* 오류 메시지 */}
       {error && (
-        <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
+        <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
           {error}
         </div>
       )}
-
-      <button
-        onClick={handlePay}
-        disabled={isLoading || !ready}
-        className="w-full rounded-2xl bg-[#7C3AED] py-4 text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:opacity-50"
-      >
-        {isLoading ? '결제 처리 중...' : `₩${amount.toLocaleString()} 결제하기`}
-      </button>
     </div>
+  );
+}
+
+function KakaoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9 1.5C4.858 1.5 1.5 4.134 1.5 7.375c0 2.106 1.4 3.953 3.514 5.004l-.9 3.35a.234.234 0 0 0 .362.255L8.27 13.19c.24.02.484.031.73.031 4.142 0 7.5-2.634 7.5-5.875S13.142 1.5 9 1.5Z"
+        fill="#3C1E1E"
+      />
+    </svg>
+  );
+}
+
+function NaverIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path
+        d="M10.254 9.27 7.56 5H5v8h2.746V8.73L10.44 13H13V5h-2.746v4.27Z"
+        fill="white"
+      />
+    </svg>
   );
 }

@@ -1,52 +1,56 @@
 import { NextResponse } from 'next/server';
-import { confirmTossPayment, parseSessionId } from '@/lib/toss/confirm';
+import { verifyPortonePayment, parseSessionId } from '@/lib/portone/confirm';
 import { getPaymentByOrderId, updatePaymentDone } from '@/lib/utils/payment';
 import { updateSessionPaid } from '@/lib/utils/session';
 
 const PRICE = Number(process.env.PRICE ?? 4900);
 
-// Toss가 결제 완료 후 GET 리다이렉트로 이 URL을 호출
+// PortOne이 결제 후 GET 리다이렉트로 이 URL을 호출
+// 성공: ?paymentId=...&txId=...
+// 실패: ?paymentId=...&code=...&message=...
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const paymentKey = searchParams.get('paymentKey');
-  const orderId = searchParams.get('orderId');
-  const amount = searchParams.get('amount');
+  const paymentId = searchParams.get('paymentId');
+  const code = searchParams.get('code');
 
-  // 필수 파라미터 누락
-  if (!paymentKey || !orderId || !amount) {
-    return NextResponse.redirect(`${origin}/`);
-  }
-
-  // 금액 변조 방지
-  if (Number(amount) !== PRICE) {
-    console.error(`Amount mismatch: expected ${PRICE}, got ${amount}`);
-    return NextResponse.redirect(`${origin}/`);
-  }
+  if (!paymentId) return NextResponse.redirect(`${origin}/`);
 
   let sessionId: string;
   try {
-    sessionId = parseSessionId(orderId);
+    sessionId = parseSessionId(paymentId);
   } catch {
     return NextResponse.redirect(`${origin}/`);
   }
 
-  try {
-    // 1. 토스 결제 승인 API 호출
-    await confirmTossPayment(paymentKey, orderId, Number(amount));
+  // 결제 실패/취소
+  if (code) {
+    const params = new URLSearchParams({ error: code });
+    const message = searchParams.get('message');
+    if (message) params.set('message', message);
+    return NextResponse.redirect(`${origin}/pay/${sessionId}?${params}`);
+  }
 
-    // 2. DB 업데이트 (결제 키 저장 + is_paid)
+  try {
+    const { status, amount, txId } = await verifyPortonePayment(paymentId);
+
+    if (status !== 'PAID') {
+      throw new Error(`Payment status not PAID: ${status}`);
+    }
+
+    if (amount !== PRICE) {
+      console.error(`Amount mismatch: expected ${PRICE}, got ${amount}`);
+      return NextResponse.redirect(`${origin}/`);
+    }
+
     await Promise.all([
-      getPaymentByOrderId(orderId),
-      updatePaymentDone(orderId, paymentKey),
+      getPaymentByOrderId(paymentId),
+      updatePaymentDone(paymentId, txId),
     ]);
     await updateSessionPaid(sessionId);
 
-    // 이메일은 분석 완료(analyze route) 시점에 발송됩니다.
     return NextResponse.redirect(`${origin}/upload/${sessionId}`);
   } catch (err) {
     console.error('Payment confirm error:', err);
-    return NextResponse.redirect(
-      `${origin}/pay/${sessionId}?error=confirm_failed`,
-    );
+    return NextResponse.redirect(`${origin}/pay/${sessionId}?error=confirm_failed`);
   }
 }

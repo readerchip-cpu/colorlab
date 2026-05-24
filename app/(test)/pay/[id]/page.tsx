@@ -125,13 +125,13 @@ export default async function PayPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        {/* 토스페이먼츠 위젯 + 이메일 입력 */}
+        {/* 결제 수단 선택 + 이메일 입력 */}
         <div className="rounded-3xl bg-white px-6 py-6 shadow-sm">
           <PaymentWidget sessionId={params.id} amount={PRICE} />
         </div>
 
         <p className="mt-5 text-center text-xs text-gray-400">
-          결제는 토스페이먼츠를 통해 안전하게 처리됩니다
+          결제는 포트원(KG이니시스)을 통해 안전하게 처리됩니다
         </p>
       </div>
     </main>

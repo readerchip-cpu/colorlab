@@ -1,27 +1,23 @@
 import { NextResponse } from 'next/server';
-import { parseSessionId } from '@/lib/toss/confirm';
+import { parseSessionId } from '@/lib/portone/confirm';
 import { updatePaymentFailed } from '@/lib/utils/payment';
 
-// Toss가 결제 실패/취소 시 GET 리다이렉트로 이 URL을 호출
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const orderId = searchParams.get('orderId');
+  const paymentId = searchParams.get('paymentId');
   const code = searchParams.get('code') ?? 'UNKNOWN';
   const message = searchParams.get('message') ?? '';
 
-  if (!orderId) {
-    return NextResponse.redirect(`${origin}/`);
-  }
+  if (!paymentId) return NextResponse.redirect(`${origin}/`);
 
   let sessionId: string;
   try {
-    sessionId = parseSessionId(orderId);
+    sessionId = parseSessionId(paymentId);
   } catch {
     return NextResponse.redirect(`${origin}/`);
   }
 
-  // payments 레코드가 없을 수도 있으므로 조용히 처리
-  updatePaymentFailed(orderId).catch((err) =>
+  updatePaymentFailed(paymentId).catch((err) =>
     console.error('updatePaymentFailed error:', err),
   );
 
