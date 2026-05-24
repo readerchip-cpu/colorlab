@@ -5,7 +5,7 @@ import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { TYPE_PALETTE, TYPE_DISPLAY, TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { QuadrantChart } from './QuadrantChart';
 import { ColorChip } from './ColorChip';
-import { SeasonIcon } from './SeasonIcon';
+
 import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
 import { PaletteGrid } from './PaletteGrid';
 import { CelebrityCard } from './CelebrityCard';
@@ -664,18 +664,18 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
         <Text style={{ fontSize: 9, color: '#AAA', marginTop: 2, fontFamily: 'Pretendard' }}>Best Colors · {fashion.main}</Text>
       </View>
 
-      {/* Best Colors Grid — 4×2, 큰 칩 + 별점 + 키워드 */}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+      {/* Best Colors Grid — 4×2, 칩 + 별점 + 키워드 */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginBottom: 8 }}>
         {bestColors.map(({ hex, name: cName }, i) => (
           <View key={hex} style={{
             width: '23%', alignItems: 'center',
-            backgroundColor: '#FAFAFA', borderRadius: 8, padding: 10,
+            backgroundColor: '#FAFAFA', borderRadius: 8, padding: 7,
           }}>
             <View style={{
-              width: 64, height: 64, borderRadius: 32,
+              width: 48, height: 48, borderRadius: 24,
               backgroundColor: hex,
               borderWidth: 0.5, borderColor: '#E0DCCC', borderStyle: 'solid',
-              marginBottom: 7,
+              marginBottom: 5,
             }} />
             <Text style={{ fontSize: 9, fontWeight: 700, color: '#2A2A2A', textAlign: 'center', marginBottom: 2, fontFamily: 'Pretendard' }}>{cName}</Text>
             <Text style={{ fontSize: 6.5, color: '#BBB', textAlign: 'center', marginBottom: 5, fontFamily: 'Pretendard' }}>{hex}</Text>
@@ -711,7 +711,7 @@ function PalettePage({ colorType, accent, customerName }: { colorType: PersonalC
           {worstColors.map(({ hex, name: cName }) => (
             <View key={hex} style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff', padding: 8, borderRadius: 6 }}>
               <View style={{
-                width: 46, height: 46, borderRadius: 23,
+                width: 36, height: 36, borderRadius: 18,
                 backgroundColor: hex, opacity: 0.4,
                 borderWidth: 2, borderColor: '#999', borderStyle: 'dashed',
                 marginBottom: 5,
@@ -979,8 +979,8 @@ function HairFashionSeasonalPage({ colorType, accent, customerName }: {
                 paddingVertical: 6,
                 borderRightWidth: 0.5, borderRightColor: stripe + '50', borderRightStyle: 'solid',
               }}>
-                <SeasonIcon season={key} size={30} />
-                <Text style={{ fontSize: 6.5, fontWeight: 700, color: stripe, letterSpacing: 0.3, marginTop: 3, textAlign: 'center' }}>
+                <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: stripe + '30', borderWidth: 1.5, borderColor: stripe, borderStyle: 'solid', marginBottom: 4 }} />
+                <Text style={{ fontSize: 6.5, fontWeight: 700, color: stripe, letterSpacing: 0.3, textAlign: 'center' }}>
                   {key === 'spring' ? 'SPRING' : key === 'summer' ? 'SUMMER' : key === 'autumn' ? 'AUTUMN' : 'WINTER'}
                 </Text>
               </View>

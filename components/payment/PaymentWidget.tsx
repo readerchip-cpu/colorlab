@@ -10,6 +10,7 @@ interface Props {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^010\d{8}$/;
 type PayMethod = 'CARD' | 'KAKAO' | 'NAVER';
 
 const isValidChannelKey = (key: string | undefined): boolean =>
@@ -21,6 +22,8 @@ const isValidChannelKey = (key: string | undefined): boolean =>
 export default function PaymentWidget({ sessionId, amount }: Props) {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [loadingMethod, setLoadingMethod] = useState<PayMethod | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,17 +39,26 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
     return true;
   };
 
+  const validatePhone = (): boolean => {
+    if (!phone.trim()) { setPhoneError('휴대폰 번호를 입력해주세요.'); return false; }
+    if (!PHONE_RE.test(phone)) { setPhoneError('010으로 시작하는 11자리 숫자를 입력해주세요.'); return false; }
+    setPhoneError('');
+    return true;
+  };
+
   const handlePay = async (method: PayMethod) => {
     if (!validateEmail()) return;
+    if (!validatePhone()) return;
     setError(null);
     setLoadingMethod(method);
 
     try {
-      const paymentId = `colorlab_${sessionId}_${Date.now()}`;
+      const cleanSessionId = sessionId.replace(/-/g, ''); // 32자 (UUID 하이픈 제거)
+      const shortTimestamp = Date.now().toString().slice(-4); // 4자
+      const paymentId = `cl_${cleanSessionId}_${shortTimestamp}`; // 총 40자
       await createPendingPayment({ sessionId, orderId: paymentId, amount, email });
 
       const PortOne = await import('@portone/browser-sdk/v2');
-      const { Currency, EasyPayProvider } = PortOne.Entity;
 
       const channelKey =
         method === 'KAKAO'
@@ -61,16 +73,31 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         paymentId,
         orderName: '컬러랩 퍼스널컬러 정밀 분석',
         totalAmount: amount,
-        currency: Currency.KRW,
+        currency: 'KRW' as const,
         redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm`,
-        customer: { email, fullName: '컬러랩 고객' },
+        customer: { email, fullName: '컬러랩 고객', phoneNumber: phone },
       };
+
+      console.log('==== 포트원 결제 디버깅 ====');
+      console.log('1. method:', method);
+      console.log('2. storeId:', process.env.NEXT_PUBLIC_PORTONE_STORE_ID);
+      console.log('3. channelKey:', channelKey);
+      console.log('4. paymentId:', paymentId);
+      console.log('5. amount:', amount, typeof amount);
+      console.log('6. email:', email);
+      console.log('7. redirectUrl:', `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm`);
+      console.log('8. NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+      console.log('9. common 전체:', JSON.stringify(common, null, 2));
+      console.log('==========================');
+      console.log('[채널 키]', channelKey);
+      console.log('[storeId]', process.env.NEXT_PUBLIC_PORTONE_STORE_ID);
+      console.log('[포트원 결제 요청 파라미터]', JSON.stringify(common, null, 2));
 
       const response =
         method === 'KAKAO'
-          ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: EasyPayProvider.KAKAOPAY } })
+          ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: 'KAKAOPAY' } })
           : method === 'NAVER'
-            ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: EasyPayProvider.NAVERPAY } })
+            ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: 'NAVERPAY' } })
             : await PortOne.requestPayment({ ...common, payMethod: 'CARD' });
 
       // 팝업 방식(데스크탑 카드)은 response 객체가 반환됨
@@ -80,7 +107,11 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
             setError(response.message || '결제 중 오류가 발생했어요.');
           }
         } else {
-          window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm?paymentId=${response.paymentId}&txId=${response.txId}`;
+          // 결제 성공 - confirm API 호출 후 업로드 페이지로 이동
+          // response.paymentId 대신 로컬 paymentId 사용 (SDK 필드명 불일치 방지)
+          // BASE_URL 대신 상대경로 사용 (localhost/프로덕션 URL 혼용 방지)
+          console.log('[결제 성공] 사진 업로드 페이지로 이동');
+          window.location.href = `/api/payment/confirm?paymentId=${paymentId}&txId=${response.txId ?? ''}`;
         }
       }
       // response undefined → 리다이렉트 방식 (이미 페이지 이동 중)
@@ -119,6 +150,36 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
           <p className="mt-1.5 text-xs text-red-500">{emailError}</p>
         ) : (
           <p className="mt-1.5 text-xs text-gray-400">결제 완료 후 리포트 링크를 발송해드려요</p>
+        )}
+      </div>
+
+      {/* 휴대폰 번호 입력 */}
+      <div className="mb-6">
+        <label htmlFor="phone" className="mb-1.5 block text-sm font-semibold text-gray-700">
+          휴대폰 번호
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          value={phone}
+          onChange={(e) => {
+            setPhone(e.target.value.replace(/[^0-9]/g, ''));
+            if (phoneError) setPhoneError('');
+          }}
+          placeholder="01012345678 (- 없이 입력)"
+          maxLength={11}
+          disabled={isLoading}
+          className={cn(
+            'w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors disabled:opacity-60',
+            phoneError
+              ? 'border-red-300 focus:border-red-400'
+              : 'border-gray-200 focus:border-violet-400',
+          )}
+        />
+        {phoneError ? (
+          <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
+        ) : (
+          <p className="mt-1.5 text-xs text-gray-400">결제 진행 및 영수증 발송에 사용됩니다</p>
         )}
       </div>
 
