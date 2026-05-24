@@ -12,6 +12,12 @@ interface Props {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 type PayMethod = 'CARD' | 'KAKAO' | 'NAVER';
 
+const isValidChannelKey = (key: string | undefined): boolean =>
+  !!key &&
+  key !== 'your_kakaopay_channel_key_here' &&
+  key !== 'your_naverpay_channel_key_here' &&
+  key.startsWith('channel-key-');
+
 export default function PaymentWidget({ sessionId, amount }: Props) {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -19,6 +25,9 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const isLoading = loadingMethod !== null;
+  const showKakao = isValidChannelKey(process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_KAKAO);
+  const showNaver = isValidChannelKey(process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_NAVER);
+  const hasEasyPay = showKakao || showNaver;
 
   const validateEmail = (): boolean => {
     if (!email.trim()) { setEmailError('이메일을 입력해주세요.'); return false; }
@@ -113,31 +122,38 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         )}
       </div>
 
-      {/* 간편결제 버튼 */}
-      <div className="mb-3 space-y-2.5">
-        <button
-          onClick={() => handlePay('KAKAO')}
-          disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-sm font-bold text-[#3C1E1E] transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
-          {loadingMethod === 'KAKAO' ? '처리 중...' : <><KakaoIcon />카카오페이</>}
-        </button>
+      {/* 간편결제 버튼 (채널 키 설정 시에만 표시) */}
+      {hasEasyPay && (
+        <>
+          <div className="mb-3 space-y-2.5">
+            {showKakao && (
+              <button
+                onClick={() => handlePay('KAKAO')}
+                disabled={isLoading}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-sm font-bold text-[#3C1E1E] transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {loadingMethod === 'KAKAO' ? '처리 중...' : <><KakaoIcon />카카오페이</>}
+              </button>
+            )}
+            {showNaver && (
+              <button
+                onClick={() => handlePay('NAVER')}
+                disabled={isLoading}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#03C75A] py-3.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {loadingMethod === 'NAVER' ? '처리 중...' : <><NaverIcon />네이버페이</>}
+              </button>
+            )}
+          </div>
 
-        <button
-          onClick={() => handlePay('NAVER')}
-          disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#03C75A] py-3.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
-          {loadingMethod === 'NAVER' ? '처리 중...' : <><NaverIcon />네이버페이</>}
-        </button>
-      </div>
-
-      {/* 구분선 */}
-      <div className="mb-3 flex items-center gap-3">
-        <div className="h-px flex-1 bg-gray-100" />
-        <span className="text-xs text-gray-400">또는</span>
-        <div className="h-px flex-1 bg-gray-100" />
-      </div>
+          {/* 구분선 */}
+          <div className="mb-3 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gray-100" />
+            <span className="text-xs text-gray-400">또는</span>
+            <div className="h-px flex-1 bg-gray-100" />
+          </div>
+        </>
+      )}
 
       {/* 카드 결제 버튼 */}
       <button
@@ -147,6 +163,10 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
       >
         {loadingMethod === 'CARD' ? '결제 처리 중...' : `신용·체크카드  ₩${amount.toLocaleString()}`}
       </button>
+
+      {!hasEasyPay && (
+        <p className="mt-2 text-center text-xs text-gray-400">카카오페이·네이버페이는 준비 중입니다.</p>
+      )}
 
       {/* 오류 메시지 */}
       {error && (
