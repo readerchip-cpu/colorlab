@@ -795,9 +795,13 @@ function MakeupPage({ colorType, accent, customerName }: {
       {/* 06. 립스틱 (3개) */}
       <SectionHead num="06" title={`${name}님께 추천하는 립스틱`} accent={accent} />
       <View style={{ marginBottom: 4 }}>
-        {lipProducts.map((p, i) => (
-          <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
-        ))}
+        {lipProducts.length > 0 ? (
+          lipProducts.map((p, i) => (
+            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
+          ))
+        ) : (
+          <Text style={{ fontSize: 8, color: '#AAA', padding: 8, fontFamily: 'Pretendard' }}>해당 톤에 맞는 추천 제품을 준비 중입니다.</Text>
+        )}
       </View>
 
       <View style={S.sectionDivider} />
@@ -807,15 +811,23 @@ function MakeupPage({ colorType, accent, customerName }: {
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 4 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>파운데이션</Text>
-          {foundationProducts.map((p, i) => (
-            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
-          ))}
+          {foundationProducts.length > 0 ? (
+            foundationProducts.map((p, i) => (
+              <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
+            ))
+          ) : (
+            <Text style={{ fontSize: 8, color: '#AAA', padding: 8, fontFamily: 'Pretendard' }}>준비 중</Text>
+          )}
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>아이섀도우</Text>
-          {eyeshadowProducts.map((p, i) => (
-            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
-          ))}
+          {eyeshadowProducts.length > 0 ? (
+            eyeshadowProducts.map((p, i) => (
+              <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
+            ))
+          ) : (
+            <Text style={{ fontSize: 8, color: '#AAA', padding: 8, fontFamily: 'Pretendard' }}>준비 중</Text>
+          )}
         </View>
       </View>
 
@@ -826,9 +838,13 @@ function MakeupPage({ colorType, accent, customerName }: {
       <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>블러셔</Text>
-          {blusherProducts.map((p, i) => (
-            <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
-          ))}
+          {blusherProducts.length > 0 ? (
+            blusherProducts.map((p, i) => (
+              <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
+            ))
+          ) : (
+            <Text style={{ fontSize: 8, color: '#AAA', padding: 8, fontFamily: 'Pretendard' }}>준비 중</Text>
+          )}
         </View>
         <View style={{ flex: 1.3, backgroundColor: '#FBF8F0', borderRadius: 6, padding: 10, borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid' }}>
           <Text style={{ fontSize: 8, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 6 }}>

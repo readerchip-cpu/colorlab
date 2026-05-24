@@ -495,6 +495,10 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
       "전체 메이크업 마무리 팁 (1문장)"
     ]
   },
+
+⚠️ 절대 금지: lipstick·foundation·eyeshadow·blusher 배열에 어떤 제품도 추가하지 마세요.
+브랜드명·제품명·호수·가격을 절대 생성하지 마세요.
+4개 배열은 반드시 빈 배열([])로 출력하세요. 제품 데이터는 백엔드 DB로 자동 교체됩니다.
   "hair": {
     "recommended": [
       {"name": "헤어 컬러명", "description": "톤 설명"},
@@ -587,11 +591,16 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
 
   const data = JSON.parse(jsonText) as ReportData;
 
-  // ⭐ AI가 생성한 빈 제품 배열을 DB 실제 제품으로 교체
-  data.makeup.lipstick   = realProducts.lipstick;
-  data.makeup.foundation = realProducts.foundation;
-  data.makeup.eyeshadow  = realProducts.eyeshadow;
-  data.makeup.blusher    = realProducts.blusher;
+  // 안전장치: AI 생성 제품 무시, DB의 verified 제품만 사용
+  data.makeup.lipstick   = realProducts.lipstick.filter(p => p.verified === true);
+  data.makeup.foundation = realProducts.foundation.filter(p => p.verified === true);
+  data.makeup.eyeshadow  = realProducts.eyeshadow.filter(p => p.verified === true);
+  data.makeup.blusher    = realProducts.blusher.filter(p => p.verified === true);
+
+  if (data.makeup.lipstick.length === 0)   console.warn(`⚠️ ${colorType} 립스틱 DB 제품 없음 — PDF에 표시 안 됨`);
+  if (data.makeup.foundation.length === 0) console.warn(`⚠️ ${colorType} 파운데이션 DB 제품 없음 — PDF에 표시 안 됨`);
+  if (data.makeup.eyeshadow.length === 0)  console.warn(`⚠️ ${colorType} 아이섀도우 DB 제품 없음 — PDF에 표시 안 됨`);
+  if (data.makeup.blusher.length === 0)    console.warn(`⚠️ ${colorType} 블러셔 DB 제품 없음 — PDF에 표시 안 됨`);
 
   return data;
 }
