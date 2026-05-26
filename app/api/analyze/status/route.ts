@@ -4,6 +4,7 @@ import { adminClient } from '@/lib/supabase/admin';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  console.log('[Status API] 호출됨 — 폴링이 아직 작동 중!');
   const { searchParams } = new URL(request.url);
   const sessionId = searchParams.get('sessionId');
 

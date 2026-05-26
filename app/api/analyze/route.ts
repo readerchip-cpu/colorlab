@@ -23,12 +23,17 @@ function isAllowedMime(type: string): type is AllowedMime {
 }
 
 export async function POST(request: Request) {
+  console.log('[Analyze] ✅ POST 핸들러 진입');
+  const startTime = Date.now();
   let imageBase64: string | null = null;
 
   try {
+    console.log('[Analyze] formData 파싱 시작');
     const formData = await request.formData();
+    console.log(`[Analyze] formData 파싱 완료 (${Date.now() - startTime}ms)`);
     const sessionId = formData.get('session_id');
     const imageFile = formData.get('image');
+    console.log(`[Analyze] sessionId: ${sessionId}, imageFile: ${imageFile instanceof File ? `${imageFile.name} (${imageFile.size}B)` : 'missing'}`);
     const freeConcernRaw = formData.get('free_concern');
     const freeConcern = typeof freeConcernRaw === 'string' ? freeConcernRaw.trim() : undefined;
     const customerNameRaw = formData.get('customer_name');
@@ -65,6 +70,7 @@ export async function POST(request: Request) {
     imageBase64 = Buffer.from(arrayBuffer).toString('base64');
 
     // 리포트 생성 (Vision + 답변 + 고민 종합)
+    console.log(`[Analyze] Claude API 호출 시작 (${Date.now() - startTime}ms)`);
     const report = await generateFullReport(
       session.answers,
       session.result_type as PersonalColorType,
@@ -72,12 +78,14 @@ export async function POST(request: Request) {
       freeConcern || session.free_concern || undefined,
       mimeType,
     );
+    console.log(`[Analyze] Claude API 응답 완료 (${Date.now() - startTime}ms)`);
 
     // base64 즉시 해제 (GC 대상)
     imageBase64 = null;
 
     // DB에 리포트 저장 (customer_name 함께)
     await saveReportContent(sessionId, report, customerName);
+    console.log(`[Analyze] DB 저장 완료 (${Date.now() - startTime}ms)`);
 
     // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
     const colorType = session.result_type as PersonalColorType;
