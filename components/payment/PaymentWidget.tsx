@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createPendingPayment } from '@/app/actions/payment';
 import { cn } from '@/lib/utils/cn';
+import ReviewSlider from '@/components/loading/ReviewSlider';
 
 interface Props {
   sessionId: string;
@@ -25,6 +26,7 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [loadingMethod, setLoadingMethod] = useState<PayMethod | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isLoading = loadingMethod !== null;
@@ -111,6 +113,7 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
           // response.paymentId 대신 로컬 paymentId 사용 (SDK 필드명 불일치 방지)
           // BASE_URL 대신 상대경로 사용 (localhost/프로덕션 URL 혼용 방지)
           console.log('[결제 성공] 사진 업로드 페이지로 이동');
+          setIsConfirming(true);
           window.location.href = `/api/payment/confirm?paymentId=${paymentId}&txId=${response.txId ?? ''}`;
         }
       }
@@ -121,6 +124,26 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
       setLoadingMethod(null);
     }
   };
+
+  if (isConfirming) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-8 py-12 text-center">
+        <div className="relative flex h-16 w-16 items-center justify-center">
+          <div className="absolute inset-0 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
+          <span className="text-xl">💳</span>
+        </div>
+        <div>
+          <h2 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+            결제 처리 중이에요
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            잠시만 기다려주세요...
+          </p>
+        </div>
+        <ReviewSlider />
+      </div>
+    );
+  }
 
   return (
     <div>
