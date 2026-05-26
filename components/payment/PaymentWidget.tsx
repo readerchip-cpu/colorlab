@@ -55,9 +55,9 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
     setLoadingMethod(method);
 
     try {
-      const cleanSessionId = sessionId.replace(/-/g, ''); // 32자 (UUID 하이픈 제거)
-      const shortTimestamp = Date.now().toString().slice(-4); // 4자
-      const paymentId = `cl_${cleanSessionId}_${shortTimestamp}`; // 총 40자
+      const cleanSessionId = sessionId.replace(/-/g, '');
+      const shortTimestamp = Date.now().toString().slice(-4);
+      const paymentId = `cl_${cleanSessionId}_${shortTimestamp}`;
       await createPendingPayment({ sessionId, orderId: paymentId, amount, email });
 
       const PortOne = await import('@portone/browser-sdk/v2');
@@ -76,24 +76,12 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         orderName: '컬러랩 퍼스널컬러 정밀 분석',
         totalAmount: amount,
         currency: 'KRW' as const,
+        // 모바일 리다이렉트 방식용: 결제 후 GET /api/payment/confirm 로 이동
         redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm`,
         customer: { email, fullName: '컬러랩 고객', phoneNumber: phone },
+        // PC는 팝업(결제창 자동 닫힘), 모바일은 리다이렉트
+        windowType: { pc: 'POPUP' as const, mobile: 'REDIRECTION' as const },
       };
-
-      console.log('==== 포트원 결제 디버깅 ====');
-      console.log('1. method:', method);
-      console.log('2. storeId:', process.env.NEXT_PUBLIC_PORTONE_STORE_ID);
-      console.log('3. channelKey:', channelKey);
-      console.log('4. paymentId:', paymentId);
-      console.log('5. amount:', amount, typeof amount);
-      console.log('6. email:', email);
-      console.log('7. redirectUrl:', `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm`);
-      console.log('8. NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
-      console.log('9. common 전체:', JSON.stringify(common, null, 2));
-      console.log('==========================');
-      console.log('[채널 키]', channelKey);
-      console.log('[storeId]', process.env.NEXT_PUBLIC_PORTONE_STORE_ID);
-      console.log('[포트원 결제 요청 파라미터]', JSON.stringify(common, null, 2));
 
       const response =
         method === 'KAKAO'
@@ -102,24 +90,38 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
             ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: 'NAVERPAY' } })
             : await PortOne.requestPayment({ ...common, payMethod: 'CARD' });
 
-      // 팝업 방식(데스크탑 카드)은 response 객체가 반환됨
-      if (response) {
-        if (response.code) {
-          if (response.code !== 'PAYMENT_CANCELLED') {
-            setError(response.message || '결제 중 오류가 발생했어요.');
-          }
-        } else {
-          // 결제 성공 - confirm API 호출 후 업로드 페이지로 이동
-          // response.paymentId 대신 로컬 paymentId 사용 (SDK 필드명 불일치 방지)
-          // BASE_URL 대신 상대경로 사용 (localhost/프로덕션 URL 혼용 방지)
-          console.log('[결제 성공] 사진 업로드 페이지로 이동');
-          setIsConfirming(true);
-          window.location.href = `/api/payment/confirm?paymentId=${paymentId}&txId=${response.txId ?? ''}`;
+      // response undefined → 모바일 리다이렉트 방식 (GET 엔드포인트가 처리)
+      if (!response) return;
+
+      // 취소 또는 오류
+      if (response.code) {
+        if (response.code !== 'PAYMENT_CANCELLED') {
+          setError(response.message || '결제 중 오류가 발생했어요.');
         }
+        return;
       }
-      // response undefined → 리다이렉트 방식 (이미 페이지 이동 중)
+
+      // 결제 성공 — PC 팝업이 이미 닫힌 상태에서 여기 도달
+      setIsConfirming(true);
+
+      const confirmRes = await fetch('/api/payment/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentId, sessionId }),
+      });
+
+      if (!confirmRes.ok) {
+        console.error('Payment confirm failed:', await confirmRes.text());
+        setError('결제는 완료됐지만 처리 중 오류가 발생했어요. 고객센터에 문의해주세요.');
+        setIsConfirming(false);
+        return;
+      }
+
+      window.location.href = `/upload/${sessionId}`;
+
     } catch {
-      setError('결제 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+      setError('결제 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+      setIsConfirming(false);
     } finally {
       setLoadingMethod(null);
     }
