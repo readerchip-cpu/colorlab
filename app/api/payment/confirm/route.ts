@@ -1,27 +1,38 @@
 import { NextResponse } from 'next/server';
 import { verifyPortonePayment, parseSessionId } from '@/lib/portone/confirm';
-import { getPaymentByOrderId, updatePaymentDone } from '@/lib/utils/payment';
+import { updatePaymentDone } from '@/lib/utils/payment';
 import { updateSessionPaid } from '@/lib/utils/session';
 
 const PRICE = Number(process.env.PRICE ?? 4900);
 
 // 모바일 리다이렉트 방식: PortOne이 결제 후 GET으로 이 URL을 호출
-// 성공: ?paymentId=...&txId=...  /  실패: ?paymentId=...&code=...
+// 성공: ?paymentId=...&txId=...
+// 실패/취소: ?paymentId=...&code=ERROR_CODE&message=...
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const paymentId = searchParams.get('paymentId');
   const code = searchParams.get('code');
 
+  // paymentId 없으면 홈으로
   if (!paymentId) return NextResponse.redirect(`${origin}/`);
 
+  // sessionId: paymentId 파싱 우선, 실패 시 query param fallback
   let sessionId: string;
   try {
     sessionId = parseSessionId(paymentId);
   } catch {
-    return NextResponse.redirect(`${origin}/`);
+    const fallback = searchParams.get('sessionId');
+    if (fallback) {
+      sessionId = fallback;
+    } else {
+      console.error('parseSessionId failed and no sessionId fallback:', paymentId);
+      return NextResponse.redirect(`${origin}/`);
+    }
   }
 
+  // 결제 실패 또는 취소 (code가 비어 있지 않은 경우만)
   if (code) {
+    console.log('Payment failure/cancel code:', code);
     const params = new URLSearchParams({ error: code });
     const message = searchParams.get('message');
     if (message) params.set('message', message);
@@ -34,10 +45,12 @@ export async function GET(request: Request) {
     if (status !== 'PAID') throw new Error(`Payment status not PAID: ${status}`);
     if (amount !== PRICE) {
       console.error(`Amount mismatch: expected ${PRICE}, got ${amount}`);
-      return NextResponse.redirect(`${origin}/`);
+      return NextResponse.redirect(`${origin}/pay/${sessionId}?error=amount_mismatch`);
     }
 
-    await Promise.all([getPaymentByOrderId(paymentId), updatePaymentDone(paymentId, txId)]);
+    // getPaymentByOrderId는 사용하지 않으므로 제거
+    // (불필요한 Promise.all 실패가 updateSessionPaid를 건너뛰게 만들던 버그 수정)
+    await updatePaymentDone(paymentId, txId);
     await updateSessionPaid(sessionId);
 
     return NextResponse.redirect(`${origin}/upload/${sessionId}`);
@@ -77,7 +90,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Amount mismatch' }, { status: 400 });
     }
 
-    await Promise.all([getPaymentByOrderId(paymentId), updatePaymentDone(paymentId, txId)]);
+    await updatePaymentDone(paymentId, txId);
     await updateSessionPaid(sessionId);
 
     return NextResponse.json({ success: true });
