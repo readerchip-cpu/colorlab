@@ -149,7 +149,7 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
     <div>
       {/* 이메일 입력 */}
       <div className="mb-6">
-        <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-gray-700">
+        <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-200">
           이메일 주소
         </label>
         <input
@@ -163,22 +163,22 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
           placeholder="report@example.com"
           disabled={isLoading}
           className={cn(
-            'w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors disabled:opacity-60',
+            'w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors disabled:opacity-60 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500',
             emailError
-              ? 'border-red-300 focus:border-red-400'
-              : 'border-gray-200 focus:border-violet-400',
+              ? 'border-red-300 focus:border-red-400 dark:border-red-700'
+              : 'border-gray-200 focus:border-violet-400 dark:border-gray-600 dark:focus:border-violet-500',
           )}
         />
         {emailError ? (
           <p className="mt-1.5 text-xs text-red-500">{emailError}</p>
         ) : (
-          <p className="mt-1.5 text-xs text-gray-400">결제 완료 후 리포트 링크를 발송해드려요</p>
+          <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">결제 완료 후 리포트 링크를 발송해드려요</p>
         )}
       </div>
 
       {/* 휴대폰 번호 입력 */}
       <div className="mb-6">
-        <label htmlFor="phone" className="mb-1.5 block text-sm font-semibold text-gray-700">
+        <label htmlFor="phone" className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-200">
           휴대폰 번호
         </label>
         <input
@@ -193,16 +193,16 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
           maxLength={11}
           disabled={isLoading}
           className={cn(
-            'w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors disabled:opacity-60',
+            'w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors disabled:opacity-60 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500',
             phoneError
-              ? 'border-red-300 focus:border-red-400'
-              : 'border-gray-200 focus:border-violet-400',
+              ? 'border-red-300 focus:border-red-400 dark:border-red-700'
+              : 'border-gray-200 focus:border-violet-400 dark:border-gray-600 dark:focus:border-violet-500',
           )}
         />
         {phoneError ? (
           <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
         ) : (
-          <p className="mt-1.5 text-xs text-gray-400">결제 진행 및 영수증 발송에 사용됩니다</p>
+          <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">결제 진행 및 영수증 발송에 사용됩니다</p>
         )}
       </div>
 
@@ -249,7 +249,7 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
       </button>
 
       {!hasEasyPay && (
-        <p className="mt-2 text-center text-xs text-gray-400">카카오페이·네이버페이는 준비 중입니다.</p>
+        <p className="mt-2 text-center text-xs text-gray-400 dark:text-gray-500">카카오페이·네이버페이는 준비 중입니다.</p>
       )}
 
       {/* 오류 메시지 */}

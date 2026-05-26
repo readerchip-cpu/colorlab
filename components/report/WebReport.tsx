@@ -21,7 +21,7 @@ function SectionDivider() {
   return <div className="my-10 border-t border-gray-100 dark:border-gray-800" />;
 }
 
-export function WebReport({ data, pdfPageHref, customerName }: WebReportProps) {
+export function WebReport({ data, pdfPageHref, customerName, sessionId }: WebReportProps) {
   const accent = data.meta.accentColor;
 
   return (
@@ -57,6 +57,7 @@ export function WebReport({ data, pdfPageHref, customerName }: WebReportProps) {
               customerName={customerName}
               typeNameKr={data.meta.typeNameKr}
               accentColor={accent}
+              sessionId={sessionId}
             />
           </div>
 
