@@ -78,7 +78,7 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         currency: 'KRW' as const,
         // 모바일 리다이렉트 방식용: 결제 후 GET /api/payment/confirm 로 이동
         // sessionId를 query param으로 포함해 parseSessionId 실패 시 fallback으로 사용
-        redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/confirm?sessionId=${sessionId}`,
+        redirectUrl: `${window.location.origin}/api/payment/confirm?sessionId=${sessionId}`,
         customer: { email, fullName: '컬러랩 고객', phoneNumber: phone },
         // PC는 팝업(결제창 자동 닫힘), 모바일은 리다이렉트
         windowType: { pc: 'POPUP' as const, mobile: 'REDIRECTION' as const },

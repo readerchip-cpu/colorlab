@@ -60,7 +60,13 @@ export default async function PayPage({ params, searchParams }: Props) {
           <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-3.5 text-sm text-red-600 dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-400">
             {failError === 'USER_CANCEL'
               ? '결제가 취소됐어요. 다시 시도해주세요.'
-              : '결제 중 오류가 발생했어요. 다시 시도해주세요.'}
+              : failError === 'amount_mismatch'
+                ? '결제 금액이 일치하지 않아요. 고객센터에 문의해주세요.'
+                : failError === 'confirm_failed'
+                  ? '결제 확인 중 오류가 발생했어요. 고객센터에 문의해주세요.'
+                  : searchParams.message
+                    ? `결제 오류: ${decodeURIComponent(searchParams.message)}`
+                    : `결제 오류가 발생했어요. (${failError})`}
           </div>
         )}
 

@@ -13,26 +13,30 @@ export async function GET(request: Request) {
   const paymentId = searchParams.get('paymentId');
   const code = searchParams.get('code');
 
-  // paymentId 없으면 홈으로
-  if (!paymentId) return NextResponse.redirect(`${origin}/`);
+  console.log('[GET confirm] called — paymentId:', paymentId, 'code:', code, 'url:', request.url);
 
-  // sessionId: paymentId 파싱 우선, 실패 시 query param fallback
+  if (!paymentId) {
+    console.error('[GET confirm] missing paymentId, redirecting home');
+    return NextResponse.redirect(`${origin}/`);
+  }
+
   let sessionId: string;
   try {
     sessionId = parseSessionId(paymentId);
+    console.log('[GET confirm] parsed sessionId:', sessionId);
   } catch {
     const fallback = searchParams.get('sessionId');
     if (fallback) {
       sessionId = fallback;
+      console.log('[GET confirm] using fallback sessionId:', sessionId);
     } else {
-      console.error('parseSessionId failed and no sessionId fallback:', paymentId);
+      console.error('[GET confirm] parseSessionId failed and no sessionId fallback:', paymentId);
       return NextResponse.redirect(`${origin}/`);
     }
   }
 
-  // 결제 실패 또는 취소 (code가 비어 있지 않은 경우만)
   if (code) {
-    console.log('Payment failure/cancel code:', code);
+    console.log('[GET confirm] failure/cancel code:', code);
     const params = new URLSearchParams({ error: code });
     const message = searchParams.get('message');
     if (message) params.set('message', message);
@@ -40,22 +44,23 @@ export async function GET(request: Request) {
   }
 
   try {
+    console.log('[GET confirm] verifying payment:', paymentId);
     const { status, amount, txId } = await verifyPortonePayment(paymentId);
+    console.log('[GET confirm] verification result — status:', status, 'amount:', amount, 'txId:', txId);
 
     if (status !== 'PAID') throw new Error(`Payment status not PAID: ${status}`);
     if (amount !== PRICE) {
-      console.error(`Amount mismatch: expected ${PRICE}, got ${amount}`);
+      console.error(`[GET confirm] amount mismatch: expected ${PRICE}, got ${amount}`);
       return NextResponse.redirect(`${origin}/pay/${sessionId}?error=amount_mismatch`);
     }
 
-    // getPaymentByOrderId는 사용하지 않으므로 제거
-    // (불필요한 Promise.all 실패가 updateSessionPaid를 건너뛰게 만들던 버그 수정)
     await updatePaymentDone(paymentId, txId);
     await updateSessionPaid(sessionId);
+    console.log('[GET confirm] done — redirecting to upload:', sessionId);
 
     return NextResponse.redirect(`${origin}/upload/${sessionId}`);
   } catch (err) {
-    console.error('Payment confirm GET error:', err);
+    console.error('[GET confirm] error:', err);
     return NextResponse.redirect(`${origin}/pay/${sessionId}?error=confirm_failed`);
   }
 }
