@@ -195,6 +195,7 @@ ${formatAnswers(answers)}
     ],
   });
 
+  console.log(`[Claude/freeResult] stop_reason: ${response.stop_reason} | output: ${response.usage?.output_tokens}tok`);
   const block = response.content[0];
   return block.type === 'text' ? block.text.trim() : '';
 }
@@ -272,7 +273,7 @@ ${section7}`;
 
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 4000,
+    max_tokens: 16000,
     system: [
       {
         type: 'text',
@@ -283,8 +284,26 @@ ${section7}`;
     messages: [{ role: 'user', content: userContent }],
   });
 
+  console.log(`[Claude/fullReport] stop_reason: ${response.stop_reason} | input: ${response.usage?.input_tokens}tok | output: ${response.usage?.output_tokens}tok`);
+
+  if (response.stop_reason === 'max_tokens') {
+    console.error(`[Claude/fullReport] ⚠️ 응답이 max_tokens 한계로 잘렸습니다 (output: ${response.usage?.output_tokens}tok)`);
+    throw new Error('리포트가 토큰 한계로 잘렸습니다. max_tokens를 늘려주세요.');
+  }
+
   const block = response.content[0];
-  return block.type === 'text' ? block.text.trim() : '';
+  const text = block.type === 'text' ? block.text.trim() : '';
+  console.log(`[Claude/fullReport] 응답 길이: ${text.length}자`);
+
+  // 필수 섹션 헤더 존재 여부 확인
+  const requiredSections = ['[섹션 1]', '[섹션 2]', '[섹션 3]', '[섹션 4]', '[섹션 5]', '[섹션 6]'];
+  const missingSections = requiredSections.filter(s => !text.includes(s));
+  if (missingSections.length > 0) {
+    console.error(`[Claude/fullReport] ⚠️ 누락된 섹션: ${missingSections.join(', ')} | 응답 길이: ${text.length}자`);
+    throw new Error(`리포트 섹션 누락: ${missingSections.join(', ')}`);
+  }
+
+  return text;
 }
 
 // ── 3. 구조화 리포트 데이터 — PDF 컴포넌트용 JSON ────────────
@@ -563,7 +582,7 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
 
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 5000,
+    max_tokens: 16000,
     system: [
       {
         type: 'text',
@@ -578,6 +597,13 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     messages: [{ role: 'user', content: userContent }],
   });
 
+  console.log(`[Claude/reportData] stop_reason: ${response.stop_reason} | input: ${response.usage?.input_tokens}tok | output: ${response.usage?.output_tokens}tok`);
+
+  if (response.stop_reason === 'max_tokens') {
+    console.error(`[Claude/reportData] ⚠️ 응답이 max_tokens 한계로 잘렸습니다 (output: ${response.usage?.output_tokens}tok)`);
+    throw new Error('리포트 JSON이 토큰 한계로 잘렸습니다. max_tokens를 늘려주세요.');
+  }
+
   const block = response.content[0];
   if (block.type !== 'text') {
     throw new Error('Unexpected response type from Claude');
@@ -585,11 +611,21 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
 
   // JSON 추출 — 마크다운 코드블록이 포함된 경우 처리
   const raw = block.text.trim();
+  console.log(`[Claude/reportData] 응답 길이: ${raw.length}자`);
   const jsonText = raw.startsWith('```')
     ? raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
     : raw;
 
   const data = JSON.parse(jsonText) as ReportData;
+
+  // 필수 최상위 필드 검증
+  const requiredFields = ['meta', 'personalIntro', 'makeup', 'seasonalStyling'] as const;
+  const missingFields = requiredFields.filter(f => !data[f]);
+  if (missingFields.length > 0) {
+    console.error(`[Claude/reportData] ⚠️ 누락 필드: ${missingFields.join(', ')} | 응답 길이: ${raw.length}자`);
+    throw new Error(`리포트 JSON 필드 누락: ${missingFields.join(', ')}`);
+  }
+  console.log('[Claude/reportData] 필드 검증 완료');
 
   // 안전장치: AI 생성 제품 무시, DB의 verified 제품만 사용
   data.makeup.lipstick   = realProducts.lipstick.filter(p => p.verified === true);
