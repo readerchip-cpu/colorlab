@@ -32,38 +32,50 @@ export async function processAnalysisInBackground(params: BackgroundParams): Pro
     console.log('[BG] Claude 분석 완료');
 
     await saveReportContent(sessionId, report, customerName);
+    console.log('[BG] 리포트 저장 완료');
 
-    await adminClient
+    const { error: statusError } = await adminClient
       .from('test_sessions')
       .update({ analysis_status: 'completed' })
       .eq('id', sessionId);
-    console.log('[BG] DB 업데이트 완료');
 
-    // 이메일 발송 — 실패해도 무시
-    getEmailBySessionId(sessionId)
-      .then((email) => {
-        if (!email) return;
+    if (statusError) {
+      console.error('[BG] analysis_status 업데이트 실패:', statusError);
+    } else {
+      console.log('[BG] analysis_status → completed');
+    }
+
+    // 이메일 발송 — 실패해도 분석 결과에는 영향 없음
+    try {
+      const email = await getEmailBySessionId(sessionId);
+      if (email) {
         const base = process.env.NEXT_PUBLIC_BASE_URL ?? '';
-        return sendReport(email, {
+        await sendReport(email, {
           sessionId,
           typeName:   TYPE_EN[colorType] ?? colorType,
           typeNameKr: colorType,
           reportUrl:  `${base}/report/${sessionId}`,
           pdfUrl:     `${base}/api/pdf/${sessionId}`,
         });
-      })
-      .catch((err) => console.error('[BG] 이메일 발송 실패:', err));
+        console.log('[BG] 이메일 발송 완료');
+      }
+    } catch (emailErr) {
+      console.error('[BG] 이메일 발송 실패 (무시):', emailErr);
+    }
 
   } catch (error) {
     console.error('[BG] 분석 실패:', error);
+
     try {
-      await adminClient
+      const { error: failError } = await adminClient
         .from('test_sessions')
         .update({ analysis_status: 'failed' })
         .eq('id', sessionId);
-    } catch {
-      // ignore — throw 아래에서 상위로 전달됨
+      if (failError) console.error('[BG] failed 상태 업데이트 실패:', failError);
+    } catch (e) {
+      console.error('[BG] failed 상태 업데이트 예외:', e);
     }
+
     throw error;
   }
 }
