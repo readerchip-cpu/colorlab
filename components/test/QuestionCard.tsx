@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { cn } from '@/lib/utils/cn';
 import type { Question } from '@/types';
 
@@ -86,12 +85,13 @@ function ImageOptions({
               )}
             >
               {opt.imageUrl ? (
-                <Image
+                <img
                   src={opt.imageUrl}
                   alt={opt.label}
-                  width={160}
-                  height={96}
                   className="h-full w-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  }}
                 />
               ) : (
                 <span className="text-xs text-gray-300 dark:text-gray-600">이미지</span>
