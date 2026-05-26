@@ -61,15 +61,18 @@ export async function POST(request: Request) {
     const imageBase64 = Buffer.from(arrayBuffer).toString('base64');
 
     // 분석 상태와 고객 정보를 즉시 저장
-    await adminClient
-      .from('test_sessions')
-      .update({
-        customer_name: customerName || null,
-        free_concern: freeConcern || null,
-        analysis_status: 'processing',
-      })
-      .eq('id', sessionId)
-      .catch((err) => console.error('[analyze] status update failed (컬럼 없을 수 있음):', err));
+    try {
+      await adminClient
+        .from('test_sessions')
+        .update({
+          customer_name: customerName || null,
+          free_concern: freeConcern || null,
+          analysis_status: 'processing',
+        })
+        .eq('id', sessionId);
+    } catch (err) {
+      console.error('[analyze] status update failed (컬럼 없을 수 있음):', err);
+    }
 
     // 백그라운드에서 분석 시작 (await 안 함 — 즉시 응답)
     processAnalysisInBackground({

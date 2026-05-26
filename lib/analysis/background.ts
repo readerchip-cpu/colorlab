@@ -56,11 +56,14 @@ export async function processAnalysisInBackground(params: BackgroundParams): Pro
 
   } catch (error) {
     console.error('[BG] 분석 실패:', error);
-    await adminClient
-      .from('test_sessions')
-      .update({ analysis_status: 'failed' })
-      .eq('id', sessionId)
-      .catch(() => {});
+    try {
+      await adminClient
+        .from('test_sessions')
+        .update({ analysis_status: 'failed' })
+        .eq('id', sessionId);
+    } catch {
+      // ignore — throw 아래에서 상위로 전달됨
+    }
     throw error;
   }
 }
