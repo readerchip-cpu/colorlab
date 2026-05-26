@@ -125,8 +125,8 @@ export default function TermsPage() {
           </div>
           <P>
             환불 요청은{' '}
-            <a href="mailto:readerchip@gmail.com" className="text-[#7C3AED] hover:underline">
-              readerchip@gmail.com
+            <a href="mailto:kumokiri@naver.com" className="text-[#7C3AED] hover:underline">
+              kumokiri@naver.com
             </a>
             으로 주문 번호와 함께 문의해주세요.
             접수 후 3영업일 이내에 처리됩니다.
@@ -170,8 +170,8 @@ export default function TermsPage() {
             서울중앙지방법원을 제1심 관할 법원으로 합니다.</P>
           <P>
             분쟁 발생 시 먼저{' '}
-            <a href="mailto:readerchip@gmail.com" className="text-[#7C3AED] hover:underline">
-              readerchip@gmail.com
+            <a href="mailto:kumokiri@naver.com" className="text-[#7C3AED] hover:underline">
+              kumokiri@naver.com
             </a>
             으로 협의를 시도합니다.
           </P>

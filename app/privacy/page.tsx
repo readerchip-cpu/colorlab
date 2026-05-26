@@ -169,8 +169,8 @@ export default function PrivacyPage() {
           </ul>
           <P>
             권리 행사는{' '}
-            <a href="mailto:readerchip@gmail.com" className="text-[#7C3AED] hover:underline">
-              readerchip@gmail.com
+            <a href="mailto:kumokiri@naver.com" className="text-[#7C3AED] hover:underline">
+              kumokiri@naver.com
             </a>
             으로 이메일을 보내주시면 10영업일 내에 처리합니다.
           </P>
@@ -187,8 +187,9 @@ export default function PrivacyPage() {
         <Section number="9" title="개인정보 보호책임자">
           <Table
             rows={[
-              ['이름', '서비스 운영자'],
-              ['이메일', 'readerchip@gmail.com'],
+              ['이름', '이형진'],
+              ['이메일', 'kumokiri@naver.com'],
+              ['연락처', '010-2060-7039'],
               ['처리 기한', '문의 접수 후 10영업일 이내'],
             ]}
           />

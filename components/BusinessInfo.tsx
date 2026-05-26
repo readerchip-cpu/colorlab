@@ -1,9 +1,9 @@
 const BIZ = {
   name:       '컬러랩',
   ceo:        '이형진',
-  regNo:      '602-18-97643',
+  regNo:      '602-18-96743',
   mailOrder:  '제2026-경기양주-1851호',
-  address:    '경기도 양주시 삼숭로58번길 108-11 704-103',
+  address:    '경기도 양주시 삼숭로58번길 141 704-103',
   email:      'kumokiri@naver.com',
   phone:      '010-2060-7039',
 } as const;
