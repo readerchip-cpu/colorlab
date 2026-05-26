@@ -1,4 +1,4 @@
-import { generateFullReport } from '@/lib/anthropic/client';
+import { generateReportData } from '@/lib/anthropic/client';
 import { saveReportContent } from '@/lib/utils/session';
 import { getEmailBySessionId } from '@/lib/utils/payment';
 import { sendReport } from '@/lib/email/sendReport';
@@ -25,9 +25,10 @@ export async function processAnalysisInBackground(params: BackgroundParams): Pro
     console.log(`[BG-1] 분석 시작: ${sessionId} (0ms)`);
 
     console.log(`[BG-2] Claude API 호출 직전 (${ms()})`);
-    const report = await generateFullReport(
+    const reportData = await generateReportData(
       answers,
       colorType,
+      customerName,
       imageBase64,
       freeConcern,
       imageMediaType,
@@ -35,7 +36,7 @@ export async function processAnalysisInBackground(params: BackgroundParams): Pro
     console.log(`[BG-3] Claude API 응답 완료 (${ms()})`);
 
     console.log(`[BG-4] saveReportContent 직전 (${ms()})`);
-    await saveReportContent(sessionId, report, customerName);
+    await saveReportContent(sessionId, JSON.stringify(reportData), customerName);
     console.log(`[BG-5] saveReportContent 완료 (${ms()})`);
 
     console.log(`[BG-6] analysis_status 업데이트 직전 (${ms()})`);

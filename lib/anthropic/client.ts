@@ -403,10 +403,10 @@ export interface ReportData {
 export async function generateReportData(
   answers: TestAnswers,
   colorType: PersonalColorType,
+  customerName?: string,
   imageBase64?: string,
   freeConcern?: string,
   imageMediaType: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg',
-  customerName?: string,
 ): Promise<ReportData> {
   const today = new Date().toISOString().slice(0, 10);
   const reportId = `CL-${Date.now().toString(36).toUpperCase()}`;
@@ -431,7 +431,14 @@ export async function generateReportData(
 - 관련 없는 경우 → isRelated: false, answer: "해당 질문에는 답변이 불가합니다"`
     : '"customAdvice" 필드는 생략하세요.';
 
-  const prompt = `내담자: ${name}님 | 퍼스널컬러 타입: ${colorType}
+  const prompt = `⚠️ 출력 규칙 (반드시 준수):
+1. 순수 JSON만 출력하세요. 첫 글자 '{', 마지막 글자 '}'.
+2. 마크다운 코드블록(\`\`\`json 등), 설명 텍스트, 주석 절대 포함 금지.
+3. makeup의 lipstick·foundation·eyeshadow·blusher는 반드시 빈 배열 []로 두세요.
+4. celebrities는 4~5명, 각각 signatureColors(hex 2~3개)를 반드시 포함하세요.
+5. JSON.parse()로 파싱 가능한 완전한 JSON이어야 합니다.
+
+내담자: ${name}님 | 퍼스널컬러 타입: ${colorType}
 ${photoInstruction}
 테스트 응답:
 ${formatAnswers(answers)}
@@ -439,7 +446,6 @@ ${formatAnswers(answers)}
 ${customAdviceInstruction}
 
 아래 JSON 구조를 정확히 따르는 퍼스널컬러 분석 데이터를 생성하세요.
-순수 JSON만 출력하세요 (마크다운 코드블록, 설명 텍스트 없이).
 hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요.
 모든 텍스트 필드에서 "${name}님" 호칭을 자연스럽게 사용하세요.
 학술 용어(색의 4속성, Yellow/Pink/Neutral Base, Contrast 레벨)를 정확히 사용하세요.
@@ -471,6 +477,7 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     {
       "name": "유명인 이름 (예: 아이유)",
       "profession": "직업 (예: 가수·배우)",
+      "signatureColors": ["#RRGGBB", "#RRGGBB", "#RRGGBB"],
       "similarity": "${name}님과 같은 타입인 이유 — 톤·명도·분위기 관점으로 설명",
       "iconicLook": "이 인물의 트레이드마크 스타일 설명"
     },
@@ -612,11 +619,30 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
   // JSON 추출 — 마크다운 코드블록이 포함된 경우 처리
   const raw = block.text.trim();
   console.log(`[Claude/reportData] 응답 길이: ${raw.length}자`);
-  const jsonText = raw.startsWith('```')
-    ? raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-    : raw;
 
-  const data = JSON.parse(jsonText) as ReportData;
+  let jsonText = raw;
+  if (jsonText.startsWith('```json')) {
+    jsonText = jsonText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+  } else if (jsonText.startsWith('```')) {
+    jsonText = jsonText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+  }
+  jsonText = jsonText.trim();
+
+  if (!jsonText.startsWith('{') || !jsonText.endsWith('}')) {
+    console.error('[generateReportData] JSON 형식 아님:', jsonText.substring(0, 200));
+    throw new Error('Claude 응답이 JSON 형식이 아닙니다');
+  }
+
+  let data: ReportData;
+  try {
+    data = JSON.parse(jsonText) as ReportData;
+  } catch (parseError) {
+    console.error('[generateReportData] JSON 파싱 실패:', parseError);
+    console.error('응답 일부:', jsonText.substring(0, 500));
+    throw new Error('Claude 응답 JSON 파싱 실패');
+  }
+  console.log('[generateReportData] JSON 파싱 성공');
+  console.log('[generateReportData] 셀러브리티 수:', data.celebrities?.length ?? 0);
 
   // 필수 최상위 필드 검증
   const requiredFields = ['meta', 'personalIntro', 'makeup', 'seasonalStyling'] as const;
@@ -638,5 +664,6 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
   if (data.makeup.eyeshadow.length === 0)  console.warn(`⚠️ ${colorType} 아이섀도우 DB 제품 없음 — PDF에 표시 안 됨`);
   if (data.makeup.blusher.length === 0)    console.warn(`⚠️ ${colorType} 블러셔 DB 제품 없음 — PDF에 표시 안 됨`);
 
+  console.log('[generateReportData] 셀럽 검증 완료, 최종:', data.celebrities?.length ?? 0);
   return data;
 }

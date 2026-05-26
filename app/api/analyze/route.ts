@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateFullReport } from '@/lib/anthropic/client';
+import { generateReportData } from '@/lib/anthropic/client';
 import { getTestSession, saveReportContent } from '@/lib/utils/session';
 import { getEmailBySessionId } from '@/lib/utils/payment';
 import { sendReport } from '@/lib/email/sendReport';
@@ -69,11 +69,12 @@ export async function POST(request: Request) {
     const arrayBuffer = await imageFile.arrayBuffer();
     imageBase64 = Buffer.from(arrayBuffer).toString('base64');
 
-    // 리포트 생성 (Vision + 답변 + 고민 종합)
+    // 리포트 생성 (Vision + 답변 + 고민 종합 → 구조화 JSON)
     console.log(`[Analyze] Claude API 호출 시작 (${Date.now() - startTime}ms)`);
-    const report = await generateFullReport(
+    const reportData = await generateReportData(
       session.answers,
       session.result_type as PersonalColorType,
+      customerName,
       imageBase64,
       freeConcern || session.free_concern || undefined,
       mimeType,
@@ -83,8 +84,9 @@ export async function POST(request: Request) {
     // base64 즉시 해제 (GC 대상)
     imageBase64 = null;
 
-    // DB에 리포트 저장 (customer_name 함께)
-    await saveReportContent(sessionId, report, customerName);
+    // JSON.stringify 후 DB 저장
+    const reportContentJson = JSON.stringify(reportData);
+    await saveReportContent(sessionId, reportContentJson, customerName);
     console.log(`[Analyze] DB 저장 완료 (${Date.now() - startTime}ms)`);
 
     // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
