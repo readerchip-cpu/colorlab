@@ -32,6 +32,7 @@ export default function UploadZone({ sessionId }: Props) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -96,10 +97,14 @@ export default function UploadZone({ sessionId }: Props) {
     timerRef.current = setInterval(() => {
       p = Math.min(p + (Math.random() * 2.5 + 0.5), 88);
       setProgress(p);
-      // 약 17% 단계마다 phase 증가
       const newPhase = Math.min(Math.floor(p / 17), PHASES.length - 1);
       if (newPhase !== phase) { phase = newPhase; setPhaseIdx(newPhase); }
     }, 400);
+
+    const stopAll = () => {
+      clearInterval(timerRef.current!);
+      clearInterval(pollRef.current!);
+    };
 
     try {
       const form = new FormData();
@@ -115,20 +120,45 @@ export default function UploadZone({ sessionId }: Props) {
         throw new Error(body.error ?? `HTTP ${res.status}`);
       }
 
-      const { redirectUrl } = await res.json();
+      // 분석이 백그라운드에서 시작됨 — 폴링으로 완료 확인
+      const startedAt = Date.now();
+      const MAX_WAIT_MS = 5 * 60 * 1000; // 5분
 
-      clearInterval(timerRef.current!);
-      setProgress(100);
-      setPhaseIdx(PHASES.length - 1);
+      pollRef.current = setInterval(async () => {
+        try {
+          const statusRes = await fetch(`/api/analyze/status?sessionId=${sessionId}`);
+          const { status } = await statusRes.json() as { status: string };
 
-      setTimeout(() => router.push(redirectUrl), 600);
+          if (status === 'completed') {
+            stopAll();
+            setProgress(100);
+            setPhaseIdx(PHASES.length - 1);
+            setTimeout(() => router.push(`/report/${sessionId}`), 600);
+          } else if (status === 'failed') {
+            stopAll();
+            setIsAnalyzing(false);
+            setProgress(0);
+            setPhaseIdx(0);
+            setApiError('분석에 실패했어요. 다시 시도해주세요.');
+          } else if (Date.now() - startedAt > MAX_WAIT_MS) {
+            // 5분 초과 — 리포트 페이지에서 확인하도록 이동
+            stopAll();
+            setProgress(100);
+            setPhaseIdx(PHASES.length - 1);
+            setTimeout(() => router.push(`/report/${sessionId}`), 600);
+          }
+        } catch {
+          // 폴링 일시 실패 — 계속 대기
+        }
+      }, 5000);
+
     } catch (err) {
-      clearInterval(timerRef.current!);
+      stopAll();
       setIsAnalyzing(false);
       setProgress(0);
       setPhaseIdx(0);
       setApiError(
-        err instanceof Error && err.message === '401'
+        err instanceof Error && err.message.includes('401')
           ? '결제 정보를 확인할 수 없어요. 다시 시도해주세요.'
           : '분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.',
       );

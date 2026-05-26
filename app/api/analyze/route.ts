@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { generateFullReport } from '@/lib/anthropic/client';
-import { getTestSession, saveReportContent } from '@/lib/utils/session';
-import { getEmailBySessionId } from '@/lib/utils/payment';
-import { sendReport } from '@/lib/email/sendReport';
-import { TYPE_EN } from '@/lib/colorData';
+import { getTestSession } from '@/lib/utils/session';
+import { adminClient } from '@/lib/supabase/admin';
+import { processAnalysisInBackground } from '@/lib/analysis/background';
 import { validateProductCoverage } from '@/lib/data/cosmetics';
 import type { PersonalColorType } from '@/types';
 
@@ -11,7 +9,6 @@ if (process.env.NODE_ENV === 'development') {
   validateProductCoverage();
 }
 
-// Anthropic API 호출 시간을 고려해 60초로 설정
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +21,6 @@ function isAllowedMime(type: string): type is AllowedMime {
 }
 
 export async function POST(request: Request) {
-  let imageBase64: string | null = null;
-
   try {
     const formData = await request.formData();
     const sessionId = formData.get('session_id');
@@ -35,7 +30,6 @@ export async function POST(request: Request) {
     const customerNameRaw = formData.get('customer_name');
     const customerName = typeof customerNameRaw === 'string' ? customerNameRaw.trim().slice(0, 10) : '';
 
-    // 입력값 검증
     if (typeof sessionId !== 'string' || !sessionId) {
       return NextResponse.json({ error: 'session_id is required' }, { status: 400 });
     }
@@ -43,13 +37,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'image file is required' }, { status: 400 });
     }
 
-    // 결제 여부 확인
     const session = await getTestSession(sessionId);
     if (!session.is_paid) {
       return NextResponse.json({ error: 'Payment required' }, { status: 401 });
     }
 
-    // 이미지 유효성 검증 (MIME + 크기)
     const mimeType = imageFile.type;
     if (!isAllowedMime(mimeType)) {
       return NextResponse.json(
@@ -66,45 +58,36 @@ export async function POST(request: Request) {
 
     // 서버 메모리에서만 base64 변환 (파일 저장 없음)
     const arrayBuffer = await imageFile.arrayBuffer();
-    imageBase64 = Buffer.from(arrayBuffer).toString('base64');
+    const imageBase64 = Buffer.from(arrayBuffer).toString('base64');
 
-    // 리포트 생성 (Vision + 답변 + 고민 종합)
-    const report = await generateFullReport(
-      session.answers,
-      session.result_type as PersonalColorType,
-      imageBase64,
-      freeConcern || session.free_concern || undefined,
-      mimeType,
-    );
-
-    // base64 즉시 해제 (GC 대상)
-    imageBase64 = null;
-
-    // DB에 리포트 저장 (customer_name 함께)
-    await saveReportContent(sessionId, report, customerName);
-
-    // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
-    const colorType = session.result_type as PersonalColorType;
-    getEmailBySessionId(sessionId)
-      .then((email) => {
-        if (!email) return;
-        const base = process.env.NEXT_PUBLIC_BASE_URL!;
-        return sendReport(email, {
-          sessionId,
-          typeName:   TYPE_EN[colorType] ?? colorType,
-          typeNameKr: colorType,
-          reportUrl:  `${base}/report/${sessionId}`,
-          pdfUrl:     `${base}/api/pdf/${sessionId}`,
-        });
+    // 분석 상태와 고객 정보를 즉시 저장
+    await adminClient
+      .from('test_sessions')
+      .update({
+        customer_name: customerName || null,
+        free_concern: freeConcern || null,
+        analysis_status: 'processing',
       })
-      .catch((err) => console.error('Email send failed:', err));
+      .eq('id', sessionId)
+      .catch((err) => console.error('[analyze] status update failed (컬럼 없을 수 있음):', err));
 
-    return NextResponse.json({ redirectUrl: `/report/${sessionId}` });
+    // 백그라운드에서 분석 시작 (await 안 함 — 즉시 응답)
+    processAnalysisInBackground({
+      sessionId,
+      answers: session.answers,
+      colorType: session.result_type as PersonalColorType,
+      imageBase64,
+      imageMediaType: mimeType,
+      freeConcern: freeConcern || session.free_concern || undefined,
+      customerName,
+    }).catch((err) => {
+      console.error('[analyze] background process failed:', err);
+    });
+
+    return NextResponse.json({ success: true, sessionId });
+
   } catch (err) {
-    // 에러 발생 시에도 base64 해제 보장
-    imageBase64 = null;
-
-    console.error('Analyze error:', err);
+    console.error('[analyze] error:', err);
     const status = err instanceof Error && err.message.includes('401') ? 401 : 500;
     return NextResponse.json(
       { error: 'Analysis failed. Please try again.' },
