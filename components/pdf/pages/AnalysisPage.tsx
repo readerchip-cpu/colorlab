@@ -2,43 +2,36 @@
 
 import { Page, View, Text } from '@react-pdf/renderer';
 import { S, Footer, PageHeader, SectionHead } from '@/components/pdf/pdfShared';
-import { TYPE_EXTRA, CHART_POS } from '@/lib/pdf/typeExtra';
 import { QuadrantChart } from '@/components/pdf/QuadrantChart';
-import type { PersonalColorType } from '@/types';
+import type { ReportData } from '@/types/report';
 
 interface Props {
-  colorType: PersonalColorType;
+  data: ReportData;
   accent: string;
   customerName: string;
-  photoImpression?: string;
-  keyFinding?: string;
-  keyInsight?: string;
 }
 
-export default function AnalysisPage({ colorType, accent, customerName, photoImpression, keyFinding, keyInsight }: Props) {
-  const extra = TYPE_EXTRA[colorType];
-  const { attributes } = extra;
-  const [posX, posY] = CHART_POS[colorType];
-  const warmCool  = Math.round((posX + 1) / 2 * 100);
-  const lightDeep = Math.round((1 - posY) / 2 * 100);
+export default function AnalysisPage({ data, accent, customerName }: Props) {
+  const { analysis, personalIntro } = data;
+  const { fourAttributes, quadrant, base, contrast, keyInsight } = analysis;
   const name = customerName || '고객';
 
-  const contrastLevel = attributes.contrast.includes('High') ? 3 : attributes.contrast.includes('Medium') ? 2 : 1;
+  const contrastLevel = contrast.includes('High') ? 3 : contrast.includes('Medium') ? 2 : 1;
   const contrastLabel = contrastLevel === 3 ? 'High' : contrastLevel === 2 ? 'Medium' : 'Low';
   const contrastDesc = contrastLevel === 1
     ? '비슷한 명도끼리 매칭이 자연스러움'
     : contrastLevel === 2
     ? '적당한 명도 차이로 세련된 스타일링 가능'
     : '강한 명도 차이로 선명한 스타일링 적합';
-  const baseToneDesc = attributes.base.includes('Yellow')
+  const baseToneDesc = base.includes('Yellow')
     ? '옐로우 베이스의 따뜻한 피부 톤'
     : '핑크 베이스의 시원한 피부 톤';
 
   const attrCards = [
-    { key: 'HUE',     label: '색상', val: attributes.hue },
-    { key: 'VALUE',   label: '명도', val: attributes.value },
-    { key: 'CHROMA',  label: '채도', val: attributes.chroma },
-    { key: 'CLARITY', label: '청탁', val: attributes.clarity },
+    { key: 'HUE',     label: '색상', val: fourAttributes.hue },
+    { key: 'VALUE',   label: '명도', val: fourAttributes.value },
+    { key: 'CHROMA',  label: '채도', val: fourAttributes.chroma },
+    { key: 'CLARITY', label: '청탁', val: fourAttributes.clarity },
   ];
 
   return (
@@ -51,23 +44,23 @@ export default function AnalysisPage({ colorType, accent, customerName, photoImp
           <View style={{ flex: 1 }}>
             <SectionHead num="01" title={`${name}님의 첫인상`} accent={accent} />
             <Text style={[S.body, { marginBottom: 7 }]}>
-              {photoImpression || `${name}님은 ${attributes.base}을 가진 ${colorType} 타입으로, ${attributes.value} 명도와 ${attributes.chroma} 채도의 특성을 지니고 있습니다.`}
+              {personalIntro.photoImpression || `${name}님은 ${base}을 가진 ${data.meta.typeNameKr} 타입으로, ${fourAttributes.value} 명도와 ${fourAttributes.chroma} 채도의 특성을 지니고 있습니다.`}
             </Text>
-            {keyFinding ? (
+            {personalIntro.keyFinding ? (
               <View style={S.keyFindingBox}>
                 <Text style={S.keyFindingLabel}>KEY FINDING</Text>
-                <Text style={S.keyFindingText}>{keyFinding}</Text>
+                <Text style={S.keyFindingText}>{personalIntro.keyFinding}</Text>
               </View>
             ) : null}
           </View>
           <View style={{ alignItems: 'center', paddingTop: 6 }}>
-            <QuadrantChart warmCool={warmCool} lightDeep={lightDeep} size={160} />
+            <QuadrantChart warmCool={quadrant.warmCool} lightDeep={quadrant.lightDeep} size={160} />
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, marginTop: 7 }}>
               <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#FF3B30' }} />
               <Text style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.2, color: '#FF3B30', fontFamily: 'Pretendard' }}>YOUR POSITION</Text>
             </View>
             <Text style={{ fontSize: 8, color: '#666', textAlign: 'center', marginTop: 3, fontFamily: 'Pretendard' }}>
-              Warm {warmCool}% · Light {100 - lightDeep}%
+              Warm {quadrant.warmCool}% · Light {100 - quadrant.lightDeep}%
             </Text>
           </View>
         </View>
@@ -112,7 +105,7 @@ export default function AnalysisPage({ colorType, accent, customerName, photoImp
             <Text style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: 1.5, color: accent, fontFamily: 'Pretendard' }}>BASE TONE</Text>
             <Text style={{ fontSize: 8.5, color: '#666', marginTop: 2, marginBottom: 5, fontFamily: 'Pretendard' }}>베이스 톤</Text>
             <View style={{ height: 1, width: '60%', backgroundColor: accent + '4D', marginBottom: 6 }} />
-            <Text style={{ fontSize: 15, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2, fontFamily: 'Pretendard' }}>{attributes.base}</Text>
+            <Text style={{ fontSize: 15, fontWeight: 700, color: '#2A2A2A', lineHeight: 1.2, fontFamily: 'Pretendard' }}>{base}</Text>
             <Text style={{ fontSize: 8, color: '#666', marginTop: 5, lineHeight: 1.5, fontFamily: 'Pretendard' }}>{baseToneDesc}</Text>
           </View>
           <View style={{ flex: 1, padding: 12 }}>

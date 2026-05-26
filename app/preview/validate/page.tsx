@@ -51,7 +51,7 @@ function PageCard({ result }: { result: PageValidationResult }) {
 }
 
 export default function ValidatePage() {
-  const results = validatePDFStructure(SAMPLE_PDF_DATA);
+  const results = validatePDFStructure({ data: SAMPLE_PDF_DATA.reportData, sessionId: SAMPLE_PDF_DATA.sessionId });
   const allOk = results.every(r => r.estimatedFillRatio >= 0.8 && r.warnings.length === 0);
   const hasWarnings = results.some(r => r.warnings.length > 0);
   const avgFill = Math.round(results.reduce((s, r) => s + r.estimatedFillRatio, 0) / results.length * 100);

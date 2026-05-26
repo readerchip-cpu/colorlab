@@ -2,29 +2,19 @@
 
 import { Page, View, Text } from '@react-pdf/renderer';
 import { S, Footer, PageHeader, SectionHead } from '@/components/pdf/pdfShared';
-import { TYPE_EXTRA } from '@/lib/pdf/typeExtra';
 import { CelebrityCard } from '@/components/pdf/CelebrityCard';
-import type { PersonalColorType } from '@/types';
-
-interface CelebrityItem {
-  name: string;
-  profession: string;
-  similarity: string;
-  iconicLook: string;
-}
+import type { ReportData } from '@/types/report';
 
 interface Props {
-  colorType: PersonalColorType;
+  data: ReportData;
   accent: string;
   customerName: string;
-  celebrities?: CelebrityItem[];
-  customAdvice?: { answer: string; isRelated: boolean };
 }
 
-export default function CelebrityAndAdvicePage({ colorType, accent, customerName, celebrities, customAdvice }: Props) {
+export default function CelebrityAndAdvicePage({ data, accent, customerName }: Props) {
+  const { celebrities, customAdvice, palette, fashion, hair } = data;
   const name = customerName || '고객';
-  const extra = TYPE_EXTRA[colorType];
-  const sigColors = extra.bestColors.slice(0, 3).map((c) => c.hex);
+  const sigColors = palette.best.slice(0, 3).map((c) => c.hex);
   const showAdvice = customAdvice?.isRelated === true;
   const hasCelebs = celebrities && celebrities.length > 0;
 
@@ -41,10 +31,10 @@ export default function CelebrityAndAdvicePage({ colorType, accent, customerName
               <CelebrityCard
                 key={celeb.name}
                 name={celeb.name}
-                profession={celeb.profession}
-                similarity={celeb.similarity}
-                iconicLook={celeb.iconicLook}
-                signatureColors={sigColors}
+                profession={celeb.profession ?? ''}
+                similarity={celeb.similarity ?? ''}
+                iconicLook={celeb.iconicLook ?? ''}
+                signatureColors={celeb.signatureColors ?? sigColors}
               />
             ))}
           </View>
@@ -55,21 +45,21 @@ export default function CelebrityAndAdvicePage({ colorType, accent, customerName
             padding: 14, marginBottom: 8,
           }}>
             <Text style={{ fontSize: 7, fontWeight: 700, letterSpacing: 1, color: accent, marginBottom: 8, fontFamily: 'Pretendard' }}>
-              {colorType} 타입의 대표 셀러브리티
+              {data.meta.typeNameKr} 타입의 대표 셀러브리티
             </Text>
             <Text style={{ fontSize: 9.5, color: '#444', lineHeight: 1.7, fontFamily: 'Pretendard' }}>
-              {colorType} 타입은 {extra.attributes.base}을 가진 {extra.attributes.value} 명도, {extra.attributes.chroma} 채도의 특성을 지닙니다.
-              이 타입의 셀러브리티들은 자신의 자연스러운 색감을 살려 {extra.fashion.main} 계열 컬러를 즐겨 활용합니다.
+              {data.meta.typeNameKr} 타입은 {data.analysis.base}을 가진 {data.analysis.fourAttributes.value} 명도, {data.analysis.fourAttributes.chroma} 채도의 특성을 지닙니다.
+              이 타입의 셀러브리티들은 자신의 자연스러운 색감을 살려 {fashion.main.slice(0, 2).join(', ')} 계열 컬러를 즐겨 활용합니다.
             </Text>
             <View style={{ height: 0.5, backgroundColor: accent + '30', marginVertical: 10 }} />
             <Text style={{ fontSize: 8.5, color: '#666', lineHeight: 1.6, fontFamily: 'Pretendard' }}>
-              메인 컬러: {extra.fashion.main}
+              메인 컬러: {fashion.main.join(', ')}
             </Text>
             <Text style={{ fontSize: 8.5, color: '#666', lineHeight: 1.6, fontFamily: 'Pretendard' }}>
-              서브 컬러: {extra.fashion.sub}
+              서브 컬러: {fashion.sub.join(', ')}
             </Text>
             <Text style={{ fontSize: 8.5, color: '#666', lineHeight: 1.6, fontFamily: 'Pretendard' }}>
-              포인트 컬러: {extra.fashion.accent}
+              포인트 컬러: {fashion.accent.join(', ')}
             </Text>
           </View>
         )}
@@ -93,15 +83,17 @@ export default function CelebrityAndAdvicePage({ colorType, accent, customerName
               {name}님을 위한 컬러랩 스타일링 가이드
             </Text>
             {[
-              extra.fashion.tip,
-              `메인 컬러 ${extra.fashion.main} 계열을 베이스로 코디를 시작하세요.`,
-              `${extra.fashion.sub} 컬러로 레이어링하면 자연스러운 조합이 완성됩니다.`,
-              `포인트 컬러 ${extra.fashion.accent}를 액세서리나 백으로 활용해보세요.`,
-              extra.attributes.base.includes('Yellow')
+              fashion.tips?.[0] ?? `${fashion.main.slice(0, 2).join(', ')} 계열 컬러로 자연스러운 스타일링을 완성하세요.`,
+              `메인 컬러 ${fashion.main.slice(0, 2).join(', ')} 계열을 베이스로 코디를 시작하세요.`,
+              `${fashion.sub.slice(0, 2).join(', ')} 컬러로 레이어링하면 자연스러운 조합이 완성됩니다.`,
+              `포인트 컬러 ${fashion.accent[0] ?? ''} 를 액세서리나 백으로 활용해보세요.`,
+              data.analysis.base.includes('Yellow')
                 ? '금 소재 액세서리(골드·브라스)가 피부 톤과 가장 잘 어울립니다.'
                 : '실버·화이트 골드 소재 액세서리가 쿨한 피부 톤을 돋보이게 합니다.',
-              `헤어는 ${extra.hair.recommended[0].name} 계열을 1순위로 추천드려요.`,
-            ].map((tip, i) => (
+              hair.recommended[0]?.name
+                ? `헤어는 ${hair.recommended[0].name} 계열을 1순위로 추천드려요.`
+                : '',
+            ].filter(Boolean).map((tip, i) => (
               <View key={i} style={{ flexDirection: 'row', gap: 8, marginBottom: 7 }}>
                 <View style={{ width: 17, height: 17, borderRadius: 8.5, backgroundColor: accent, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Text style={{ fontSize: 8, fontWeight: 700, color: '#fff', fontFamily: 'Pretendard' }}>{i + 1}</Text>

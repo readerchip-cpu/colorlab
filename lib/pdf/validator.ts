@@ -9,33 +9,34 @@ export interface PageValidationResult {
 
 const A4_PT = 700;
 
-export function validatePDFStructure(data: ReportPDFProps): PageValidationResult[] {
+export function validatePDFStructure(props: ReportPDFProps): PageValidationResult[] {
   return [
-    validateCover(data),
-    validateAnalysis(data),
-    validatePalette(data),
-    validateMakeup(data),
-    validateHairFashionSeasonal(data),
-    validateCelebrity(data),
+    validateCover(props),
+    validateAnalysis(props),
+    validatePalette(props),
+    validateMakeup(props),
+    validateHairFashionSeasonal(props),
+    validateCelebrity(props),
   ];
 }
 
-function validateCover(data: ReportPDFProps): PageValidationResult {
+function validateCover(props: ReportPDFProps): PageValidationResult {
   const warnings: string[] = [];
+  const { data } = props;
   // 로고(40) + marginBottom(32) + 이름+타입EN+타입KO+displayName(120) + 컬러칩(90)
   let height = 282;
 
-  if (!data.customerName) {
+  if (!data?.meta?.customerName) {
     warnings.push('customerName 이 없습니다. 표지에 "고객님의"로 표시됩니다.');
   }
 
-  if (data.personalIntro?.greeting) {
+  if (data?.personalIntro?.greeting) {
     height += 65; // 인사말 1~2줄
   } else {
     warnings.push('personalIntro.greeting 이 없습니다. 인사말이 표시되지 않습니다.');
   }
 
-  if (data.personalIntro?.colorTypeDescription) {
+  if (data?.personalIntro?.colorTypeDescription) {
     height += 265; // PERSONAL MESSAGE 박스 (summary + 3 char + bestFor + padding)
   } else {
     warnings.push('personalIntro.colorTypeDescription 이 없습니다. 타입 설명이 표시되지 않습니다.');
@@ -51,8 +52,8 @@ function validateCover(data: ReportPDFProps): PageValidationResult {
   };
 }
 
-function validateAnalysis(data: ReportPDFProps): PageValidationResult {
-  const warnings: string[] = [];
+function validateAnalysis(props: ReportPDFProps): PageValidationResult {
+  const { data } = props;
   // Reference 박스 제거됨, 차트 196→160으로 압축
   let height = 55  // 페이지 헤더
     + 195          // 첫인상 + 4분면 차트(160)
@@ -61,7 +62,7 @@ function validateAnalysis(data: ReportPDFProps): PageValidationResult {
     + 105          // 4속성 통합 카드
     + 105;         // BASE+CONTRAST 통합 카드
 
-  if (data.personalIntro?.keyInsight) {
+  if (data?.analysis?.keyInsight) {
     height += 75;
   }
 
@@ -69,12 +70,12 @@ function validateAnalysis(data: ReportPDFProps): PageValidationResult {
     pageNumber: 2,
     pageName: '첫인상 + 정밀 분석',
     estimatedFillRatio: Math.min(height / A4_PT, 1),
-    warnings,
+    warnings: [],
   };
 }
 
-function validatePalette(_data: ReportPDFProps): PageValidationResult {
-  // TYPE_EXTRA.bestColors(8) + worstColors(4) + combinations + stylingNotes 항상 존재
+function validatePalette(_props: ReportPDFProps): PageValidationResult {
+  // palette.best(8) + palette.worst(4) + combinations + stylingNotes 항상 존재
   const height = 40   // 헤더
     + 260             // Best 4×2 그리드
     + 15              // 구분선
@@ -91,8 +92,8 @@ function validatePalette(_data: ReportPDFProps): PageValidationResult {
   };
 }
 
-function validateMakeup(_data: ReportPDFProps): PageValidationResult {
-  // cosmeticsDatabase + makeupTipsDatabase 항상 존재
+function validateMakeup(_props: ReportPDFProps): PageValidationResult {
+  // makeup.lipstick/foundation/eyeshadow/blusher + tips 항상 존재
   const height = 40   // 헤더
     + 200             // 립스틱 3개
     + 15              // 구분선
@@ -110,7 +111,7 @@ function validateMakeup(_data: ReportPDFProps): PageValidationResult {
   };
 }
 
-function validateHairFashionSeasonal(_data: ReportPDFProps): PageValidationResult {
+function validateHairFashionSeasonal(_props: ReportPDFProps): PageValidationResult {
   // 2×2 텍스트 전용 시즌 카드로 압축
   const height = 35   // 헤더
     + 110             // 헤어 3카드 + avoid
@@ -128,9 +129,10 @@ function validateHairFashionSeasonal(_data: ReportPDFProps): PageValidationResul
   };
 }
 
-function validateCelebrity(data: ReportPDFProps): PageValidationResult {
+function validateCelebrity(props: ReportPDFProps): PageValidationResult {
   const warnings: string[] = [];
-  const celebCount = data.celebrities?.length ?? 0;
+  const { data } = props;
+  const celebCount = data?.celebrities?.length ?? 0;
   let height = 40 + celebCount * 110;
 
   if (celebCount === 0) {
@@ -140,7 +142,7 @@ function validateCelebrity(data: ReportPDFProps): PageValidationResult {
     warnings.push(`셀러브리티가 ${celebCount}명으로 적습니다. 페이지 하단에 빈 공간이 생길 수 있습니다.`);
   }
 
-  if (data.customAdvice?.isRelated) {
+  if (data?.customAdvice?.isRelated) {
     height += 110; // 맞춤 답변 박스
   } else {
     height += 200; // 스타일링 가이드 대체 박스 (6개 팁)

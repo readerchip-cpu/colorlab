@@ -2,32 +2,21 @@
 
 import { Page, View, Text } from '@react-pdf/renderer';
 import { S, PAD_H, Footer } from '@/components/pdf/pdfShared';
-import { TYPE_EN } from '@/lib/pdf/typeExtra';
-import { TYPE_PALETTE, TYPE_DISPLAY } from '@/lib/colorData';
 import { ColorChip } from '@/components/pdf/ColorChip';
-import type { PersonalColorType } from '@/types';
-
-interface ColorTypeDescription {
-  summary: string;
-  characteristics: string[];
-  bestFor: string;
-}
+import type { ReportData } from '@/types/report';
 
 interface Props {
-  colorType: PersonalColorType;
+  data: ReportData;
   sessionId: string;
   createdAt: string;
   accent: string;
   customerName: string;
-  greeting: string;
-  colorTypeDescription?: ColorTypeDescription;
-  palette: Array<{ hex: string; name: string }>;
 }
 
-export default function CoverPage({ colorType, sessionId, createdAt, accent, customerName, greeting, colorTypeDescription, palette }: Props) {
-  const typeEn = TYPE_EN[colorType];
-  const display = TYPE_DISPLAY[colorType];
+export default function CoverPage({ data, sessionId, createdAt, accent, customerName }: Props) {
   const name = customerName || '고객';
+  const { personalIntro, palette, meta } = data;
+  const coverColors = palette.best.slice(0, 3);
 
   return (
     <Page size="A4" style={S.page}>
@@ -44,12 +33,12 @@ export default function CoverPage({ colorType, sessionId, createdAt, accent, cus
         </View>
 
         <Text style={[S.coverNameLine, { fontSize: 28, color: accent }]}>{name}님의</Text>
-        <Text style={S.coverTypeEn}>{typeEn}</Text>
-        <Text style={S.coverTypeKo}>{colorType}</Text>
-        <Text style={S.coverDisplayName}>{display}</Text>
+        <Text style={S.coverTypeEn}>{meta.typeName}</Text>
+        <Text style={S.coverTypeKo}>{meta.typeNameKr}</Text>
+        <Text style={S.coverDisplayName}>{meta.typeNameKr}</Text>
 
         <View style={{ flexDirection: 'row', gap: 14, marginBottom: 22 }}>
-          {palette.map(({ hex, name: cName }) => (
+          {coverColors.map(({ hex, name: cName }) => (
             <ColorChip key={hex} hex={hex} name={cName} size="large" showHex={false} />
           ))}
         </View>
@@ -60,34 +49,30 @@ export default function CoverPage({ colorType, sessionId, createdAt, accent, cus
             PERSONAL MESSAGE
           </Text>
 
-          {greeting ? (
+          {personalIntro.greeting ? (
             <Text style={{ fontSize: 12.5, fontWeight: 300, color: '#2A2A2A', lineHeight: 1.7, letterSpacing: 0.3, textAlign: 'center' }}>
-              {greeting}
+              {personalIntro.greeting}
             </Text>
           ) : null}
 
           <View style={{ width: 30, height: 1, backgroundColor: accent, marginVertical: 12 }} />
 
-          {colorTypeDescription ? (
-            <>
-              <Text style={{ fontSize: 12.5, fontWeight: 300, color: '#444', lineHeight: 1.7, letterSpacing: 0.2, textAlign: 'center', marginBottom: 12 }}>
-                {colorTypeDescription.summary}
-              </Text>
+          <Text style={{ fontSize: 12.5, fontWeight: 300, color: '#444', lineHeight: 1.7, letterSpacing: 0.2, textAlign: 'center', marginBottom: 12 }}>
+            {personalIntro.colorTypeDescription.summary}
+          </Text>
 
-              <View style={{ alignSelf: 'stretch', paddingHorizontal: 16, marginBottom: 12 }}>
-                {colorTypeDescription.characteristics.map((char, i) => (
-                  <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-                    <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: accent, marginRight: 10, flexShrink: 0 }} />
-                    <Text style={{ fontSize: 10.5, fontWeight: 300, color: '#555', flex: 1, lineHeight: 1.6 }}>{char}</Text>
-                  </View>
-                ))}
+          <View style={{ alignSelf: 'stretch', paddingHorizontal: 16, marginBottom: 12 }}>
+            {personalIntro.colorTypeDescription.characteristics.map((char, i) => (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: accent, marginRight: 10, flexShrink: 0 }} />
+                <Text style={{ fontSize: 10.5, fontWeight: 300, color: '#555', flex: 1, lineHeight: 1.6 }}>{char}</Text>
               </View>
+            ))}
+          </View>
 
-              <Text style={{ fontSize: 11, fontWeight: 300, color: accent, textAlign: 'center', lineHeight: 1.6 }}>
-                {colorTypeDescription.bestFor}
-              </Text>
-            </>
-          ) : null}
+          <Text style={{ fontSize: 11, fontWeight: 300, color: accent, textAlign: 'center', lineHeight: 1.6 }}>
+            {personalIntro.colorTypeDescription.bestFor}
+          </Text>
         </View>
 
         <View style={{ alignItems: 'center', marginTop: 6, marginBottom: 6 }}>

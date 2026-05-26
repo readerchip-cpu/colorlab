@@ -1,8 +1,9 @@
 import { notFound, redirect } from 'next/navigation';
 import { getTestSession } from '@/lib/utils/session';
 import PdfViewerClient from '@/components/pdf/PdfViewerClient';
+import { TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import type { PersonalColorType } from '@/types';
-import { TYPE_INTRO } from '@/lib/pdf/typeIntro';
+import type { ReportData } from '@/types/report';
 
 interface Props {
   params: { id: string };
@@ -23,27 +24,29 @@ export default async function PdfPage({ params }: Props) {
   if (!session.is_paid) redirect(`/pay/${params.id}`);
   if (!session.report_content) redirect(`/upload/${params.id}`);
 
-  const colorType = session.result_type as PersonalColorType;
-  const name = session.customer_name?.trim() || '';
-  const intro = TYPE_INTRO[colorType];
+  let reportData: ReportData;
+  try {
+    reportData = JSON.parse(session.report_content) as ReportData;
+  } catch {
+    redirect(`/upload/${params.id}`);
+  }
+
+  if (!reportData.meta || !reportData.palette) redirect(`/upload/${params.id}`);
+
+  const colorType = (session.result_type ?? reportData.meta.typeNameKr) as PersonalColorType;
+  reportData.meta.accentColor = TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED';
+
+  if (!reportData.meta.customerName && session.customer_name) {
+    reportData.meta.customerName = session.customer_name;
+  }
+  const customerName = reportData.meta.customerName || session.customer_name || undefined;
 
   return (
     <PdfViewerClient
+      reportData={reportData}
       sessionId={params.id}
-      colorType={colorType}
-      reportContent={session.report_content}
+      customerName={customerName}
       createdAt={session.created_at}
-      customerName={name || undefined}
-      personalIntro={name ? {
-        greeting: `${name}님, 안녕하세요. 컬러랩에서 분석한 ${name}님만의 컬러 가이드를 보내드려요.`,
-        colorTypeDescription: {
-          summary: intro.summary,
-          characteristics: intro.characteristics,
-          bestFor: intro.bestFor,
-        },
-        photoImpression: `${name}님의 테스트 응답을 기반으로 정밀 분석한 결과입니다. ${colorType} 타입의 특성이 잘 나타나 있습니다.`,
-        keyFinding: `${name}님은 ${intro.keyFinding}`,
-      } : undefined}
     />
   );
 }

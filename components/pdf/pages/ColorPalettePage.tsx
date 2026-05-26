@@ -1,9 +1,8 @@
 'use client';
 
 import { Page, View, Text } from '@react-pdf/renderer';
-import { S, Footer, PageHeader, SectionHead } from '@/components/pdf/pdfShared';
-import { TYPE_EXTRA } from '@/lib/pdf/typeExtra';
-import type { PersonalColorType } from '@/types';
+import { S, Footer, PageHeader } from '@/components/pdf/pdfShared';
+import type { ReportData } from '@/types/report';
 
 function getMood(colorName: string): string {
   if (colorName.includes('핑크') || colorName.includes('분홍')) return '청순';
@@ -25,15 +24,19 @@ function getMood(colorName: string): string {
 }
 
 interface Props {
-  colorType: PersonalColorType;
+  data: ReportData;
   accent: string;
   customerName: string;
 }
 
-export default function ColorPalettePage({ colorType, accent, customerName }: Props) {
-  const { bestColors, worstColors, fashion, attributes } = TYPE_EXTRA[colorType];
+export default function ColorPalettePage({ data, accent, customerName }: Props) {
+  const { palette, fashion, analysis } = data;
+  const bestColors = palette.best;
+  const worstColors = palette.worst;
   const name = customerName || '고객';
-  const contrastLevel = attributes.contrast.includes('High') ? 3 : attributes.contrast.includes('Medium') ? 2 : 1;
+
+  const mainLabel = fashion.main.slice(0, 2).join(' / ');
+  const accentLabel = fashion.accent.slice(0, 2).join(', ');
 
   const combinations = [
     {
@@ -44,30 +47,22 @@ export default function ColorPalettePage({ colorType, accent, customerName }: Pr
     {
       type: '톤온톤', typeEn: 'Tone on Tone',
       description: '같은 명도의 다른 색상으로 부드러운 조화를 연출해요',
-      colors: [bestColors[0], bestColors[3], bestColors[5]],
+      colors: [bestColors[0], bestColors[3], bestColors[5]].filter(Boolean),
     },
     {
       type: '포인트', typeEn: 'Accent Color',
-      description: `${fashion.accent} 포인트 컬러로 생기 있는 스타일링을 완성해요`,
-      colors: [bestColors[1], bestColors[4], bestColors[7]],
+      description: `${accentLabel} 포인트 컬러로 생기 있는 스타일링을 완성해요`,
+      colors: [bestColors[1], bestColors[4], bestColors[7]].filter(Boolean),
     },
   ];
 
   const stylingNotes = [
-    fashion.tip,
-    attributes.base.includes('Yellow')
+    ...(fashion.tips ?? []).slice(0, 2),
+    ...(palette.stylingNotes ?? []).slice(0, 3),
+    analysis.base.includes('Yellow')
       ? '골드 액세서리가 실버보다 자연스럽게 어우러져요.'
       : '실버 액세서리가 쿨하고 세련된 느낌을 더해줘요.',
-    contrastLevel === 1
-      ? '비슷한 명도끼리 매칭이 자연스럽고 조화로워요.'
-      : contrastLevel === 2
-      ? '적절한 명도 차이 레이어드 코디가 세련되어 보여요.'
-      : '과감한 명도 대비 코디가 특히 잘 어울려요.',
-    attributes.chroma.includes('Soft') || attributes.chroma.includes('Muted')
-      ? '원색보다 파스텔·뮤트 톤이 자연스러운 매력을 살려줘요.'
-      : '선명한 컬러가 생기와 에너지를 극대화해줘요.',
-    `${fashion.main} 계열을 베이스로, ${fashion.sub} 컬러를 레이어드하면 가장 자연스러운 코디가 완성돼요.`,
-  ];
+  ].filter(Boolean);
 
   return (
     <Page size="A4" style={S.page}>
@@ -78,7 +73,7 @@ export default function ColorPalettePage({ colorType, accent, customerName }: Pr
         <View style={[S.sectionBlock, { borderLeftWidth: 3, borderLeftColor: accent, borderLeftStyle: 'solid', paddingLeft: 10, marginBottom: 8 }]}>
           <Text style={S.sectionNum}>03</Text>
           <Text style={S.sectionTitle}>{name}님께 어울리는 컬러</Text>
-          <Text style={{ fontSize: 9, color: '#AAA', marginTop: 2, fontFamily: 'Pretendard' }}>Best Colors · {fashion.main}</Text>
+          <Text style={{ fontSize: 9, color: '#AAA', marginTop: 2, fontFamily: 'Pretendard' }}>Best Colors · {mainLabel}</Text>
         </View>
 
         {/* Best Colors Grid 4×2 */}

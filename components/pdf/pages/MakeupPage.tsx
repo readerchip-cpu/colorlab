@@ -4,23 +4,18 @@ import { Page, View, Text } from '@react-pdf/renderer';
 import { S, Footer, PageHeader, SectionHead } from '@/components/pdf/pdfShared';
 import { ProductRecommendation } from '@/components/pdf/ProductRecommendation';
 import { IconLabel } from '@/components/pdf/IconLabel';
-import { getProductsByType } from '@/lib/data/cosmetics';
-import { makeupTipsDatabase } from '@/lib/data/makeupTips';
-import type { PersonalColorType } from '@/types';
+import type { ReportData } from '@/types/report';
 
 interface Props {
-  colorType: PersonalColorType;
+  data: ReportData;
   accent: string;
   customerName: string;
 }
 
-export default function MakeupPage({ colorType, accent, customerName }: Props) {
-  const lipProducts        = getProductsByType(colorType, 'lipstick',   3);
-  const foundationProducts = getProductsByType(colorType, 'foundation', 2);
-  const eyeshadowProducts  = getProductsByType(colorType, 'eyeshadow',  2);
-  const blusherProducts    = getProductsByType(colorType, 'blusher',    2);
-  const tips = makeupTipsDatabase[colorType];
+export default function MakeupPage({ data, accent, customerName }: Props) {
+  const { makeup } = data;
   const name = customerName || '고객';
+  const tips = makeup.tips ?? [];
 
   return (
     <Page size="A4" style={S.page}>
@@ -30,8 +25,8 @@ export default function MakeupPage({ colorType, accent, customerName }: Props) {
         {/* 06. 립스틱 */}
         <SectionHead num="06" title={`${name}님께 추천하는 립스틱`} accent={accent} />
         <View style={{ marginBottom: 4 }}>
-          {lipProducts.length > 0 ? (
-            lipProducts.map((p, i) => (
+          {makeup.lipstick && makeup.lipstick.length > 0 ? (
+            makeup.lipstick.map((p, i) => (
               <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
             ))
           ) : (
@@ -46,8 +41,8 @@ export default function MakeupPage({ colorType, accent, customerName }: Props) {
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 4 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>파운데이션</Text>
-            {foundationProducts.length > 0 ? (
-              foundationProducts.map((p, i) => (
+            {makeup.foundation && makeup.foundation.length > 0 ? (
+              makeup.foundation.map((p, i) => (
                 <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
               ))
             ) : (
@@ -56,8 +51,8 @@ export default function MakeupPage({ colorType, accent, customerName }: Props) {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>아이섀도우</Text>
-            {eyeshadowProducts.length > 0 ? (
-              eyeshadowProducts.map((p, i) => (
+            {makeup.eyeshadow && makeup.eyeshadow.length > 0 ? (
+              makeup.eyeshadow.map((p, i) => (
                 <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
               ))
             ) : (
@@ -73,8 +68,8 @@ export default function MakeupPage({ colorType, accent, customerName }: Props) {
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 7.5, fontWeight: 700, color: '#888', marginBottom: 5, letterSpacing: 0.5 }}>블러셔</Text>
-            {blusherProducts.length > 0 ? (
-              blusherProducts.map((p, i) => (
+            {makeup.blusher && makeup.blusher.length > 0 ? (
+              makeup.blusher.map((p, i) => (
                 <ProductRecommendation key={p.id ?? i} product={p} accentColor={accent} />
               ))
             ) : (

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import ReportPDF from './ReportPDF';
-import type { ReportPDFProps } from './ReportPDF';
+import type { ReportData } from '@/types/report';
 
 // BlobProvider는 URL.createObjectURL 등 브라우저 API 사용 → SSR 비활성화
 const BlobProvider = dynamic(
@@ -13,7 +13,12 @@ const BlobProvider = dynamic(
   { ssr: false },
 );
 
-type Props = ReportPDFProps & { createdAt: string };
+interface Props {
+  reportData: ReportData;
+  sessionId: string;
+  customerName?: string;
+  createdAt: string;
+}
 
 function Spinner() {
   return (
@@ -27,10 +32,8 @@ function Spinner() {
   );
 }
 
-export default function PdfViewerClient({
-  sessionId, colorType, reportContent, createdAt,
-  customerName, personalIntro, celebrities, customAdvice,
-}: Props) {
+export default function PdfViewerClient({ reportData, sessionId, customerName, createdAt }: Props) {
+  const colorType = reportData.meta.typeNameKr;
   const safeName = (customerName ?? '').replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 20);
   const dateStr = createdAt.slice(0, 10).replace(/-/g, '');
   const fileName = safeName ? `컬러랩_${safeName}_${dateStr}.pdf` : `컬러랩_${colorType.replace(/\s/g, '_')}_${dateStr}.pdf`;
@@ -40,17 +43,12 @@ export default function PdfViewerClient({
   const doc = useMemo(
     () => (
       <ReportPDF
-        colorType={colorType}
+        data={reportData}
         sessionId={sessionId}
-        reportContent={reportContent}
         createdAt={createdAt.slice(0, 10)}
-        customerName={customerName}
-        personalIntro={personalIntro}
-        celebrities={celebrities}
-        customAdvice={customAdvice}
       />
     ),
-    [colorType, sessionId, reportContent, createdAt, customerName, personalIntro, celebrities, customAdvice],
+    [reportData, sessionId, createdAt],
   );
 
   return (

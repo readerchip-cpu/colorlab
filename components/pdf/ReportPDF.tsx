@@ -2,79 +2,36 @@
 
 import '@/lib/pdf/font';
 import { Document } from '@react-pdf/renderer';
-import { TYPE_PALETTE } from '@/lib/colorData';
-import { TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import CoverPage from '@/components/pdf/pages/CoverPage';
 import AnalysisPage from '@/components/pdf/pages/AnalysisPage';
 import ColorPalettePage from '@/components/pdf/pages/ColorPalettePage';
 import MakeupPage from '@/components/pdf/pages/MakeupPage';
 import HairFashionSeasonPage from '@/components/pdf/pages/HairFashionSeasonPage';
 import CelebrityAndAdvicePage from '@/components/pdf/pages/CelebrityAndAdvicePage';
-import type { PersonalColorType } from '@/types';
-
-interface ColorTypeDescription {
-  summary: string;
-  characteristics: string[];
-  bestFor: string;
-}
+import type { ReportData } from '@/types/report';
 
 export interface ReportPDFProps {
-  colorType:     PersonalColorType;
-  sessionId:     string;
-  reportContent: string;
-  createdAt?:    string;
-  customerName?: string;
-  personalIntro?: {
-    greeting:              string;
-    colorTypeDescription?: ColorTypeDescription;
-    photoImpression:       string;
-    keyFinding:            string;
-    keyInsight?:           string;
-  };
-  celebrities?: {
-    name: string;
-    profession: string;
-    similarity: string;
-    iconicLook: string;
-  }[];
-  customAdvice?: {
-    answer:    string;
-    isRelated: boolean;
-  };
+  data:       ReportData;
+  sessionId:  string;
+  createdAt?: string;
 }
 
-export default function ReportPDF({
-  colorType, sessionId, reportContent, createdAt,
-  customerName, personalIntro, celebrities, customAdvice,
-}: ReportPDFProps) {
-  const accent  = TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED';
-  const date    = createdAt ?? new Date().toISOString().slice(0, 10);
-  const name    = customerName?.trim() || '고객';
-  const palette = TYPE_PALETTE[colorType];
+export default function ReportPDF({ data, sessionId, createdAt }: ReportPDFProps) {
+  const accent = data.meta.accentColor;
+  const date   = createdAt ?? new Date().toISOString().slice(0, 10);
+  const name   = data.meta.customerName?.trim() || '고객';
 
   return (
-    <Document title={`${name}님 컬러랩 퍼스널컬러 리포트 · ${colorType}`} author="COLORLAB">
+    <Document title={`${name}님 컬러랩 퍼스널컬러 리포트 · ${data.meta.typeNameKr}`} author="COLORLAB">
       <CoverPage
-        colorType={colorType} sessionId={sessionId} createdAt={date}
+        data={data} sessionId={sessionId} createdAt={date}
         accent={accent} customerName={name}
-        greeting={personalIntro?.greeting ?? ''}
-        colorTypeDescription={personalIntro?.colorTypeDescription}
-        palette={[...palette]}
       />
-      <AnalysisPage
-        colorType={colorType} accent={accent} customerName={name}
-        photoImpression={personalIntro?.photoImpression}
-        keyFinding={personalIntro?.keyFinding}
-        keyInsight={personalIntro?.keyInsight}
-      />
-      <ColorPalettePage colorType={colorType} accent={accent} customerName={name} />
-      <MakeupPage colorType={colorType} accent={accent} customerName={name} />
-      <HairFashionSeasonPage colorType={colorType} accent={accent} customerName={name} />
-      <CelebrityAndAdvicePage
-        colorType={colorType} accent={accent} customerName={name}
-        celebrities={celebrities}
-        customAdvice={customAdvice}
-      />
+      <AnalysisPage data={data} accent={accent} customerName={name} />
+      <ColorPalettePage data={data} accent={accent} customerName={name} />
+      <MakeupPage data={data} accent={accent} customerName={name} />
+      <HairFashionSeasonPage data={data} accent={accent} customerName={name} />
+      <CelebrityAndAdvicePage data={data} accent={accent} customerName={name} />
     </Document>
   );
 }
