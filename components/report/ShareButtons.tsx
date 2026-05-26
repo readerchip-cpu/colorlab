@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 
 interface ShareButtonsProps {
   pdfHref: string;
@@ -87,17 +86,11 @@ export function ShareButtons({ pdfHref, customerName, typeNameKr, accentColor }:
         </button>
       </div>
 
-      <div className="pt-4 text-center">
-        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-          친구의 퍼스널컬러도 궁금하다면?
-        </p>
-        <Link
-          href="/"
-          className="inline-block rounded-2xl border-2 border-gray-200 px-8 py-3 text-sm font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:text-gray-400"
-        >
-          컬러랩을 친구에게 공유하기
-        </Link>
-      </div>
+      <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
+        친구에게 결과를 공유하고 싶다면
+        <br />
+        위 공유 버튼을 활용해보세요!
+      </p>
     </div>
   );
 }
