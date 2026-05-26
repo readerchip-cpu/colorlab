@@ -5,6 +5,8 @@ import type { Metadata } from 'next';
 import { getTestSession } from '@/lib/utils/session';
 import UploadZone from '@/components/upload/UploadZone';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: { id: string };
 }
@@ -20,6 +22,8 @@ export default async function UploadPage({ params }: Props) {
   } catch {
     notFound();
   }
+
+  console.log('[upload page] id:', params.id, '| is_paid:', session?.is_paid);
 
   if (!session.is_paid) redirect(`/pay/${params.id}`);
 
