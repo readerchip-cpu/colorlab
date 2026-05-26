@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getTestSession } from '@/lib/utils/session';
-import { adminClient } from '@/lib/supabase/admin';
-import { processAnalysisInBackground } from '@/lib/analysis/background';
+import { generateFullReport } from '@/lib/anthropic/client';
+import { getTestSession, saveReportContent } from '@/lib/utils/session';
+import { getEmailBySessionId } from '@/lib/utils/payment';
+import { sendReport } from '@/lib/email/sendReport';
+import { TYPE_EN } from '@/lib/colorData';
 import { validateProductCoverage } from '@/lib/data/cosmetics';
 import type { PersonalColorType } from '@/types';
 
@@ -9,7 +11,7 @@ if (process.env.NODE_ENV === 'development') {
   validateProductCoverage();
 }
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
@@ -21,6 +23,8 @@ function isAllowedMime(type: string): type is AllowedMime {
 }
 
 export async function POST(request: Request) {
+  let imageBase64: string | null = null;
+
   try {
     const formData = await request.formData();
     const sessionId = formData.get('session_id');
@@ -58,39 +62,44 @@ export async function POST(request: Request) {
 
     // 서버 메모리에서만 base64 변환 (파일 저장 없음)
     const arrayBuffer = await imageFile.arrayBuffer();
-    const imageBase64 = Buffer.from(arrayBuffer).toString('base64');
+    imageBase64 = Buffer.from(arrayBuffer).toString('base64');
 
-    // 분석 상태와 고객 정보를 즉시 저장
-    try {
-      await adminClient
-        .from('test_sessions')
-        .update({
-          customer_name: customerName || null,
-          free_concern: freeConcern || null,
-          analysis_status: 'processing',
-        })
-        .eq('id', sessionId);
-    } catch (err) {
-      console.error('[analyze] status update failed (컬럼 없을 수 있음):', err);
-    }
-
-    // 백그라운드에서 분석 시작 (await 안 함 — 즉시 응답)
-    processAnalysisInBackground({
-      sessionId,
-      answers: session.answers,
-      colorType: session.result_type as PersonalColorType,
+    // 리포트 생성 (Vision + 답변 + 고민 종합)
+    const report = await generateFullReport(
+      session.answers,
+      session.result_type as PersonalColorType,
       imageBase64,
-      imageMediaType: mimeType,
-      freeConcern: freeConcern || session.free_concern || undefined,
-      customerName,
-    }).catch((err) => {
-      console.error('[analyze] background process failed:', err);
-    });
+      freeConcern || session.free_concern || undefined,
+      mimeType,
+    );
 
-    return NextResponse.json({ success: true, sessionId });
+    // base64 즉시 해제 (GC 대상)
+    imageBase64 = null;
+
+    // DB에 리포트 저장 (customer_name 함께)
+    await saveReportContent(sessionId, report, customerName);
+
+    // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
+    const colorType = session.result_type as PersonalColorType;
+    getEmailBySessionId(sessionId)
+      .then((email) => {
+        if (!email) return;
+        const base = process.env.NEXT_PUBLIC_BASE_URL ?? '';
+        return sendReport(email, {
+          sessionId,
+          typeName:   TYPE_EN[colorType] ?? colorType,
+          typeNameKr: colorType,
+          reportUrl:  `${base}/report/${sessionId}`,
+          pdfUrl:     `${base}/api/pdf/${sessionId}`,
+        });
+      })
+      .catch((err) => console.error('Email send failed:', err));
+
+    return NextResponse.json({ redirectUrl: `/report/${sessionId}` });
 
   } catch (err) {
-    console.error('[analyze] error:', err);
+    imageBase64 = null;
+    console.error('Analyze error:', err);
     const status = err instanceof Error && err.message.includes('401') ? 401 : 500;
     return NextResponse.json(
       { error: 'Analysis failed. Please try again.' },
