@@ -71,32 +71,32 @@ export default async function UploadPage({ params }: Props) {
             {/* 올바른 예 */}
             <div>
               <div className="mb-2 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-amber-50">
-                <FaceGoodIllustration />
+                <span className="text-6xl flex-shrink-0" aria-hidden="true">😊</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">✓</span>
                 <span className="text-xs font-semibold text-gray-700">올바른 예</span>
               </div>
               <ul className="mt-1.5 space-y-0.5 text-xs text-gray-500">
-                <li>· 정면 얼굴</li>
-                <li>· 자연광 / 밝은 조명</li>
-                <li>· 메이크업 최소화</li>
+                <li><span className="flex-shrink-0">👤</span> 정면 얼굴</li>
+                <li><span className="flex-shrink-0">✨</span> 자연광 / 밝은 조명</li>
+                <li><span className="flex-shrink-0">💆‍♀️</span> 메이크업 최소화</li>
               </ul>
             </div>
 
             {/* 잘못된 예 */}
             <div>
               <div className="mb-2 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gray-100">
-                <FaceBadIllustration />
+                <span className="text-6xl flex-shrink-0" aria-hidden="true">😷</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-red-400 text-[10px] font-bold text-white">✕</span>
                 <span className="text-xs font-semibold text-gray-700">피해 주세요</span>
               </div>
               <ul className="mt-1.5 space-y-0.5 text-xs text-gray-500">
-                <li>· 측면·뒷모습</li>
-                <li>· 어둡거나 역광</li>
-                <li>· 선글라스·마스크 착용</li>
+                <li><span className="flex-shrink-0">📐</span> 측면·뒷모습</li>
+                <li><span className="flex-shrink-0">🌑</span> 어둡거나 역광</li>
+                <li><span className="flex-shrink-0">🕶️</span> 선글라스·마스크 착용</li>
               </ul>
             </div>
           </div>
@@ -115,42 +115,3 @@ export default async function UploadPage({ params }: Props) {
   );
 }
 
-/* ── SVG 일러스트 ── */
-
-function FaceGoodIllustration() {
-  return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-      {/* 얼굴 */}
-      <circle cx="40" cy="40" r="30" fill="#FFD8A8" />
-      {/* 눈 */}
-      <ellipse cx="30" cy="36" rx="3.5" ry="4" fill="#3B2006" />
-      <ellipse cx="50" cy="36" rx="3.5" ry="4" fill="#3B2006" />
-      {/* 미소 */}
-      <path d="M30 50 Q40 58 50 50" stroke="#3B2006" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      {/* 햇살 (자연광 상징) */}
-      <circle cx="66" cy="14" r="6" fill="#FFD234" opacity="0.8" />
-      <line x1="66" y1="5" x2="66" y2="3" stroke="#FFD234" strokeWidth="2" strokeLinecap="round" />
-      <line x1="66" y1="23" x2="66" y2="25" stroke="#FFD234" strokeWidth="2" strokeLinecap="round" />
-      <line x1="57" y1="14" x2="55" y2="14" stroke="#FFD234" strokeWidth="2" strokeLinecap="round" />
-      <line x1="75" y1="14" x2="77" y2="14" stroke="#FFD234" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function FaceBadIllustration() {
-  return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-      {/* 얼굴 (측면 표현: 타원) */}
-      <ellipse cx="44" cy="40" rx="22" ry="28" fill="#C8C8C8" />
-      {/* 코 (측면) */}
-      <path d="M44 30 Q54 38 50 46" stroke="#999" strokeWidth="2" fill="none" strokeLinecap="round" />
-      {/* 눈 하나만 */}
-      <ellipse cx="50" cy="34" rx="3" ry="3.5" fill="#555" />
-      {/* 어두움 표현 */}
-      <rect x="5" y="5" width="30" height="70" rx="4" fill="black" opacity="0.18" />
-      {/* X 표시 */}
-      <line x1="14" y1="14" x2="26" y2="26" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" />
-      <line x1="26" y1="14" x2="14" y2="26" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
