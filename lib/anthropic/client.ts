@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { PersonalColorType, TestAnswers } from '@/types';
 import { getProductsByType, type CosmeticProduct } from '@/lib/data/cosmetics';
+import { getCelebritiesByType } from '@/lib/data/celebrities';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -115,22 +116,16 @@ const ACADEMIC_SYSTEM = `당신은 한국 퍼스널컬러 학회 기반의 공�
 - 수치와 근거는 반드시 색채 이론에 기반하여 제시
 - 한국어로만 작성`;
 
-// ── 유명인 후보풀 ─────────────────────────────────────────────
+// ── 유명인 후보풀 (DB에서 동적 생성) ────────────────────────
 
-const CELEBRITY_POOL = `
-■ 유명인 후보풀 (타입별 참고 — 최근 활동 활발한 인물 우선)
-봄 라이트:    아이유, 박보영, 정채연, 한지민
-봄 브라이트:  카리나, 윈터, 박은빈, 김유정
-여름 라이트:  김다미, 김지원, 박소이, 채수빈
-여름 뮤트:    한소희, 정유미, 송혜교, 이은샘
-가을 뮤트:    김태리, 박서준, 한예슬, 이성경
-가을 딥:      전지현, 김희애, 공효진
-겨울 브라이트: 제니, 차은우, 이도현
-겨울 딥:      김혜수, 송중기, 김다미
-
-선정 기준: 2030 세대가 즉시 알아볼 수 있는 인물, 최근 3년 내 활발히 활동 중인 인물 우선.
-위 목록 외에도 적절한 인물 추천 가능 (단, 한국에서 인지도 높은 인물).
-`;
+function buildCelebrityPoolText(colorType: PersonalColorType): string {
+  const pool = getCelebritiesByType(colorType);
+  if (pool.length === 0) return '■ 유명인 후보풀: 한국에서 인지도 높은 적절한 인물을 직접 추천하세요.';
+  const lines = pool
+    .map(c => `  { "id": "${c.id}", "name": "${c.name}", "profession": "${c.profession}" }`)
+    .join('\n');
+  return `■ 유명인 후보풀 (반드시 아래 목록에서만 선택, id 값은 그대로 사용):\n${lines}`;
+}
 
 function buildPersonalizationSystem(name: string, colorType: PersonalColorType): string {
   const n = name || '고객';
@@ -145,13 +140,11 @@ function buildPersonalizationSystem(name: string, colorType: PersonalColorType):
 - Q11 고민에 대한 답변은 특별히 공감적이고 따뜻하게
 
 유명인 추천 기준:
-- 2030 세대(만 20~39세)가 즉시 알아볼 수 있는 인물
-- 한국에서 활동 중이거나 잘 알려진 K-POP 아이돌·한국 배우·글로벌 셀럽
-- 너무 옛날이거나 잘 알려지지 않은 인물 ❌
+- 후보풀에 제공된 인물만 사용, id 값은 반드시 그대로 출력
 - 4~5명 추천, 각각 왜 같은 톤인지 짧게 설명
-- 동성 인물을 우선 추천하되, 다양한 직군 포함
+- signatureColors는 그 인물이 자주 입는 톤의 색상 hex 2~3개
 
-${CELEBRITY_POOL}
+${buildCelebrityPoolText(colorType)}
 
 사진 분석 지침 (사진이 제공된 경우):
 - personalIntro.photoImpression에 피부 밝기·톤, 분위기, 어울리는 메이크업 스타일을 구체적으로 서술
@@ -326,8 +319,10 @@ export interface ReportMakeupItem {
 }
 
 export interface Celebrity {
+  id: string;
   name: string;
   profession: string;
+  signatureColors: string[];
   similarity: string;
   iconicLook: string;
 }
@@ -336,8 +331,8 @@ export interface ReportData {
   meta: {
     typeName: string;
     typeNameKr: string;
-    toneStrength: string;
-    issueDate: string;
+    toneStrength?: string;
+    analysisDate: string;
     reportId: string;
     customerName: string;
   };
@@ -353,7 +348,7 @@ export interface ReportData {
   };
   celebrities: Celebrity[];
   analysis: {
-    summary: string;
+    summary?: string;
     quadrant: {
       warmCool: number;  // 0: 매우 쿨, 100: 매우 웜
       lightDeep: number; // 0: 매우 라이트, 100: 매우 딥
@@ -366,6 +361,7 @@ export interface ReportData {
     };
     base: string;
     contrast: string;
+    keyInsight?: string;
   };
   palette: {
     best: ReportColorItem[];    // 8개
@@ -455,7 +451,7 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     "typeName": "영문 타입명 (예: Spring Light)",
     "typeNameKr": "${colorType}",
     "toneStrength": "톤 강도 설명 (예: Soft Light tendency, Yellow Base 경향)",
-    "issueDate": "${today}",
+    "analysisDate": "${today}",
     "reportId": "${reportId}",
     "customerName": "${name}"
   },
@@ -475,13 +471,14 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
   },
   "celebrities": [
     {
-      "name": "유명인 이름 (예: 아이유)",
-      "profession": "직업 (예: 가수·배우)",
+      "id": "후보풀에서 제공된 id 값 그대로",
+      "name": "후보풀에서 제공된 name 값 그대로",
+      "profession": "후보풀에서 제공된 profession 값 그대로",
       "signatureColors": ["#RRGGBB", "#RRGGBB", "#RRGGBB"],
       "similarity": "${name}님과 같은 타입인 이유 — 톤·명도·분위기 관점으로 설명",
       "iconicLook": "이 인물의 트레이드마크 스타일 설명"
     },
-    (총 4~5명)
+    (총 4~5명, 반드시 후보풀 목록 내에서만 선택)
   ],
   "analysis": {
     "summary": "이 타입의 핵심 특징을 색의 4속성 관점에서 설명하는 2~3문장 요약",
@@ -496,7 +493,8 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
       "clarity": "청탁 특성 (예: Clear tendency)"
     },
     "base": "Yellow Base / Pink Base / Neutral Base 중 하나",
-    "contrast": "High / Medium / Low Contrast 중 하나"
+    "contrast": "High / Medium / Low Contrast 중 하나",
+    "keyInsight": "${name}님의 가장 핵심적인 컬러 특징 한 문장"
   },
   "palette": {
     "best": [
@@ -664,6 +662,18 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
   if (data.makeup.eyeshadow.length === 0)  console.warn(`⚠️ ${colorType} 아이섀도우 DB 제품 없음 — PDF에 표시 안 됨`);
   if (data.makeup.blusher.length === 0)    console.warn(`⚠️ ${colorType} 블러셔 DB 제품 없음 — PDF에 표시 안 됨`);
 
+  // 셀럽 DB 검증 — 후보풀에 없는 id 제거
+  const availableCelebrities = getCelebritiesByType(colorType);
+  const validIds = new Set(availableCelebrities.map(c => c.id));
+  if (data.celebrities?.length) {
+    data.celebrities = data.celebrities.filter((c) => {
+      if (!validIds.has(c.id)) {
+        console.warn(`⚠️ DB에 없는 셀럽 제거: ${c.name} (id: ${c.id})`);
+        return false;
+      }
+      return true;
+    });
+  }
   console.log('[generateReportData] 셀럽 검증 완료, 최종:', data.celebrities?.length ?? 0);
   return data;
 }
