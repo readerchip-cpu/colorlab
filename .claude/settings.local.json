@@ -9,7 +9,14 @@
       "Bash(Write-Host \"deleted\")",
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Skill(claude-api)",
+      "Bash(npx tsc *)",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(findstr /i \"deploy\\\\|vercel\\\\|netlify\\\\|scripts\")",
+      "Bash(npx vercel *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)"
     ]
   }
 }

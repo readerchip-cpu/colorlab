@@ -49,69 +49,6 @@ function TextOptions({
   );
 }
 
-function ImageOptions({
-  options,
-  selectedValue,
-  onSelect,
-}: {
-  options: Question['options'];
-  selectedValue?: string;
-  onSelect: (value: string) => void;
-}) {
-  const isOdd = options.length % 2 !== 0;
-
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      {options.map((opt, idx) => {
-        const active = opt.value === selectedValue;
-        const isLast = isOdd && idx === options.length - 1;
-
-        return (
-          <button
-            key={opt.value}
-            onClick={() => onSelect(opt.value)}
-            className={cn(
-              'flex flex-col items-center gap-2.5 rounded-2xl border-2 p-3 text-center transition-all duration-150',
-              isLast && 'col-span-2 mx-auto w-[calc(50%-6px)]',
-              active
-                ? 'border-[#7C3AED] bg-violet-50 dark:bg-violet-900/30'
-                : 'border-gray-100 bg-white hover:border-violet-200 hover:bg-violet-50/40 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-violet-700 dark:hover:bg-violet-900/20',
-            )}
-          >
-            <div
-              className={cn(
-                'flex h-24 w-full items-center justify-center overflow-hidden rounded-xl',
-                active ? 'bg-violet-100 dark:bg-violet-900/40' : 'bg-gray-50 dark:bg-gray-700',
-              )}
-            >
-              {opt.imageUrl ? (
-                <img
-                  src={opt.imageUrl}
-                  alt={opt.label}
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              ) : (
-                <span className="text-xs text-gray-300 dark:text-gray-600">이미지</span>
-              )}
-            </div>
-            <span
-              className={cn(
-                'text-xs font-medium leading-tight',
-                active ? 'text-[#7C3AED] dark:text-purple-400' : 'text-gray-600 dark:text-gray-400',
-              )}
-            >
-              {opt.label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 function MultiSelectOptions({
   options,
   selectedValues,
@@ -201,14 +138,8 @@ export default function QuestionCard({ question, selectedValue, onSelect }: Prop
           selectedValues={selectedArr}
           onToggle={onSelect}
         />
-      ) : question.type === 'text' ? (
-        <TextOptions
-          options={question.options}
-          selectedValue={selectedStr}
-          onSelect={onSelect}
-        />
       ) : (
-        <ImageOptions
+        <TextOptions
           options={question.options}
           selectedValue={selectedStr}
           onSelect={onSelect}

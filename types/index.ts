@@ -26,14 +26,12 @@ export type QuestionCategory = '피부' | '눈' | '머리' | '스타일링' | '�
 export interface QuestionOption {
   label: string;
   value: string;
-  imageUrl?: string;
 }
 
 export interface Question {
   id: number;
   category: QuestionCategory;
   question: string;
-  type: 'text' | 'image';
   multiSelect: boolean;
   options: QuestionOption[];
 }
