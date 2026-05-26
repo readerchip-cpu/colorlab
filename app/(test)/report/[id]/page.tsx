@@ -1,21 +1,28 @@
 import { cache } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getTestSession } from '@/lib/utils/session';
-import { TYPE_REPRESENTATIVE, TYPE_PALETTE } from '@/lib/colorData';
-import { TYPE_EN, TYPE_EXTRA, CHART_POS } from '@/lib/pdf/typeExtra';
-import { TYPE_INTRO } from '@/lib/pdf/typeIntro';
-import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
-import { makeupTipsDatabase } from '@/lib/data/makeupTips';
+import { adminClient } from '@/lib/supabase/admin';
+import { TYPE_REPRESENTATIVE } from '@/lib/colorData';
 import { WebReport } from '@/components/report/WebReport';
 import type { PersonalColorType } from '@/types';
 import type { ReportData } from '@/types/report';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface Props {
   params: { id: string };
 }
 
-const fetchSession = cache(async (id: string) => getTestSession(id));
+const fetchSession = cache(async (id: string) => {
+  const { data, error } = await adminClient
+    .from('test_sessions')
+    .select('id, is_paid, result_type, report_content, customer_name, analysis_status, created_at')
+    .eq('id', id)
+    .single();
+  if (error || !data) throw new Error('session not found');
+  return data;
+});
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
@@ -31,87 +38,58 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ReportPage({ params }: Props) {
+  const sessionId = params.id;
+  console.log('[ReportPage] sessionId:', sessionId);
+
   let session;
   try {
-    session = await fetchSession(params.id);
+    session = await fetchSession(sessionId);
   } catch {
     notFound();
   }
 
-  if (!session.is_paid) redirect(`/pay/${params.id}`);
-  if (!session.report_content) redirect(`/upload/${params.id}`);
+  console.log('[ReportPage] is_paid:', session.is_paid);
+  console.log('[ReportPage] analysis_status:', session.analysis_status);
+  console.log('[ReportPage] report_content 길이:', session.report_content?.length ?? 0);
 
-  const colorType = session.result_type as PersonalColorType;
-  const name = session.customer_name?.trim() || '고객';
-  const intro = TYPE_INTRO[colorType];
-  const extra = TYPE_EXTRA[colorType];
-  const attr = extra.attributes;
+  if (!session.is_paid) redirect(`/pay/${sessionId}`);
+  if (!session.report_content) redirect(`/upload/${sessionId}`);
 
-  // CHART_POS: [x, y] — x: negative=cool, positive=warm / y: positive=light, negative=deep
-  const [cpX, cpY] = CHART_POS[colorType];
-  const warmCool = Math.round(((cpX + 1) / 2) * 100);
-  const lightDeep = Math.round(((1 - cpY) / 2) * 100);
+  // JSON 파싱
+  let reportData: ReportData;
+  try {
+    reportData = JSON.parse(session.report_content) as ReportData;
+  } catch (parseError) {
+    console.error('[ReportPage] report_content JSON 파싱 실패:', parseError);
+    redirect(`/upload/${sessionId}`);
+  }
 
-  const reportData: ReportData = {
-    meta: {
-      typeName: TYPE_EN[colorType],
-      typeNameKr: colorType,
-      toneStrength: attr.base,
-      accentColor: TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED',
-    },
-    palette: {
-      best: [...TYPE_PALETTE[colorType], ...extra.bestColors].slice(0, 8),
-      worst: extra.worstColors,
-      stylingNotes: [extra.fashion.tip],
-    },
-    personalIntro: {
-      greeting: `${name}님, 안녕하세요. 컬러랩에서 분석한 ${name}님만의 컬러 가이드를 보내드려요.`,
-      colorTypeDescription: {
-        summary: intro.summary,
-        characteristics: intro.characteristics,
-        bestFor: intro.bestFor,
-      },
-      photoImpression: `${name}님의 테스트 응답을 기반으로 정밀 분석한 결과입니다. ${colorType} 타입의 특성이 잘 나타나 있습니다.`,
-      keyFinding: `${name}님은 ${intro.keyFinding}`,
-    },
-    analysis: {
-      quadrant: { warmCool, lightDeep },
-      fourAttributes: {
-        hue: attr.hue,
-        value: attr.value,
-        chroma: attr.chroma,
-        clarity: attr.clarity,
-      },
-      base: attr.base,
-      contrast: attr.contrast,
-      keyInsight: `${attr.hue} 계열로, ${attr.base} 타입의 ${attr.clarity} ${attr.chroma} 특성을 가집니다.`,
-    },
-    makeup: {
-      lip: extra.makeup.lip,
-      foundation: extra.makeup.foundation,
-      eyeshadow: extra.makeup.eyeshadow,
-      blush: extra.makeup.blush,
-      tips: makeupTipsDatabase[colorType],
-    },
-    hair: {
-      recommended: extra.hair.recommended,
-      avoid: extra.hair.avoid,
-    },
-    fashion: {
-      main: extra.fashion.main,
-      sub: extra.fashion.sub,
-      accent: extra.fashion.accent,
-      tip: extra.fashion.tip,
-    },
-    seasonalStyling: seasonalStylingDatabase[colorType],
-  };
+  // 필수 필드 무결성 확인
+  if (!reportData.meta || !reportData.palette) {
+    console.error('[ReportPage] reportData 구조 손상:', Object.keys(reportData ?? {}));
+    redirect(`/upload/${sessionId}`);
+  }
+
+  console.log('[ReportPage] reportData 키:', Object.keys(reportData));
+  console.log('[ReportPage] celebrities 수:', reportData.celebrities?.length ?? 0);
+  console.log('[ReportPage] customAdvice:', reportData.customAdvice);
+
+  // accentColor 주입 (Claude JSON에 없으므로 타입 기반으로 결정)
+  const colorType = (session.result_type ?? reportData.meta.typeNameKr) as PersonalColorType;
+  reportData.meta.accentColor = TYPE_REPRESENTATIVE[colorType] ?? '#7C3AED';
+
+  // customerName 보강
+  if (!reportData.meta.customerName && session.customer_name) {
+    reportData.meta.customerName = session.customer_name;
+  }
+  const customerName = reportData.meta.customerName || session.customer_name || '고객';
 
   return (
     <WebReport
       data={reportData}
-      pdfPageHref={`/report/${params.id}/pdf`}
-      customerName={name}
-      sessionId={params.id}
+      pdfPageHref={`/report/${sessionId}/pdf`}
+      customerName={customerName}
+      sessionId={sessionId}
     />
   );
 }

@@ -1,5 +1,8 @@
+'use client';
+
 import { SectionHeader } from '@/components/report/components/SectionHeader';
 import type { ReportData } from '@/types/report';
+import type { CosmeticProduct } from '@/lib/data/cosmetics';
 
 interface SectionProps {
   data: ReportData;
@@ -16,7 +19,7 @@ export function MakeupSection({ data, customerName }: SectionProps) {
         number="06"
         title="추천 립스틱"
         subtitle="Lip Color"
-        items={makeup.lip}
+        items={makeup.lipstick}
         accent={accent}
       />
 
@@ -45,7 +48,7 @@ export function MakeupSection({ data, customerName }: SectionProps) {
           number="09"
           title="추천 블러셔"
           subtitle="Blusher"
-          items={makeup.blush}
+          items={makeup.blusher}
           accent={accent}
         />
       </div>
@@ -90,16 +93,18 @@ function MakeupCategory({
   number: string;
   title: string;
   subtitle: string;
-  items: Array<{ hex: string; name: string }>;
+  items: CosmeticProduct[];
   accent: string;
 }) {
+  if (!items || items.length === 0) return null;
+
   return (
     <>
       <SectionHeader number={number} title={title} subtitle={subtitle} accentColor={accent} />
       <div className="space-y-3">
         {items.map((item) => (
           <div
-            key={item.hex + item.name}
+            key={item.id}
             className="flex items-center gap-4 rounded-2xl border border-gray-200 p-4 dark:border-gray-700"
           >
             <div
@@ -107,9 +112,23 @@ function MakeupCategory({
               style={{ backgroundColor: item.hex }}
             />
             <div className="min-w-0 flex-1">
-              <p className="font-bold text-gray-900 dark:text-white">{item.name}</p>
+              <p className="font-bold text-gray-900 dark:text-white">
+                {item.brand} {item.product}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{item.shade}</p>
               <p className="font-mono text-xs text-gray-400">{item.hex}</p>
             </div>
+            {item.purchaseLink && (
+              <a
+                href={item.purchaseLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold text-white"
+                style={{ backgroundColor: accent }}
+              >
+                구매
+              </a>
+            )}
           </div>
         ))}
       </div>

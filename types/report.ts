@@ -1,4 +1,5 @@
 import type { PersonalColorType } from './index';
+import type { CosmeticProduct } from '@/lib/data/cosmetics';
 
 interface SeasonalLook {
   title: string;
@@ -8,6 +9,7 @@ interface SeasonalLook {
 }
 
 export interface Celebrity {
+  id?: string;
   name: string;
   profession?: string;
   similarity?: string;
@@ -19,19 +21,21 @@ export interface ReportData {
   meta: {
     typeName: string;
     typeNameKr: PersonalColorType;
-    toneStrength: string;
-    accentColor: string;
+    toneStrength?: string;
+    accentColor: string;       // injected in page.tsx (not from Claude)
+    customerName?: string;
+    analysisDate?: string;
   };
   palette: {
-    best: Array<{ hex: string; name: string }>;
-    worst: Array<{ hex: string; name: string }>;
+    best: Array<{ hex: string; name: string; mood?: string }>;
+    worst: Array<{ hex: string; name: string; reason?: string }>;
     stylingNotes?: string[];
   };
   personalIntro: {
     greeting: string;
     colorTypeDescription: {
       summary: string;
-      characteristics: [string, string, string];
+      characteristics: string[];
       bestFor: string;
     };
     photoImpression: string;
@@ -45,26 +49,26 @@ export interface ReportData {
     keyInsight?: string;
   };
   makeup: {
-    lip: Array<{ hex: string; name: string }>;
-    foundation: Array<{ hex: string; name: string }>;
-    eyeshadow: Array<{ hex: string; name: string }>;
-    blush: Array<{ hex: string; name: string }>;
+    lipstick: CosmeticProduct[];
+    foundation: CosmeticProduct[];
+    eyeshadow: CosmeticProduct[];
+    blusher: CosmeticProduct[];
     tips?: string[];
   };
   hair: {
-    recommended: Array<{ name: string; desc: string }>;
-    avoid: string;
+    recommended: Array<{ name: string; description: string }>;
+    avoid?: Array<{ name: string; reason: string }>;
   };
   fashion: {
-    main: string;
-    sub: string;
-    accent: string;
-    tip: string;
+    main: string[];
+    sub: string[];
+    accent: string[];
+    tips?: string[];
   };
   seasonalStyling: {
     spring: SeasonalLook;
     summer: SeasonalLook;
-    autumn: SeasonalLook;
+    fall: SeasonalLook;
     winter: SeasonalLook;
   };
   celebrities?: Celebrity[];

@@ -6,10 +6,6 @@ interface SectionProps {
   customerName: string;
 }
 
-function toColorList(str: string): string[] {
-  return str.split(',').map((s) => s.trim()).filter(Boolean);
-}
-
 export function HairFashionSection({ data, customerName }: SectionProps) {
   const { hair, fashion, seasonalStyling, meta } = data;
   const accent = meta.accentColor;
@@ -32,18 +28,25 @@ export function HairFashionSection({ data, customerName }: SectionProps) {
             style={{ borderLeftColor: accent }}
           >
             <p className="mb-1 text-base font-bold text-gray-900 dark:text-white">{h.name}</p>
-            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{h.desc}</p>
+            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{h.description}</p>
           </div>
         ))}
       </div>
 
       {/* 피해야 할 헤어 */}
-      {hair.avoid && (
+      {hair.avoid && hair.avoid.length > 0 && (
         <div className="mb-10 rounded-2xl border-l-4 border-red-400 bg-red-50 p-4 dark:bg-red-950/20">
           <p className="mb-2 text-sm font-bold text-red-700 dark:text-red-400">
             피해야 할 헤어 컬러
           </p>
-          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{hair.avoid}</p>
+          <ul className="space-y-1">
+            {hair.avoid.map((item, i) => (
+              <li key={i} className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                <span className="font-medium">{item.name}</span>
+                {item.reason && <span className="text-gray-500"> — {item.reason}</span>}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -59,36 +62,45 @@ export function HairFashionSection({ data, customerName }: SectionProps) {
         <ColorGroupCard
           label="MAIN"
           korean="메인 컬러"
-          colors={toColorList(fashion.main)}
+          colors={fashion.main}
           description="기본이 되는 베이스 컬러"
           accent={accent}
         />
         <ColorGroupCard
           label="SUB"
           korean="서브 컬러"
-          colors={toColorList(fashion.sub)}
+          colors={fashion.sub}
           description="자연스럽게 어우러지는 컬러"
           accent={accent}
         />
         <ColorGroupCard
           label="ACCENT"
           korean="포인트 컬러"
-          colors={toColorList(fashion.accent)}
+          colors={fashion.accent}
           description="포인트로 활용하는 컬러"
           accent={accent}
         />
       </div>
 
       {/* 코디 팁 */}
-      <div
-        className="mb-10 rounded-2xl border-l-4 p-5"
-        style={{ backgroundColor: accent + '10', borderLeftColor: accent }}
-      >
-        <p className="mb-3 font-mono text-xs font-bold tracking-widest" style={{ color: accent }}>
-          {customerName}님을 위한 코디 팁
-        </p>
-        <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{fashion.tip}</p>
-      </div>
+      {fashion.tips && fashion.tips.length > 0 && (
+        <div
+          className="mb-10 rounded-2xl border-l-4 p-5"
+          style={{ backgroundColor: accent + '10', borderLeftColor: accent }}
+        >
+          <p className="mb-3 font-mono text-xs font-bold tracking-widest" style={{ color: accent }}>
+            {customerName}님을 위한 코디 팁
+          </p>
+          <ul className="space-y-2">
+            {fashion.tips.map((tip, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="mt-1 flex-shrink-0" style={{ color: accent }}>▸</span>
+                <span className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* 시즌별 스타일링 */}
       <SectionHeader
@@ -101,7 +113,7 @@ export function HairFashionSection({ data, customerName }: SectionProps) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <SeasonCard season="SPRING" korean="봄" color="#E89B8C" data={seasonalStyling.spring} />
         <SeasonCard season="SUMMER" korean="여름" color="#6FA8DC" data={seasonalStyling.summer} />
-        <SeasonCard season="AUTUMN" korean="가을" color="#C68642" data={seasonalStyling.autumn} />
+        <SeasonCard season="AUTUMN" korean="가을" color="#C68642" data={seasonalStyling.fall} />
         <SeasonCard season="WINTER" korean="겨울" color="#4A5568" data={seasonalStyling.winter} />
       </div>
     </section>
