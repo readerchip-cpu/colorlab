@@ -5,6 +5,8 @@ import { getTestSession } from '@/lib/utils/session';
 import { TYPE_REPRESENTATIVE, TYPE_PALETTE } from '@/lib/colorData';
 import { TYPE_EN, TYPE_EXTRA, CHART_POS } from '@/lib/pdf/typeExtra';
 import { TYPE_INTRO } from '@/lib/pdf/typeIntro';
+import { seasonalStylingDatabase } from '@/lib/data/seasonalStyling';
+import { makeupTipsDatabase } from '@/lib/data/makeupTips';
 import { WebReport } from '@/components/report/WebReport';
 import type { PersonalColorType } from '@/types';
 import type { ReportData } from '@/types/report';
@@ -89,7 +91,19 @@ export default async function ReportPage({ params }: Props) {
       foundation: extra.makeup.foundation,
       eyeshadow: extra.makeup.eyeshadow,
       blush: extra.makeup.blush,
+      tips: makeupTipsDatabase[colorType],
     },
+    hair: {
+      recommended: extra.hair.recommended,
+      avoid: extra.hair.avoid,
+    },
+    fashion: {
+      main: extra.fashion.main,
+      sub: extra.fashion.sub,
+      accent: extra.fashion.accent,
+      tip: extra.fashion.tip,
+    },
+    seasonalStyling: seasonalStylingDatabase[colorType],
   };
 
   return (

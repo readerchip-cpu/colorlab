@@ -1,5 +1,20 @@
 import type { PersonalColorType } from './index';
 
+interface SeasonalLook {
+  title: string;
+  description: string;
+  mustHaves: Array<{ icon: string; label: string }>;
+  colors: Array<{ name: string; hex: string }>;
+}
+
+export interface Celebrity {
+  name: string;
+  profession?: string;
+  similarity?: string;
+  iconicLook?: string;
+  signatureColors?: string[];
+}
+
 export interface ReportData {
   meta: {
     typeName: string;
@@ -35,5 +50,26 @@ export interface ReportData {
     eyeshadow: Array<{ hex: string; name: string }>;
     blush: Array<{ hex: string; name: string }>;
     tips?: string[];
+  };
+  hair: {
+    recommended: Array<{ name: string; desc: string }>;
+    avoid: string;
+  };
+  fashion: {
+    main: string;
+    sub: string;
+    accent: string;
+    tip: string;
+  };
+  seasonalStyling: {
+    spring: SeasonalLook;
+    summer: SeasonalLook;
+    autumn: SeasonalLook;
+    winter: SeasonalLook;
+  };
+  celebrities?: Celebrity[];
+  customAdvice?: {
+    isRelated: boolean;
+    answer: string;
   };
 }
