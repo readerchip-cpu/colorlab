@@ -127,10 +127,10 @@ function buildCelebrityPoolText(colorType: PersonalColorType): string {
   return `■ 유명인 후보풀 (반드시 아래 목록에서만 선택, id 값은 그대로 사용):\n${lines}`;
 }
 
-function buildPersonalizationSystem(name: string, colorType: PersonalColorType): string {
+// 사용자별 개인화 지침 (이름 포함 → 캐시 불가)
+function buildPersonalizationInstructions(name: string): string {
   const n = name || '고객';
-  return `
-■ 개인화 리포트 지침 — 반드시 준수
+  return `■ 개인화 리포트 지침 — 반드시 준수
 
 이 리포트는 "${n}"님께 보내는 개인 맞춤 분석 보고서입니다.
 
@@ -144,13 +144,10 @@ function buildPersonalizationSystem(name: string, colorType: PersonalColorType):
 - 4~5명 추천, 각각 왜 같은 톤인지 짧게 설명
 - signatureColors는 그 인물이 자주 입는 톤의 색상 hex 2~3개
 
-${buildCelebrityPoolText(colorType)}
-
 사진 분석 지침 (사진이 제공된 경우):
 - personalIntro.photoImpression에 피부 밝기·톤, 분위기, 어울리는 메이크업 스타일을 구체적으로 서술
 - 분석 데이터(quadrant, fourAttributes)에도 사진 관찰 결과를 반영
-- "[n]님의 사진에서 느껴지는..." 형식으로 직접 언급
-`.trim();
+- "${n}님의 사진에서 느껴지는..." 형식으로 직접 언급`;
 }
 
 // ── 1. 무료 결과 — 서사형 2~3문장 ────────────────────────────
@@ -592,17 +589,32 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
       {
         type: 'text',
         text: ACADEMIC_SYSTEM,
-        cache_control: { type: 'ephemeral' }, // 학술 프롬프트 캐시
+        cache_control: { type: 'ephemeral' }, // 블록 1: 공통 학술 지침 — 전 타입 공유 캐시
       },
       {
         type: 'text',
-        text: buildPersonalizationSystem(name, colorType), // 개인화 (캐시 불가)
+        text: buildCelebrityPoolText(colorType),
+        cache_control: { type: 'ephemeral' }, // 블록 2: 타입별 셀럽 풀 — 8종 캐시
+      },
+      {
+        type: 'text',
+        text: buildPersonalizationInstructions(name), // 블록 3: 이름 포함 — 캐시 불가
       },
     ] as Anthropic.TextBlockParam[],
     messages: [{ role: 'user', content: userContent }],
   });
 
-  console.log(`[Claude/reportData] stop_reason: ${response.stop_reason} | input: ${response.usage?.input_tokens}tok | output: ${response.usage?.output_tokens}tok`);
+  const u = response.usage as typeof response.usage & {
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
+  console.log('[Claude/reportData] Token usage:', {
+    input:          u.input_tokens,
+    output:         u.output_tokens,
+    cache_creation: u.cache_creation_input_tokens ?? 0,
+    cache_read:     u.cache_read_input_tokens ?? 0,
+  });
+  console.log(`[Claude/reportData] stop_reason: ${response.stop_reason}`);
 
   if (response.stop_reason === 'max_tokens') {
     console.error(`[Claude/reportData] ⚠️ 응답이 max_tokens 한계로 잘렸습니다 (output: ${response.usage?.output_tokens}tok)`);
