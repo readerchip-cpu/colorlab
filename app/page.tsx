@@ -347,7 +347,43 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── 6. 푸터 ── */}
+      {/* ── 6. 서비스 안내 ── */}
+      <section className="bg-gray-50 px-5 py-16 dark:bg-gray-900">
+        <div className="mx-auto max-w-lg">
+          <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400 dark:text-purple-400">
+            Service Information
+          </p>
+          <h2 className="mb-10 text-center text-2xl font-black text-gray-900 dark:text-gray-100">
+            서비스 제공 안내
+          </h2>
+
+          <div className="space-y-5">
+            {[
+              { emoji: '📋', title: '상품 정보', desc: '컬러랩 퍼스널컬러 정밀 분석 리포트 (디지털 PDF + 웹 열람)' },
+              { emoji: '💰', title: '가격', desc: '4,900원 (정가 5,900원 / 런칭 이벤트가)' },
+              { emoji: '⏱️', title: '서비스 제공 기간', desc: '결제 완료 즉시 ~ 영구 제공 (다운로드 기간 제한 없음)' },
+              { emoji: '📦', title: '제공 방식', desc: '결제 완료 후 사진 업로드 → AI 분석 (약 90초 소요) → 웹 리포트 즉시 열람 및 PDF 다운로드' },
+              { emoji: '💌', title: '리포트 발송', desc: '입력하신 이메일로 PDF 리포트가 자동 발송됩니다' },
+            ].map(({ emoji, title, desc }) => (
+              <div key={title} className="border-l-4 border-violet-600 pl-4">
+                <p className="mb-1 text-sm font-bold text-gray-900 dark:text-white">{emoji} {title}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{desc}</p>
+              </div>
+            ))}
+            <div className="border-l-4 border-violet-600 pl-4">
+              <p className="mb-1 text-sm font-bold text-gray-900 dark:text-white">🔄 환불 정책</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                디지털 콘텐츠 특성상 결제 완료 후 리포트 열람 시 환불이 불가합니다. 단, 기술적 오류로 리포트가 제공되지 않은 경우 전액 환불됩니다.
+              </p>
+              <Link href="/refund" className="mt-1 inline-block text-sm text-violet-600 underline dark:text-violet-400">
+                환불 정책 자세히 보기 →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. 푸터 ── */}
       <footer className="border-t border-gray-100 bg-gray-50 px-5 py-10 dark:border-gray-700 dark:bg-gray-800/50">
         <div className="mx-auto max-w-lg">
           <div className="mb-4 flex items-center gap-2">
@@ -371,6 +407,9 @@ export default function LandingPage() {
             </Link>
             <Link href="/terms" className="text-gray-500 transition-colors hover:text-violet-600 dark:text-gray-400 dark:hover:text-purple-400">
               이용약관
+            </Link>
+            <Link href="/refund" className="text-gray-500 transition-colors hover:text-violet-600 dark:text-gray-400 dark:hover:text-purple-400">
+              환불 정책
             </Link>
           </div>
 

@@ -131,6 +131,33 @@ export default async function PayPage({ params, searchParams }: Props) {
           </div>
         </div>
 
+        {/* 서비스 제공 안내 */}
+        <div className="mb-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+          <p className="mb-3 text-sm font-bold text-gray-900 dark:text-white">서비스 제공 안내</p>
+          <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+            <li>
+              <strong className="text-gray-900 dark:text-gray-200">제공 방식:</strong>
+              <span className="ml-1">결제 완료 후 즉시 웹 리포트 열람 및 PDF 다운로드 가능</span>
+            </li>
+            <li>
+              <strong className="text-gray-900 dark:text-gray-200">서비스 제공 기간:</strong>
+              <span className="ml-1">결제 완료 후 즉시 ~ 영구 제공 (다운로드 가능 기간: 결제일로부터 무제한)</span>
+            </li>
+            <li>
+              <strong className="text-gray-900 dark:text-gray-200">리포트 발송:</strong>
+              <span className="ml-1">입력하신 이메일로 PDF 리포트 자동 발송</span>
+            </li>
+            <li>
+              <strong className="text-gray-900 dark:text-gray-200">환불 정책:</strong>
+              <span className="ml-1">디지털 콘텐츠 특성상 리포트 열람 시 환불이 불가합니다. 단, 기술적 오류로 리포트가 제공되지 않은 경우 전액 환불됩니다.</span>
+            </li>
+            <li>
+              <strong className="text-gray-900 dark:text-gray-200">문의:</strong>
+              <span className="ml-1">kumokiri@naver.com / 010-2060-7039</span>
+            </li>
+          </ul>
+        </div>
+
         {/* 결제 수단 선택 + 이메일 입력 */}
         <div className="rounded-3xl bg-white px-6 py-6 shadow-sm dark:bg-gray-800">
           <PaymentWidget sessionId={params.id} amount={PRICE} />
