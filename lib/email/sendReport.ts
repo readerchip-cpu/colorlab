@@ -168,12 +168,26 @@ export async function sendReport(
   to: string,
   data: SendReportData,
 ): Promise<void> {
-  await resend.emails.send({
+  console.log('[sendReport] 호출됨');
+  console.log('[sendReport] to:', to);
+  console.log('[sendReport] FROM_EMAIL:', process.env.FROM_EMAIL);
+  console.log('[sendReport] RESEND_API_KEY:', process.env.RESEND_API_KEY ? '설정됨' : '누락');
+
+  const result = await resend.emails.send({
     from: process.env.FROM_EMAIL!,
     to,
     subject: `[컬러랩] ${data.customerName ? `${data.customerName}님의 ` : ''}${data.typeNameKr} 분석 리포트가 준비됐어요`,
     html: buildHtml(data),
   });
+
+  console.log('[sendReport] Resend 응답:', JSON.stringify(result));
+
+  if (result.error) {
+    console.error('[sendReport] Resend 에러:', result.error);
+    throw new Error(result.error.message);
+  }
+
+  console.log('[sendReport] 이메일 발송 성공:', result.data?.id);
 }
 
 /** @deprecated use sendReport instead */

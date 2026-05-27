@@ -89,21 +89,28 @@ export async function POST(request: Request) {
     await saveReportContent(sessionId, reportContentJson, customerName);
     console.log(`[Analyze] DB 저장 완료 (${Date.now() - startTime}ms)`);
 
-    // 분석 완료 후 이메일 발송 — 실패해도 응답은 계속
+    // 분석 완료 후 이메일 발송 — 실패해도 응답은 정상 반환
     const colorType = session.result_type as PersonalColorType;
-    getEmailBySessionId(sessionId)
-      .then((email) => {
-        if (!email) return;
+    try {
+      const email = await getEmailBySessionId(sessionId);
+      if (email) {
+        console.log(`[Analyze] 이메일 발송 시작: ${email} (${Date.now() - startTime}ms)`);
         const base = process.env.NEXT_PUBLIC_BASE_URL ?? '';
-        return sendReport(email, {
+        await sendReport(email, {
+          customerName,
           sessionId,
           typeName:   TYPE_EN[colorType] ?? colorType,
           typeNameKr: colorType,
           reportUrl:  `${base}/report/${sessionId}`,
           pdfUrl:     `${base}/api/pdf/${sessionId}`,
         });
-      })
-      .catch((err) => console.error('Email send failed:', err));
+        console.log(`[Analyze] 이메일 발송 완료 (${Date.now() - startTime}ms)`);
+      } else {
+        console.warn('[Analyze] payments에서 이메일 조회 실패, 발송 스킵');
+      }
+    } catch (emailErr) {
+      console.error('[Analyze] 이메일 발송 실패 (응답은 정상):', emailErr);
+    }
 
     return NextResponse.json({ redirectUrl: `/report/${sessionId}` });
 
