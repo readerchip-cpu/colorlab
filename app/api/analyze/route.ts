@@ -99,11 +99,7 @@ export async function POST(request: Request) {
         console.warn('[Analyze] payments에서 이메일 조회 실패, 발송 스킵');
       }
     } catch (emailErr) {
-      console.error('[Analyze] ❌ 이메일 발송 실패 (응답은 정상):');
-      console.error('Error name:', (emailErr as Error)?.name);
-      console.error('Error message:', (emailErr as Error)?.message);
-      console.error('Error stack:', (emailErr as Error)?.stack);
-      console.error('Error full:', JSON.stringify(emailErr, null, 2));
+      console.error('[Analyze] 이메일 발송 실패 (응답은 정상):', emailErr);
     }
 
     return NextResponse.json({ redirectUrl: `/report/${sessionId}` });

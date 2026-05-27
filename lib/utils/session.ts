@@ -44,15 +44,15 @@ export async function saveReportContent(
   content: string,
   customerName?: string,
 ): Promise<void> {
-  const patch: Record<string, unknown> = {
-    report_content: content,
-    analysis_status: 'completed',
-  };
-  if (customerName !== undefined) patch.customer_name = customerName || null;
+  const safeName = customerName?.trim() || '고객';
 
   const { error } = await adminClient
     .from('test_sessions')
-    .update(patch)
+    .update({
+      report_content: content,
+      analysis_status: 'completed',
+      customer_name: safeName,
+    })
     .eq('id', id);
 
   if (error) throw error;

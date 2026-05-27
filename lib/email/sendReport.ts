@@ -168,16 +168,22 @@ export async function sendReport(
   to: string,
   data: SendReportData,
 ): Promise<void> {
-  const result = await resend.emails.send({
+  const sendPromise = resend.emails.send({
     from: process.env.FROM_EMAIL!,
     to,
     subject: `[컬러랩] ${data.customerName ? `${data.customerName}님의 ` : ''}${data.typeNameKr} 분석 리포트가 준비됐어요`,
     html: buildHtml(data),
   });
 
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error('Resend timeout (10s)')), 10_000);
+  });
+
+  const result = await Promise.race([sendPromise, timeoutPromise]);
+
   if (result.error) {
     console.error('[sendReport] Resend 에러:', result.error);
-    throw new Error(result.error.message);
+    throw new Error(result.error.message || 'Resend 발송 실패');
   }
 }
 
