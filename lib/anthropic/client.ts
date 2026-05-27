@@ -185,7 +185,6 @@ ${formatAnswers(answers)}
     ],
   });
 
-  console.log(`[Claude/freeResult] stop_reason: ${response.stop_reason} | output: ${response.usage?.output_tokens}tok`);
   const block = response.content[0];
   return block.type === 'text' ? block.text.trim() : '';
 }
@@ -274,8 +273,6 @@ ${section7}`;
     messages: [{ role: 'user', content: userContent }],
   });
 
-  console.log(`[Claude/fullReport] stop_reason: ${response.stop_reason} | input: ${response.usage?.input_tokens}tok | output: ${response.usage?.output_tokens}tok`);
-
   if (response.stop_reason === 'max_tokens') {
     console.error(`[Claude/fullReport] ⚠️ 응답이 max_tokens 한계로 잘렸습니다 (output: ${response.usage?.output_tokens}tok)`);
     throw new Error('리포트가 토큰 한계로 잘렸습니다. max_tokens를 늘려주세요.');
@@ -283,7 +280,6 @@ ${section7}`;
 
   const block = response.content[0];
   const text = block.type === 'text' ? block.text.trim() : '';
-  console.log(`[Claude/fullReport] 응답 길이: ${text.length}자`);
 
   // 필수 섹션 헤더 존재 여부 확인
   const requiredSections = ['[섹션 1]', '[섹션 2]', '[섹션 3]', '[섹션 4]', '[섹션 5]', '[섹션 6]'];
@@ -604,18 +600,6 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     messages: [{ role: 'user', content: userContent }],
   });
 
-  const u = response.usage as typeof response.usage & {
-    cache_creation_input_tokens?: number;
-    cache_read_input_tokens?: number;
-  };
-  console.log('[Claude/reportData] Token usage:', {
-    input:          u.input_tokens,
-    output:         u.output_tokens,
-    cache_creation: u.cache_creation_input_tokens ?? 0,
-    cache_read:     u.cache_read_input_tokens ?? 0,
-  });
-  console.log(`[Claude/reportData] stop_reason: ${response.stop_reason}`);
-
   if (response.stop_reason === 'max_tokens') {
     console.error(`[Claude/reportData] ⚠️ 응답이 max_tokens 한계로 잘렸습니다 (output: ${response.usage?.output_tokens}tok)`);
     throw new Error('리포트 JSON이 토큰 한계로 잘렸습니다. max_tokens를 늘려주세요.');
@@ -628,7 +612,6 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
 
   // JSON 추출 — 마크다운 코드블록이 포함된 경우 처리
   const raw = block.text.trim();
-  console.log(`[Claude/reportData] 응답 길이: ${raw.length}자`);
 
   let jsonText = raw;
   if (jsonText.startsWith('```json')) {
@@ -651,8 +634,6 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     console.error('응답 일부:', jsonText.substring(0, 500));
     throw new Error('Claude 응답 JSON 파싱 실패');
   }
-  console.log('[generateReportData] JSON 파싱 성공');
-  console.log('[generateReportData] 셀러브리티 수:', data.celebrities?.length ?? 0);
 
   // 필수 최상위 필드 검증
   const requiredFields = ['meta', 'personalIntro', 'makeup', 'seasonalStyling'] as const;
@@ -661,7 +642,6 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
     console.error(`[Claude/reportData] ⚠️ 누락 필드: ${missingFields.join(', ')} | 응답 길이: ${raw.length}자`);
     throw new Error(`리포트 JSON 필드 누락: ${missingFields.join(', ')}`);
   }
-  console.log('[Claude/reportData] 필드 검증 완료');
 
   // 안전장치: AI 생성 제품 무시, DB의 verified 제품만 사용
   data.makeup.lipstick   = realProducts.lipstick.filter(p => p.verified === true);
@@ -686,6 +666,5 @@ hex 값은 반드시 '#RRGGBB' 형식의 실제 색상 코드를 사용하세요
       return true;
     });
   }
-  console.log('[generateReportData] 셀럽 검증 완료, 최종:', data.celebrities?.length ?? 0);
   return data;
 }

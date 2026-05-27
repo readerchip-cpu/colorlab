@@ -1,4 +1,7 @@
-export async function GET() {
+export async function GET(request: Request) {
+  if (process.env.NODE_ENV === 'production') {
+    return Response.json({ error: 'Not found' }, { status: 404 });
+  }
   const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
   const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
   const apiSecret = process.env.PORTONE_API_SECRET;

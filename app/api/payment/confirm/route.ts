@@ -13,8 +13,6 @@ export async function GET(request: Request) {
   const paymentId = searchParams.get('paymentId');
   const code = searchParams.get('code');
 
-  console.log('[GET confirm] called — paymentId:', paymentId, 'code:', code, 'url:', request.url);
-
   if (!paymentId) {
     console.error('[GET confirm] missing paymentId, redirecting home');
     return NextResponse.redirect(`${origin}/`);
@@ -23,12 +21,10 @@ export async function GET(request: Request) {
   let sessionId: string;
   try {
     sessionId = parseSessionId(paymentId);
-    console.log('[GET confirm] parsed sessionId:', sessionId);
   } catch {
     const fallback = searchParams.get('sessionId');
     if (fallback) {
       sessionId = fallback;
-      console.log('[GET confirm] using fallback sessionId:', sessionId);
     } else {
       console.error('[GET confirm] parseSessionId failed and no sessionId fallback:', paymentId);
       return NextResponse.redirect(`${origin}/`);
@@ -36,7 +32,6 @@ export async function GET(request: Request) {
   }
 
   if (code) {
-    console.log('[GET confirm] failure/cancel code:', code);
     const params = new URLSearchParams({ error: code });
     const message = searchParams.get('message');
     if (message) params.set('message', message);
@@ -44,9 +39,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    console.log('[GET confirm] verifying payment:', paymentId);
     const { status, amount, txId } = await verifyPortonePayment(paymentId);
-    console.log('[GET confirm] verification result — status:', status, 'amount:', amount, 'txId:', txId);
 
     if (status !== 'PAID') throw new Error(`Payment status not PAID: ${status}`);
     if (amount !== PRICE) {
@@ -56,7 +49,6 @@ export async function GET(request: Request) {
 
     await updatePaymentDone(paymentId, txId);
     await updateSessionPaid(sessionId);
-    console.log('[GET confirm] done — redirecting to upload:', sessionId);
 
     return NextResponse.redirect(`${origin}/upload/${sessionId}`);
   } catch (err) {

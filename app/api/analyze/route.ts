@@ -23,17 +23,12 @@ function isAllowedMime(type: string): type is AllowedMime {
 }
 
 export async function POST(request: Request) {
-  console.log('[Analyze] ✅ POST 핸들러 진입');
-  const startTime = Date.now();
   let imageBase64: string | null = null;
 
   try {
-    console.log('[Analyze] formData 파싱 시작');
     const formData = await request.formData();
-    console.log(`[Analyze] formData 파싱 완료 (${Date.now() - startTime}ms)`);
     const sessionId = formData.get('session_id');
     const imageFile = formData.get('image');
-    console.log(`[Analyze] sessionId: ${sessionId}, imageFile: ${imageFile instanceof File ? `${imageFile.name} (${imageFile.size}B)` : 'missing'}`);
     const freeConcernRaw = formData.get('free_concern');
     const freeConcern = typeof freeConcernRaw === 'string' ? freeConcernRaw.trim() : undefined;
     const customerNameRaw = formData.get('customer_name');
@@ -70,7 +65,6 @@ export async function POST(request: Request) {
     imageBase64 = Buffer.from(arrayBuffer).toString('base64');
 
     // 리포트 생성 (Vision + 답변 + 고민 종합 → 구조화 JSON)
-    console.log(`[Analyze] Claude API 호출 시작 (${Date.now() - startTime}ms)`);
     const reportData = await generateReportData(
       session.answers,
       session.result_type as PersonalColorType,
@@ -79,7 +73,6 @@ export async function POST(request: Request) {
       freeConcern || session.free_concern || undefined,
       mimeType,
     );
-    console.log(`[Analyze] Claude API 응답 완료 (${Date.now() - startTime}ms)`);
 
     // base64 즉시 해제 (GC 대상)
     imageBase64 = null;
@@ -87,21 +80,14 @@ export async function POST(request: Request) {
     // JSON.stringify 후 DB 저장
     const reportContentJson = JSON.stringify(reportData);
     await saveReportContent(sessionId, reportContentJson, customerName);
-    console.log(`[Analyze] DB 저장 완료 (${Date.now() - startTime}ms)`);
 
     // 분석 완료 후 이메일 발송 — 실패해도 응답은 정상 반환
     const colorType = session.result_type as PersonalColorType;
-    console.log(`[Analyze] 이메일 발송 단계 진입 (${Date.now() - startTime}ms)`);
     try {
-      console.log('[Analyze] getEmailBySessionId 호출 직전');
       const email = await getEmailBySessionId(sessionId);
-      console.log('[Analyze] getEmailBySessionId 결과:', email);
       if (email) {
-        console.log(`[Analyze] 이메일 발송 시작: ${email} (${Date.now() - startTime}ms)`);
         const base = process.env.NEXT_PUBLIC_BASE_URL ?? '';
-        console.log('[Analyze] BASE_URL:', base);
-        console.log('[Analyze] sendReport 호출 직전');
-        const sendResult = await sendReport(email, {
+        await sendReport(email, {
           customerName,
           sessionId,
           typeName:   TYPE_EN[colorType] ?? colorType,
@@ -109,8 +95,6 @@ export async function POST(request: Request) {
           reportUrl:  `${base}/report/${sessionId}`,
           pdfUrl:     `${base}/api/pdf/${sessionId}`,
         });
-        console.log('[Analyze] sendReport 응답:', sendResult);
-        console.log(`[Analyze] 이메일 발송 완료 (${Date.now() - startTime}ms)`);
       } else {
         console.warn('[Analyze] payments에서 이메일 조회 실패, 발송 스킵');
       }
@@ -121,7 +105,6 @@ export async function POST(request: Request) {
       console.error('Error stack:', (emailErr as Error)?.stack);
       console.error('Error full:', JSON.stringify(emailErr, null, 2));
     }
-    console.log(`[Analyze] 이메일 단계 종료, return 직전 (${Date.now() - startTime}ms)`);
 
     return NextResponse.json({ redirectUrl: `/report/${sessionId}` });
 

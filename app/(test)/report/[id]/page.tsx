@@ -39,7 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ReportPage({ params }: Props) {
   const sessionId = params.id;
-  console.log('[ReportPage] sessionId:', sessionId);
 
   let session;
   try {
@@ -47,10 +46,6 @@ export default async function ReportPage({ params }: Props) {
   } catch {
     notFound();
   }
-
-  console.log('[ReportPage] is_paid:', session.is_paid);
-  console.log('[ReportPage] analysis_status:', session.analysis_status);
-  console.log('[ReportPage] report_content 길이:', session.report_content?.length ?? 0);
 
   if (!session.is_paid) redirect(`/pay/${sessionId}`);
   if (!session.report_content) redirect(`/upload/${sessionId}`);
@@ -69,10 +64,6 @@ export default async function ReportPage({ params }: Props) {
     console.error('[ReportPage] reportData 구조 손상:', Object.keys(reportData ?? {}));
     redirect(`/upload/${sessionId}`);
   }
-
-  console.log('[ReportPage] reportData 키:', Object.keys(reportData));
-  console.log('[ReportPage] celebrities 수:', reportData.celebrities?.length ?? 0);
-  console.log('[ReportPage] customAdvice:', reportData.customAdvice);
 
   // accentColor 주입 (Claude JSON에 없으므로 타입 기반으로 결정)
   const colorType = (session.result_type ?? reportData.meta.typeNameKr) as PersonalColorType;
