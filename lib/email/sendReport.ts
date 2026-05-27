@@ -170,17 +170,26 @@ export async function sendReport(
 ): Promise<void> {
   console.log('[sendReport] 호출됨');
   console.log('[sendReport] to:', to);
-  console.log('[sendReport] FROM_EMAIL:', process.env.FROM_EMAIL);
   console.log('[sendReport] RESEND_API_KEY:', process.env.RESEND_API_KEY ? '설정됨' : '누락');
 
+  const fromValue = process.env.FROM_EMAIL!;
+
+  console.log('[sendReport] ====== from 값 추적 ======');
+  console.log('[sendReport] FROM_EMAIL raw:', JSON.stringify(process.env.FROM_EMAIL));
+  console.log('[sendReport] FROM_EMAIL length:', process.env.FROM_EMAIL?.length);
+  console.log('[sendReport] fromValue:', JSON.stringify(fromValue));
+  console.log('[sendReport] fromValue length:', fromValue.length);
+  console.log('[sendReport] ===========================');
+
   const result = await resend.emails.send({
-    from: process.env.FROM_EMAIL!,
+    from: fromValue,
     to,
     subject: `[컬러랩] ${data.customerName ? `${data.customerName}님의 ` : ''}${data.typeNameKr} 분석 리포트가 준비됐어요`,
     html: buildHtml(data),
   });
 
-  console.log('[sendReport] Resend 응답:', JSON.stringify(result));
+  console.log('[sendReport] Resend error:', JSON.stringify(result?.error));
+  console.log('[sendReport] Resend data:', JSON.stringify(result?.data));
 
   if (result.error) {
     console.error('[sendReport] Resend 에러:', result.error);
