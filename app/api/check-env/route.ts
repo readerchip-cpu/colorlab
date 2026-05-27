@@ -3,6 +3,7 @@ export async function GET() {
   const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
   const apiSecret = process.env.PORTONE_API_SECRET;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const fromEmail = process.env.FROM_EMAIL;
 
   return Response.json({
     storeId: { exists: !!storeId, first10: storeId?.substring(0, 10) || '없음' },
@@ -15,6 +16,13 @@ export async function GET() {
       hasNewline: anthropicKey?.includes('\n') || false,
       hasSpace: anthropicKey?.includes(' ') || false,
       hasTrailingWhitespace: anthropicKey ? anthropicKey !== anthropicKey.trim() : false,
+    },
+    from_email: {
+      exists: !!fromEmail,
+      value: fromEmail || '없음',
+      length: fromEmail?.length || 0,
+      includesAngleBracket: fromEmail?.includes('<') || false,
+      includesColorlab: fromEmail?.includes('colorlab.ai.kr') || false,
     },
   });
 }
