@@ -3,6 +3,7 @@
 import {
   useState,
   useRef,
+  useEffect,
   useCallback,
   type DragEvent,
   type ChangeEvent,
@@ -10,6 +11,7 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
+import { AnalysisProgress } from '@/components/loading/AnalysisProgress';
 import ReviewSlider from '@/components/loading/ReviewSlider';
 
 interface Props {
@@ -19,30 +21,29 @@ interface Props {
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'] as const;
 
-// 분석 단계별 메시지 (각 단계 약 4~5초)
-const PHASES = [
-  '이미지 분석 준비 중...',
-  'AI가 피부 톤을 읽고 있어요...',
-  '명도와 채도를 계산하고 있어요...',
-  '퍼스널컬러 타입 매핑 중...',
-  '맞춤 리포트를 작성하고 있어요...',
-];
-
 export default function UploadZone({ sessionId }: Props) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [phaseIdx, setPhaseIdx] = useState(0);
   const [apiError, setApiError] = useState<string | null>(null);
   const [freeConcern, setFreeConcern] = useState('');
   const [customerName, setCustomerName] = useState('');
+
+  // 분석 중 페이지 이탈 경고
+  useEffect(() => {
+    if (!isAnalyzing) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '분석이 진행 중입니다. 페이지를 닫으면 결과가 손실될 수 있어요.';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isAnalyzing]);
 
   const validate = useCallback((f: File): string | null => {
     if (!(ALLOWED as readonly string[]).includes(f.type))
@@ -87,18 +88,6 @@ export default function UploadZone({ sessionId }: Props) {
     if (!file) return;
     setIsAnalyzing(true);
     setApiError(null);
-    setProgress(0);
-    setPhaseIdx(0);
-
-    // 진행률 시뮬레이션 (최대 88%까지 자연스럽게 증가)
-    let p = 0;
-    let phase = 0;
-    timerRef.current = setInterval(() => {
-      p = Math.min(p + (Math.random() * 2.5 + 0.5), 88);
-      setProgress(p);
-      const newPhase = Math.min(Math.floor(p / 17), PHASES.length - 1);
-      if (newPhase !== phase) { phase = newPhase; setPhaseIdx(newPhase); }
-    }, 400);
 
     try {
       const form = new FormData();
@@ -115,17 +104,9 @@ export default function UploadZone({ sessionId }: Props) {
       }
 
       const { redirectUrl } = await res.json();
-
-      clearInterval(timerRef.current!);
-      setProgress(100);
-      setPhaseIdx(PHASES.length - 1);
-
-      setTimeout(() => router.push(redirectUrl), 600);
+      setTimeout(() => router.push(redirectUrl), 400);
     } catch (err) {
-      clearInterval(timerRef.current!);
       setIsAnalyzing(false);
-      setProgress(0);
-      setPhaseIdx(0);
       setApiError(
         err instanceof Error && err.message === '401'
           ? '결제 정보를 확인할 수 없어요. 다시 시도해주세요.'
@@ -134,32 +115,19 @@ export default function UploadZone({ sessionId }: Props) {
     }
   };
 
-  /* ── 분석 중 오버레이 ── */
+  /* ── 분석 중 전체화면 오버레이 ── */
   if (isAnalyzing) {
     return (
-      <div className="flex flex-col items-center justify-center gap-5 py-8">
-        {/* 스피너 */}
-        <div className="relative flex h-20 w-20 items-center justify-center">
-          <div className="absolute inset-0 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
-          <span className="text-2xl">🎨</span>
-        </div>
-
-        {/* 상태 텍스트 + 진행 바 */}
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-            {PHASES[phaseIdx]}
-          </p>
-          <div className="h-1.5 w-56 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
-            <div
-              className="h-full rounded-full bg-[#7C3AED] transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            />
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-white dark:bg-gray-900">
+        <div className="flex min-h-screen flex-col items-center justify-center py-12">
+          <AnalysisProgress customerName={customerName || '고객'} />
+          <div className="mt-6 w-full max-w-md px-6">
+            <p className="mb-3 text-center text-xs text-gray-500 dark:text-gray-400">
+              기다리는 동안 다른 분들의 후기를 확인해보세요
+            </p>
+            <ReviewSlider />
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500">최대 20초 소요될 수 있어요</p>
         </div>
-
-        {/* 리뷰 슬라이더 */}
-        <ReviewSlider />
       </div>
     );
   }
@@ -282,11 +250,16 @@ export default function UploadZone({ sessionId }: Props) {
         </div>
       </div>
 
+      {/* 소요 시간 안내 */}
+      <p className="mt-3 text-center text-xs text-gray-400">
+        분석에는 약 1분 30초 ~ 2분 소요돼요
+      </p>
+
       {/* 분석 버튼 */}
       <button
         onClick={handleAnalyze}
         disabled={!file || !customerName.trim() || isAnalyzing}
-        className="mt-5 w-full rounded-2xl bg-[#7C3AED] py-4 text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-3 w-full rounded-2xl bg-[#7C3AED] py-4 text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         분석 시작하기 →
       </button>
