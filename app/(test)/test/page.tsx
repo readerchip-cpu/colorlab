@@ -41,7 +41,11 @@ export default function TestPage() {
     setLoading(true);
     const freshAnswers = useTestStore.getState().answers;
     try {
-      const sessionId = await submitTestAction(freshAnswers as TestAnswers);
+      const meta = {
+        referrer: document.referrer || undefined,
+        utm_source: new URLSearchParams(window.location.search).get('utm_source') ?? undefined,
+      };
+      const sessionId = await submitTestAction(freshAnswers as TestAnswers, meta);
       router.push(`/result/${sessionId}`);
     } catch (err) {
       console.error('Test submission failed:', err);

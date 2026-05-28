@@ -5,13 +5,16 @@ import { generateFreeResult } from '@/lib/anthropic/client';
 import { createTestSession, saveReportContent } from '@/lib/utils/session';
 import type { TestAnswers } from '@/types';
 
-export async function submitTestAction(answers: TestAnswers): Promise<string> {
+export async function submitTestAction(
+  answers: TestAnswers,
+  meta?: { referrer?: string; utm_source?: string },
+): Promise<string> {
   const colorType = determineColorType(answers);
   const freeResult = buildFreeResult('', answers);
 
   // 세션 생성과 AI 요약 생성을 병렬 실행
   const [sessionId, summary] = await Promise.all([
-    createTestSession(answers, freeResult),
+    createTestSession(answers, freeResult, meta),
     generateFreeResult(answers, colorType).catch(() => ''),
   ]);
 

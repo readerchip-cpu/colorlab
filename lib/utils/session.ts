@@ -4,13 +4,19 @@ import type { FreeResult, TestAnswers, TestSession } from '@/types';
 export async function createTestSession(
   answers: TestAnswers,
   freeResult: FreeResult,
+  meta?: { referrer?: string; utm_source?: string },
 ): Promise<string> {
+  const now = new Date().toISOString();
   const { data, error } = await adminClient
     .from('test_sessions')
     .insert({
       answers,
       free_concern: null,
       result_type: freeResult.colorType,
+      started_at: now,
+      diagnosis_completed_at: now,
+      referrer: meta?.referrer || null,
+      utm_source: meta?.utm_source || null,
     })
     .select('id')
     .single();
@@ -33,7 +39,7 @@ export async function getTestSession(id: string): Promise<TestSession> {
 export async function updateSessionPaid(id: string): Promise<void> {
   const { error } = await adminClient
     .from('test_sessions')
-    .update({ is_paid: true })
+    .update({ is_paid: true, paid_at: new Date().toISOString() })
     .eq('id', id);
 
   if (error) throw error;
@@ -51,6 +57,7 @@ export async function saveReportContent(
     .update({
       report_content: content,
       analysis_status: 'completed',
+      analysis_completed_at: new Date().toISOString(),
       customer_name: safeName,
     })
     .eq('id', id);

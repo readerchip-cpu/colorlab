@@ -5,6 +5,7 @@ import { getTestSession } from '@/lib/utils/session';
 import { TYPE_DISPLAY } from '@/lib/colorData';
 import PaymentWidget from '@/components/payment/PaymentWidget';
 import type { PersonalColorType } from '@/types';
+import { adminClient } from '@/lib/supabase/admin';
 
 interface Props {
   params: { id: string };
@@ -29,6 +30,22 @@ export default async function PayPage({ params, searchParams }: Props) {
 
   if (session.is_paid) redirect(`/report/${params.id}`);
   if (!session.result_type) redirect('/test');
+
+  // 페이월 최초 진입 기록 (실패해도 결제 흐름에 영향 없음)
+  try {
+    if (!session.reached_paywall) {
+      await adminClient
+        .from('test_sessions')
+        .update({
+          reached_paywall: true,
+          paywall_reached_at: new Date().toISOString(),
+        })
+        .eq('id', params.id)
+        .eq('reached_paywall', false);
+    }
+  } catch (e) {
+    console.error('페이월 기록 실패 (무시):', e);
+  }
 
   const colorType = session.result_type as PersonalColorType;
   const displayName = TYPE_DISPLAY[colorType];

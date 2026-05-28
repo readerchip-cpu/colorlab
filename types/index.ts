@@ -63,6 +63,14 @@ export interface TestSession {
   report_content: string | null;
   customer_name: string | null;
   created_at: string;
+  started_at: string | null;
+  diagnosis_completed_at: string | null;
+  reached_paywall: boolean | null;
+  paywall_reached_at: string | null;
+  paid_at: string | null;
+  analysis_completed_at: string | null;
+  referrer: string | null;
+  utm_source: string | null;
 }
 
 export interface Payment {
