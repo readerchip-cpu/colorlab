@@ -4,6 +4,7 @@ import { ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getTestSession } from '@/lib/utils/session';
 import UploadZone from '@/components/upload/UploadZone';
+import KarrotPixelEvent from '@/components/KarrotPixelEvent';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,7 @@ export default async function UploadPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-gray-50 pb-16">
+      <KarrotPixelEvent event="Purchase" />
       <div className="mx-auto max-w-lg px-5 pt-10">
 
         {/* 헤더 */}

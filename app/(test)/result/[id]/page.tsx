@@ -8,6 +8,7 @@ import { TYPE_DISPLAY, SEASON_GRADIENT, TYPE_PALETTE, TYPE_DESCRIPTION } from '@
 import ColorPalette from '@/components/result/ColorPalette';
 import LockedContent from '@/components/result/LockedContent';
 import ShareModal from '@/components/share/ShareModal';
+import KarrotPixelEvent from '@/components/KarrotPixelEvent';
 import type { PersonalColorType } from '@/types';
 
 interface Props {
@@ -63,6 +64,7 @@ export default async function ResultPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-white pb-28 dark:bg-gray-900">
+      <KarrotPixelEvent event="ViewContent" />
 
       {/* ── 1. 헤더 ── */}
       <header
