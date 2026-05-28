@@ -251,10 +251,6 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         {loadingMethod === 'CARD' ? '결제 처리 중...' : `신용·체크카드  ₩${amount.toLocaleString()}`}
       </button>
 
-      {!hasEasyPay && (
-        <p className="mt-2 text-center text-xs text-gray-400 dark:text-gray-500">카카오페이·네이버페이는 준비 중입니다.</p>
-      )}
-
       {/* 오류 메시지 */}
       {error && (
         <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
