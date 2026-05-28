@@ -18,6 +18,20 @@ export function ShareButtons({ pdfHref, customerName, typeNameKr, accentColor, s
     setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
   }, []);
 
+  useEffect(() => {
+    const Kakao = (window as any).Kakao;
+    if (!Kakao) return;
+    if (!Kakao.isInitialized()) {
+      Kakao.init(process.env.NEXT_PUBLIC_KAKAO_KEY);
+    }
+    if (Kakao.Channel) {
+      Kakao.Channel.createAddChannelButton({
+        container: '#kakao-channel-button',
+        channelPublicId: '_yDrxbX',
+      });
+    }
+  }, []);
+
   const handleKakao = () => {
     const Kakao = (window as any).Kakao;
     if (!Kakao) return;
@@ -41,6 +55,13 @@ export function ShareButtons({ pdfHref, customerName, typeNameKr, accentColor, s
           link: {
             mobileWebUrl: window.location.origin,
             webUrl: window.location.origin,
+          },
+        },
+        {
+          title: '카카오톡 채널 추가',
+          link: {
+            mobileWebUrl: 'https://pf.kakao.com/_yDrxbX',
+            webUrl: 'https://pf.kakao.com/_yDrxbX',
           },
         },
       ],
@@ -148,7 +169,9 @@ export function ShareButtons({ pdfHref, customerName, typeNameKr, accentColor, s
         )}
       </div>
 
-      <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
+      <div id="kakao-channel-button" className="flex justify-center mt-4" />
+
+      <p className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
         친구에게 결과를 공유하고 싶다면
         <br />
         위 공유 버튼을 활용해보세요!

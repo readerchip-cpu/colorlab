@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import { ThemeProvider } from 'next-themes';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import KakaoScript from '@/components/KakaoScript';
+import Script from 'next/script';
 import './globals.css';
 
 // 한국어 본문용 — 필요한 weight만 로드
@@ -82,6 +83,23 @@ export default function RootLayout({
           {children}
           <ThemeToggle />
           <KakaoScript />
+          <Script id="meta-pixel" strategy="afterInteractive">{`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '1724677232068213');
+            fbq('track', 'PageView');
+          `}</Script>
+          <noscript>
+            <img height="1" width="1" style={{display:'none'}}
+              src="https://www.facebook.com/tr?id=1724677232068213&ev=PageView&noscript=1"
+            />
+          </noscript>
         </ThemeProvider>
       </body>
     </html>
