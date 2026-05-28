@@ -100,6 +100,20 @@ export default function RootLayout({
               src="https://www.facebook.com/tr?id=1724677232068213&ev=PageView&noscript=1"
             />
           </noscript>
+          {/* Danggeun Market Code */}
+          <Script id="karrot-pixel" strategy="afterInteractive">{`
+            (function() {
+              var s = document.createElement('script');
+              s.src = 'https://karrot-pixel.business.daangn.com/karrot-pixel.js';
+              s.async = true;
+              s.onload = function() {
+                window.karrotPixel.init('1779948295388137001');
+                window.karrotPixel.track('ViewPage');
+              };
+              document.head.appendChild(s);
+            })();
+          `}</Script>
+          {/* End Danggeun Market Code */}
         </ThemeProvider>
       </body>
     </html>
