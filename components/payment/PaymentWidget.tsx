@@ -84,12 +84,19 @@ export default function PaymentWidget({ sessionId, amount }: Props) {
         windowType: { pc: 'POPUP' as const, mobile: 'REDIRECTION' as const },
       };
 
+      const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+      console.log('[결제] 디바이스:', isMobileDevice ? 'mobile' : 'pc');
+      console.log('[결제] paymentId 길이:', paymentId.length, '/', paymentId);
+      console.log('[결제] 요청 파라미터:', JSON.stringify(common, null, 2));
+
       const response =
         method === 'KAKAO'
           ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: 'KAKAOPAY' } })
           : method === 'NAVER'
             ? await PortOne.requestPayment({ ...common, payMethod: 'EASY_PAY', easyPay: { easyPayProvider: 'NAVERPAY' } })
             : await PortOne.requestPayment({ ...common, payMethod: 'CARD' });
+
+      console.log('[결제] 응답:', JSON.stringify(response, null, 2));
 
       // response undefined → 모바일 리다이렉트 방식 (GET 엔드포인트가 처리)
       if (!response) return;
