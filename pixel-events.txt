@@ -1,0 +1,57 @@
+================================================================
+  컬러랩 (colorlab.kr) — 픽셀 이벤트 현황
+  최종 업데이트: 2026-05-29
+================================================================
+
+----------------------------------------------------------------
+  META PIXEL
+  픽셀 ID: 1724677232068213
+  설치 위치: app/layout.tsx (전체 공통)
+----------------------------------------------------------------
+
+페이지                        URL 패턴              이벤트              파일
+----------------------------  --------------------  ------------------  -------------------------------------------
+전체 공통                     /*                    PageView            app/layout.tsx
+결과 확인 페이지              /result/[id]          ViewContent         app/(test)/result/[id]/page.tsx
+결제 페이지                   /pay/[id]             InitiateCheckout    app/(test)/pay/[id]/page.tsx
+업로드 페이지 (결제 완료 후)  /upload/[id]          Purchase            app/(test)/upload/[id]/page.tsx
+
+구현 방식: components/MetaPixelEvent.tsx
+  - 'use client' 컴포넌트
+  - useEffect 내에서 window.fbq('track', event) 호출
+  - fbq는 layout.tsx 인라인 스크립트로 전 페이지 공통 초기화됨
+
+퍼널 흐름:
+  PageView → ViewContent → InitiateCheckout → Purchase
+
+
+----------------------------------------------------------------
+  당근마켓 픽셀 (Karrot Pixel)
+  픽셀 ID: 1779948295388137001
+  설치 위치: app/layout.tsx (전체 공통)
+----------------------------------------------------------------
+
+페이지                        URL 패턴              이벤트              파일
+----------------------------  --------------------  ------------------  -------------------------------------------
+전체 공통                     /*                    ViewPage            app/layout.tsx
+결과 확인 페이지              /result/[id]          ViewContent         app/(test)/result/[id]/page.tsx
+업로드 페이지 (결제 완료 후)  /upload/[id]          Purchase            app/(test)/upload/[id]/page.tsx
+
+구현 방식: components/KarrotPixelEvent.tsx
+  - 'use client' 컴포넌트
+  - window.karrotPixel 로드 대기 후 track() 호출 (폴링, 최대 3초)
+  - 스크립트는 layout.tsx에서 async 로드
+
+
+----------------------------------------------------------------
+  비교 요약
+----------------------------------------------------------------
+
+페이지               메타 픽셀             당근 픽셀
+-------------------  --------------------  --------------------
+전체 공통            PageView              ViewPage
+결과 확인 /result    ViewContent           ViewContent
+결제 /pay            InitiateCheckout      InitiateCheckout
+업로드 /upload       Purchase              Purchase
+
+================================================================

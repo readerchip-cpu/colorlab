@@ -5,6 +5,7 @@ import { getTestSession } from '@/lib/utils/session';
 import { TYPE_DISPLAY } from '@/lib/colorData';
 import PaymentWidget from '@/components/payment/PaymentWidget';
 import MetaPixelEvent from '@/components/MetaPixelEvent';
+import KarrotPixelEvent from '@/components/KarrotPixelEvent';
 import type { PersonalColorType } from '@/types';
 import { adminClient } from '@/lib/supabase/admin';
 
@@ -55,6 +56,7 @@ export default async function PayPage({ params, searchParams }: Props) {
   return (
     <main className="min-h-screen bg-gray-50 pb-16 dark:bg-gray-950">
       <MetaPixelEvent event="InitiateCheckout" />
+      <KarrotPixelEvent event="InitiateCheckout" />
       <div className="mx-auto max-w-lg px-5 pt-10">
 
         {/* 헤더 */}
