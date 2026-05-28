@@ -9,6 +9,7 @@ import ColorPalette from '@/components/result/ColorPalette';
 import LockedContent from '@/components/result/LockedContent';
 import ShareModal from '@/components/share/ShareModal';
 import KarrotPixelEvent from '@/components/KarrotPixelEvent';
+import MetaPixelEvent from '@/components/MetaPixelEvent';
 import type { PersonalColorType } from '@/types';
 
 interface Props {
@@ -65,6 +66,7 @@ export default async function ResultPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-white pb-28 dark:bg-gray-900">
       <KarrotPixelEvent event="ViewContent" />
+      <MetaPixelEvent event="ViewContent" />
 
       {/* ── 1. 헤더 ── */}
       <header
