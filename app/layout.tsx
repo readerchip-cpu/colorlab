@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import { ThemeProvider } from 'next-themes';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import KakaoScript from '@/components/KakaoScript';
+import { SessionTracker } from '@/components/analytics/SessionTracker';
 import Script from 'next/script';
 import './globals.css';
 
@@ -80,6 +81,7 @@ export default function RootLayout({
     <html lang="ko" className={`${notoSansKR.variable} ${geistMono.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="font-[family-name:var(--font-noto)] antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <SessionTracker />
           {children}
           <ThemeToggle />
           <KakaoScript />

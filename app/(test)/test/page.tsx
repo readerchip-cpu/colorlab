@@ -41,9 +41,13 @@ export default function TestPage() {
     setLoading(true);
     const freshAnswers = useTestStore.getState().answers;
     try {
+      const stored = sessionStorage.getItem('tracking_info');
+      const tracked = stored ? JSON.parse(stored) : {};
       const meta = {
-        referrer: document.referrer || undefined,
-        utm_source: new URLSearchParams(window.location.search).get('utm_source') ?? undefined,
+        referrer: tracked.referrer ?? document.referrer ?? undefined,
+        utm_source: tracked.utm_source ?? undefined,
+        utm_medium: tracked.utm_medium ?? undefined,
+        utm_campaign: tracked.utm_campaign ?? undefined,
       };
       const sessionId = await submitTestAction(freshAnswers as TestAnswers, meta);
       router.push(`/result/${sessionId}`);

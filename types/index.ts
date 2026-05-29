@@ -71,6 +71,8 @@ export interface TestSession {
   analysis_completed_at: string | null;
   referrer: string | null;
   utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
 }
 
 export interface Payment {

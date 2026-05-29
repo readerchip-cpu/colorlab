@@ -4,7 +4,7 @@ import type { FreeResult, TestAnswers, TestSession } from '@/types';
 export async function createTestSession(
   answers: TestAnswers,
   freeResult: FreeResult,
-  meta?: { referrer?: string; utm_source?: string },
+  meta?: { referrer?: string; utm_source?: string; utm_medium?: string; utm_campaign?: string },
 ): Promise<string> {
   const now = new Date().toISOString();
   const { data, error } = await adminClient
@@ -17,6 +17,8 @@ export async function createTestSession(
       diagnosis_completed_at: now,
       referrer: meta?.referrer || null,
       utm_source: meta?.utm_source || null,
+      utm_medium: meta?.utm_medium || null,
+      utm_campaign: meta?.utm_campaign || null,
     })
     .select('id')
     .single();

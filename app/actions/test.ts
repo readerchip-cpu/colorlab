@@ -7,7 +7,7 @@ import type { TestAnswers } from '@/types';
 
 export async function submitTestAction(
   answers: TestAnswers,
-  meta?: { referrer?: string; utm_source?: string },
+  meta?: { referrer?: string; utm_source?: string; utm_medium?: string; utm_campaign?: string },
 ): Promise<string> {
   const colorType = determineColorType(answers);
   const freeResult = buildFreeResult('', answers);
