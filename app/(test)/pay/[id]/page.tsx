@@ -91,6 +91,44 @@ export default async function PayPage({ params, searchParams }: Props) {
           </div>
         )}
 
+        {/* 상단 안심 안내 배너 */}
+        <div className="mb-5 rounded-3xl bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-900 p-6 shadow-xl text-white">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+            <span className="text-sm">💡</span>
+            <span className="text-xs font-bold">진단 전 꼭 확인하세요</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black mb-3 leading-tight">
+            화장 지울 필요 없이<br />
+            셀카 1장이면 충분해요
+          </h2>
+          <p className="text-sm sm:text-base text-white/90 mb-6 leading-relaxed">
+            AI가 메이크업 영향을 자동으로 보정해서<br />
+            본래 피부톤·언더톤을 정확하게 찾아드려요
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+              <div className="text-xl mb-1.5">💄</div>
+              <p className="text-xs font-bold mb-0.5">화장 OK</p>
+              <p className="text-[11px] text-white/80 leading-tight">AI가 자동 보정</p>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+              <div className="text-xl mb-1.5">📸</div>
+              <p className="text-xs font-bold mb-0.5">지금 촬영 OK</p>
+              <p className="text-[11px] text-white/80 leading-tight">미리 준비 불필요</p>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+              <div className="text-xl mb-1.5">🔒</div>
+              <p className="text-xs font-bold mb-0.5">AI만 분석</p>
+              <p className="text-[11px] text-white/80 leading-tight">사람은 안 봐요</p>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+              <div className="text-xl mb-1.5">⚡</div>
+              <p className="text-xs font-bold mb-0.5">즉시 삭제</p>
+              <p className="text-[11px] text-white/80 leading-tight">저장 안 함</p>
+            </div>
+          </div>
+        </div>
+
         {/* 주문 요약 */}
         <div className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-gray-800">
           {/* 상품 정보 */}
@@ -150,20 +188,6 @@ export default async function PayPage({ params, searchParams }: Props) {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* 사진 업로드 안내 */}
-        <div className="mb-5 p-4 bg-purple-50 dark:bg-purple-950/30 rounded-lg border-l-4 border-purple-600">
-          <p className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-            <span>💡</span>
-            <span>사진 업로드 안내</span>
-          </p>
-          <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5 leading-relaxed">
-            <li>💄 <strong>화장한 상태 OK</strong> — AI가 메이크업 영향을 보정해서 분석해요</li>
-            <li>📸 <strong>지금 셀카 1장이면 끝</strong> — 결제 후 사이트에서 바로 촬영 가능</li>
-            <li>🔒 <strong>AI만 분석</strong> — 사람이 사진을 직접 보지 않아요</li>
-            <li>⚡ <strong>분석 후 즉시 삭제</strong> — 사진은 저장되지 않아요</li>
-          </ul>
         </div>
 
         {/* 서비스 제공 안내 */}
