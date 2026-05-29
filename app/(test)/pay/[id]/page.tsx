@@ -152,6 +152,20 @@ export default async function PayPage({ params, searchParams }: Props) {
           </div>
         </div>
 
+        {/* 사진 업로드 안내 */}
+        <div className="mb-5 p-4 bg-purple-50 dark:bg-purple-950/30 rounded-lg border-l-4 border-purple-600">
+          <p className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <span>💡</span>
+            <span>사진 업로드 안내</span>
+          </p>
+          <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5 leading-relaxed">
+            <li>💄 <strong>화장한 상태 OK</strong> — AI가 메이크업 영향을 보정해서 분석해요</li>
+            <li>📸 <strong>지금 셀카 1장이면 끝</strong> — 결제 후 사이트에서 바로 촬영 가능</li>
+            <li>🔒 <strong>AI만 분석</strong> — 사람이 사진을 직접 보지 않아요</li>
+            <li>⚡ <strong>분석 후 즉시 삭제</strong> — 사진은 저장되지 않아요</li>
+          </ul>
+        </div>
+
         {/* 서비스 제공 안내 */}
         <div className="mb-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
           <p className="mb-3 text-sm font-bold text-gray-900 dark:text-white">서비스 제공 안내</p>

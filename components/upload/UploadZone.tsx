@@ -5,12 +5,10 @@ import {
   useRef,
   useEffect,
   useCallback,
-  type DragEvent,
   type ChangeEvent,
 } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils/cn';
 import { AnalysisProgress } from '@/components/loading/AnalysisProgress';
 import ReviewSlider from '@/components/loading/ReviewSlider';
 
@@ -24,8 +22,8 @@ const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export default function UploadZone({ sessionId }: Props) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -67,17 +65,9 @@ export default function UploadZone({ sessionId }: Props) {
     setPreview(null);
     setFileError(null);
     if (inputRef.current) inputRef.current.value = '';
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
   };
 
-  /* ── Drag & Drop ── */
-  const onDragOver = (e: DragEvent) => { e.preventDefault(); setIsDragging(true); };
-  const onDragLeave = () => setIsDragging(false);
-  const onDrop = (e: DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const f = e.dataTransfer.files[0];
-    if (f) applyFile(f);
-  };
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) applyFile(f);
@@ -136,31 +126,41 @@ export default function UploadZone({ sessionId }: Props) {
     <div>
       {/* 업로드 영역 */}
       {!preview ? (
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="사진 업로드 영역"
-          onDragOver={onDragOver}
-          onDragLeave={onDragLeave}
-          onDrop={onDrop}
-          onClick={() => inputRef.current?.click()}
-          onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}
-          className={cn(
-            'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed py-14 transition-all duration-150',
-            isDragging
-              ? 'border-violet-400 bg-violet-50'
-              : 'border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-violet-50/40',
-          )}
-        >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
-            <UploadIcon />
-          </div>
-          <div className="text-center">
-            <p className="font-semibold text-gray-700">
-              사진을 드래그하거나 클릭해 업로드
-            </p>
-            <p className="mt-1 text-xs text-gray-400">JPG · PNG · WebP · 최대 10MB</p>
-          </div>
+        <div className="space-y-3">
+          {/* 1순위: 지금 바로 셀카 찍기 */}
+          <label className="block cursor-pointer">
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept={ALLOWED.join(',')}
+              capture="user"
+              onChange={onChange}
+              className="hidden"
+              aria-label="셀카 찍기"
+            />
+            <div className="bg-[#7C3AED] hover:opacity-90 active:opacity-80 text-white font-bold py-4 px-6 rounded-2xl text-center shadow-lg shadow-violet-200 transition-all flex items-center justify-center gap-2">
+              <span className="text-xl">📷</span>
+              <span>지금 바로 셀카 찍기</span>
+            </div>
+          </label>
+
+          {/* 2순위: 갤러리에서 선택 */}
+          <label className="block cursor-pointer">
+            <input
+              ref={inputRef}
+              type="file"
+              accept={ALLOWED.join(',')}
+              onChange={onChange}
+              className="hidden"
+              aria-label="갤러리에서 선택"
+            />
+            <div className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium py-3 px-6 rounded-2xl text-center text-sm transition-all flex items-center justify-center gap-2">
+              <span>🖼️</span>
+              <span>갤러리에서 선택하기</span>
+            </div>
+          </label>
+
+          <p className="text-center text-xs text-gray-400 pt-1">JPG · PNG · WebP · 최대 10MB</p>
         </div>
       ) : (
         /* 미리보기 */
@@ -185,15 +185,6 @@ export default function UploadZone({ sessionId }: Props) {
           </div>
         </div>
       )}
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept={ALLOWED.join(',')}
-        className="hidden"
-        onChange={onChange}
-        aria-hidden="true"
-      />
 
       {/* 파일 유효성 오류 */}
       {fileError && (
@@ -273,19 +264,5 @@ export default function UploadZone({ sessionId }: Props) {
         </button>
       )}
     </div>
-  );
-}
-
-function UploadIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"
-        stroke="#7C3AED"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

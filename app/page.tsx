@@ -192,6 +192,21 @@ export default function LandingPage() {
             지금 무료로 진단 시작하기 →
           </Link>
 
+          <div className="flex flex-wrap gap-2 justify-center mt-4 px-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+              💄 화장 OK
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+              🔒 AI만 분석
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+              ⚡ 즉시 삭제
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+              📸 셀카 1장
+            </span>
+          </div>
+
           {/* 결과 카드 미리보기 */}
           <ResultCardPreview />
         </div>
@@ -219,6 +234,69 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 2.5. AI 보정 분석 섹션 ── */}
+      <section className="py-16 px-6 bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/20 dark:to-gray-900">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full mb-3">
+              💡 사진 업로드가 부담스러우셨나요?
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold dark:text-white leading-tight">
+              화장한 상태로도<br />
+              정확하게 분석할 수 있어요
+            </h2>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg dark:shadow-sm dark:shadow-purple-900/10 space-y-5">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">💄</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">AI가 메이크업을 인식하고 보정 분석</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  립스틱·블러셔·아이섀도우 컬러를 자동으로 인식하고 본래 피부톤·언더톤을 추출해서 분석해요. 화장을 지우지 않아도 정확한 결과를 받을 수 있어요.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 dark:border-gray-700"></div>
+
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">🔒</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">AI만 분석, 사람은 사진을 보지 않습니다</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  업로드한 사진은 AI가 자동 분석하며, 직원이나 다른 사람이 사진을 열어보지 않아요.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 dark:border-gray-700"></div>
+
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">⚡</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">분석 후 즉시 삭제, 저장되지 않습니다</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  분석이 완료되면 사진은 자동으로 삭제돼요. 서버에 보관되지 않고, 다시 사용되지도 않아요.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 dark:border-gray-700"></div>
+
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">📸</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">지금 바로 셀카 한 장이면 충분</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  미리 사진을 준비할 필요 없어요. 결제 후 사이트에서 바로 셀카를 찍어서 업로드하면 90초 안에 결과를 받아볼 수 있어요.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -325,6 +403,40 @@ export default function LandingPage() {
             <StarRow count={5} />
             <span className="text-sm font-bold text-gray-800 dark:text-gray-200">4.9 / 5.0</span>
             <span className="text-sm text-gray-400 dark:text-gray-500">· 누적 후기 127개</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4.5. FAQ ── */}
+      <section className="px-5 py-16 dark:bg-gray-900">
+        <div className="mx-auto max-w-lg">
+          <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400 dark:text-purple-400">
+            FAQ
+          </p>
+          <h2 className="mb-10 text-center text-2xl font-black text-gray-900 dark:text-gray-100">
+            자주 묻는 질문
+          </h2>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: '화장하고 찍어도 정확한 결과가 나오나요?',
+                a: '네, 가능해요. AI가 립스틱·블러셔 등 메이크업 컬러를 자동으로 인식하고 본래 피부톤·언더톤을 추출해서 분석해요. 다만 진한 색조 메이크업(선명한 레드 립, 강한 컬러 아이섀도우 등)은 가급적 자연스러운 톤으로 부탁드려요.',
+              },
+              {
+                q: '사진은 어떻게 처리되나요?',
+                a: 'AI 분석에만 사용되고 즉시 삭제됩니다. 직원이나 다른 사람이 사진을 직접 열어보지 않아요. 서버에도 보관되지 않습니다.',
+              },
+              {
+                q: '셀카를 미리 찍어둬야 하나요?',
+                a: '아니에요! 결제 후 사이트에서 바로 카메라를 켜서 찍어 올리면 됩니다. 별도로 사진을 준비할 필요 없어요.',
+              },
+            ].map(({ q, a }) => (
+              <div key={q} className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                <p className="mb-2 font-bold text-gray-900 dark:text-gray-100">Q. {q}</p>
+                <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">A. {a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

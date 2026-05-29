@@ -1,6 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getTestSession } from '@/lib/utils/session';
 import UploadZone from '@/components/upload/UploadZone';
@@ -53,17 +52,29 @@ export default async function UploadPage({ params }: Props) {
         </div>
 
         {/* ── 1. 안심 문구 배너 ── */}
-        <div className="mb-6 flex gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-4">
-          <ShieldCheck className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500" />
-          <div>
-            <p className="mb-0.5 text-sm font-bold text-emerald-800">
-              개인정보 완전 보호
-            </p>
-            <p className="text-xs leading-relaxed text-emerald-700">
-              업로드하신 사진은 AI 분석에만 사용돼요.
-              <br />
-              서버에 저장되지 않으며, 분석이 끝나는 순간 완전히 사라집니다.
-            </p>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20 rounded-2xl p-5 mb-6 border-l-4 border-purple-600">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl flex-shrink-0">💄</span>
+            <div className="flex-1">
+              <p className="text-base font-bold text-gray-900 dark:text-white mb-2">
+                화장한 그대로 찍어서 보내세요
+              </p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                AI가 메이크업 컬러를 자동으로 인식하고 본래 피부톤·언더톤을 추출해서 분석해요.
+                지금 모습 그대로 셀카 한 장이면 충분해요!
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-300 rounded-md">
+                  🔒 AI만 분석
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-300 rounded-md">
+                  ⚡ 즉시 삭제
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-300 rounded-md">
+                  📸 지금 촬영 OK
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -84,7 +95,7 @@ export default async function UploadPage({ params }: Props) {
               <ul className="mt-1.5 space-y-0.5 text-xs text-gray-500">
                 <li><span className="flex-shrink-0">👤</span> 정면 얼굴</li>
                 <li><span className="flex-shrink-0">✨</span> 자연광 / 밝은 조명</li>
-                <li><span className="flex-shrink-0">💆‍♀️</span> 메이크업 최소화</li>
+                <li><span className="flex-shrink-0">💄</span> 가벼운 메이크업 OK (AI 보정)</li>
               </ul>
             </div>
 
