@@ -57,7 +57,7 @@ export default async function UploadPage({ params }: Props) {
             <span className="text-3xl flex-shrink-0">💄</span>
             <div className="flex-1">
               <p className="text-base font-bold text-gray-900 dark:text-white mb-2">
-                화장한 그대로 찍어서 보내세요
+                화장 지울 필요 없이 찍어서 보내세요
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
                 AI가 메이크업 컬러를 자동으로 인식하고 본래 피부톤·언더톤을 추출해서 분석해요.
