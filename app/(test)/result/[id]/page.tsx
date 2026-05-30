@@ -6,7 +6,6 @@ import { getTestSession } from '@/lib/utils/session';
 import { getSeasonFromType, getToneFromType } from '@/lib/colorLogic';
 import { TYPE_DISPLAY, SEASON_GRADIENT, TYPE_PALETTE, TYPE_DESCRIPTION } from '@/lib/colorData';
 import ColorPalette from '@/components/result/ColorPalette';
-import LockedContent from '@/components/result/LockedContent';
 import ShareModal from '@/components/share/ShareModal';
 import KarrotPixelEvent from '@/components/KarrotPixelEvent';
 import MetaPixelEvent from '@/components/MetaPixelEvent';
@@ -104,15 +103,7 @@ export default async function ResultPage({ params }: Props) {
         </p>
       </section>
 
-      {/* 섹션 구분선 */}
-      <div className="mx-auto max-w-xl px-5">
-        <div className="border-t border-gray-100 dark:border-gray-700" />
-      </div>
-
-      {/* ── 4. 잠긴 콘텐츠 (블러) ── */}
-      <LockedContent colorType={colorType} />
-
-      {/* ── 5. 정밀 분석 리포트 blur 미리보기 ── */}
+      {/* ── 4. 정밀 분석 리포트 blur 미리보기 ── */}
       <section className="mx-auto max-w-xl px-5 py-4">
         <div className="rounded-3xl bg-gradient-to-br from-violet-600 to-purple-800 p-6 shadow-xl">
           <p className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-white/80">
