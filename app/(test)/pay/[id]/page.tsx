@@ -194,8 +194,17 @@ export default async function PayPage({ params, searchParams }: Props) {
           </div>
         </div>
 
+        {/* 결제 수단 선택 + 이메일 입력 */}
+        <div className="rounded-3xl bg-white px-6 py-6 shadow-sm dark:bg-gray-800">
+          <PaymentWidget sessionId={params.id} amount={PRICE} />
+        </div>
+
+        <p className="mt-5 text-center text-xs text-gray-400 dark:text-gray-500">
+          결제는 포트원(KG이니시스)을 통해 안전하게 처리됩니다
+        </p>
+
         {/* 서비스 제공 안내 */}
-        <div className="mb-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className="mt-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
           <p className="mb-3 text-sm font-bold text-gray-900 dark:text-white">서비스 제공 안내</p>
           <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
             <li>
@@ -220,15 +229,6 @@ export default async function PayPage({ params, searchParams }: Props) {
             </li>
           </ul>
         </div>
-
-        {/* 결제 수단 선택 + 이메일 입력 */}
-        <div className="rounded-3xl bg-white px-6 py-6 shadow-sm dark:bg-gray-800">
-          <PaymentWidget sessionId={params.id} amount={PRICE} />
-        </div>
-
-        <p className="mt-5 text-center text-xs text-gray-400 dark:text-gray-500">
-          결제는 포트원(KG이니시스)을 통해 안전하게 처리됩니다
-        </p>
       </div>
     </main>
   );
