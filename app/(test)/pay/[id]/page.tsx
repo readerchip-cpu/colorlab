@@ -8,6 +8,7 @@ import MetaPixelEvent from '@/components/MetaPixelEvent';
 import KarrotPixelEvent from '@/components/KarrotPixelEvent';
 import type { PersonalColorType } from '@/types';
 import { adminClient } from '@/lib/supabase/admin';
+import CountdownBanner from '@/components/pay/CountdownBanner';
 
 interface Props {
   params: { id: string };
@@ -90,6 +91,9 @@ export default async function PayPage({ params, searchParams }: Props) {
                     : `결제 오류가 발생했어요. (${failError})`}
           </div>
         )}
+
+        {/* 론칭 기념 할인 카운트다운 배너 */}
+        <CountdownBanner />
 
         {/* 상단 안심 안내 배너 */}
         <div className="mb-5 rounded-3xl bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-900 p-6 shadow-xl text-white">

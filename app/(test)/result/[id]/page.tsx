@@ -112,7 +112,56 @@ export default async function ResultPage({ params }: Props) {
       {/* ── 4. 잠긴 콘텐츠 (블러) ── */}
       <LockedContent colorType={colorType} />
 
-      {/* ── 5. 페이월 CTA ── */}
+      {/* ── 5. 정밀 분석 리포트 blur 미리보기 ── */}
+      <section className="mx-auto max-w-xl px-5 py-4">
+        <div className="rounded-3xl bg-gradient-to-br from-violet-600 to-purple-800 p-6 shadow-xl">
+          <p className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-white/80">
+            ✨ 정밀 분석 리포트 미리보기
+          </p>
+          <div className="mb-5 space-y-3">
+            {[
+              {
+                title: '나에게 어울리는 셀러브리티 스타일 TOP 3',
+                preview: '김태희 스타일 · 아이유 무드 · 제니 컬러 팔레트... 당신과 가장 가까운 셀럽 스타일을 분석했어요. 구체적인 메이크업과 코디 방법까지 알려드려요.',
+              },
+              {
+                title: '피해야 할 컬러 & 소재 분석',
+                preview: '쿨톤 민트, 차가운 실버 계열은 피부톤을 칙칙하게 만들어요. 피해야 할 7가지 컬러와 소재를 정리했어요. 쇼핑할 때 바로 활용하세요.',
+              },
+              {
+                title: '계절별 추천 룩 가이드',
+                preview: '봄엔 피치 블라우스, 여름엔 라벤더 원피스... 시즌마다 빛나는 컬러 코디법을 시즌별로 정리해드려요. 실제 옷 고를 때 바로 쓸 수 있어요.',
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm"
+              >
+                <div className="select-none px-4 py-4">
+                  <p className="mb-1.5 text-xs font-bold text-white">{item.title}</p>
+                  <p
+                    className="text-xs leading-relaxed text-white/90"
+                    style={{ filter: 'blur(5px)', userSelect: 'none' }}
+                  >
+                    {item.preview}
+                  </p>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-end bg-gradient-to-r from-transparent via-transparent to-purple-800/60 px-4">
+                  <span className="text-sm">🔒</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Link
+            href={`/pay/${params.id}`}
+            className="block w-full rounded-2xl bg-white py-4 text-center text-sm font-black text-violet-700 shadow-lg transition-opacity hover:opacity-90"
+          >
+            전체 리포트 보기 →
+          </Link>
+        </div>
+      </section>
+
+      {/* ── 6. 페이월 CTA ── */}
       <section className="mx-auto max-w-xl px-5 py-6">
         <div className="rounded-3xl border border-violet-100 bg-gradient-to-b from-violet-50 to-white p-7 dark:border-violet-800 dark:bg-gray-800 dark:from-gray-800 dark:to-gray-800">
           {/* 훅 문구 */}
