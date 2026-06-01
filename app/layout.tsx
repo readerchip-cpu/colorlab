@@ -11,7 +11,7 @@ import './globals.css';
 // 한국어 본문용 — 필요한 weight만 로드
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
-  weight: ['400', '500', '700', '900'],
+  weight: 'variable',
   variable: '--font-noto',
   display: 'swap',
 });
