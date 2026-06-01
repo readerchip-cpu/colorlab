@@ -180,32 +180,33 @@ export default function LandingPage() {
           </h1>
 
           <p className="mb-8 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-            10문항 + AI 사진 분석으로
+            화장 지울 필요 없어요
             <br />
-            퍼스널컬러를 정확하게 진단해드려요
+            지금 셀카 1장으로 퍼스널컬러 진단
           </p>
 
           <Link
             href="/test"
             className="inline-block rounded-2xl bg-[#7C3AED] px-10 py-5 md:py-4 text-lg md:text-base font-bold text-white shadow-xl shadow-violet-300 transition-all hover:-translate-y-0.5 hover:shadow-violet-400 active:translate-y-0"
           >
-            지금 무료로 진단 시작하기 →
+            무료 진단 시작하기 →
           </Link>
 
-          <div className="flex flex-wrap gap-2 justify-center mt-4 px-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+          <div className="grid grid-cols-2 gap-2 mt-4 px-4 max-w-xs mx-auto">
+            <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
               💄 화장 OK
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
-              🔒 AI만 분석
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
-              ⚡ 즉시 삭제
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+            <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
               📸 셀카 1장
             </span>
+            <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+              🔒 AI만 분석
+            </span>
+            <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800">
+              ⚡ 즉시 삭제
+            </span>
           </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">무료 진단 후 상세 리포트 ₩4,900</p>
 
           {/* 결과 카드 미리보기 */}
           <ResultCardPreview />
