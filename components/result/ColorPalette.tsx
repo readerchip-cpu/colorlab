@@ -2,9 +2,10 @@ import type { ColorSwatch } from '@/lib/colorData';
 
 interface Props {
   palette: [ColorSwatch, ColorSwatch, ColorSwatch];
+  blurHex?: boolean;
 }
 
-export default function ColorPalette({ palette }: Props) {
+export default function ColorPalette({ palette, blurHex = false }: Props) {
   return (
     <section className="mx-auto max-w-xl px-5 py-8">
       <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
@@ -18,7 +19,10 @@ export default function ColorPalette({ palette }: Props) {
               style={{ backgroundColor: swatch.hex }}
             />
             <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{swatch.name}</span>
-            <span className="font-mono text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <span
+              className="font-mono text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-500"
+              style={blurHex ? { filter: 'blur(3px)', userSelect: 'none' } : undefined}
+            >
               {swatch.hex}
             </span>
           </div>
