@@ -41,7 +41,7 @@ export default function PreviewResultPage() {
       </header>
 
       {/* ── 2. 대표 컬러 팔레트 ── */}
-      <ColorPalette palette={palette} blurHex />
+      <ColorPalette palette={palette} />
 
       {/* ── 3. AI 서사형 설명 ── */}
       <section className="mx-auto max-w-xl px-5 py-10">
@@ -49,28 +49,80 @@ export default function PreviewResultPage() {
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           AI 분석
         </p>
-        <div className="relative overflow-hidden">
-          <p className="font-serif text-[17px] leading-[2] tracking-wide text-gray-700 dark:text-gray-300">
-            {aiDescription.slice(0, 50)}
-            <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>
-              {aiDescription.slice(50)}
-            </span>
+        <p className="font-serif text-[17px] leading-[2] tracking-wide text-gray-700 dark:text-gray-300">
+          {aiDescription}
+        </p>
+      </section>
+
+      {/* ── 4. 전환 포인트 섹션 ── */}
+      <section className="mx-auto max-w-xl px-5 pb-4 pt-0">
+        <div
+          style={{
+            background: '#F5F0FF',
+            border: '1px solid #7C3AED',
+            borderRadius: '12px',
+            padding: '20px',
+          }}
+        >
+          <p style={{ fontSize: '16px', fontWeight: 600, color: '#7C3AED', marginBottom: '12px' }}>
+            ⚠️ 질문만으로는 한계가 있어요
           </p>
-          <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center bg-gradient-to-t from-white pb-2 pt-10 dark:from-gray-900">
-            <span className="text-xs font-semibold text-violet-600 dark:text-violet-400">
-              상세 리포트에서 전체 확인 →
-            </span>
+          <p style={{ fontSize: '14px', color: '#555', lineHeight: 1.7, marginBottom: '16px' }}>
+            지금 결과는 10가지 질문을 기반으로 한 예측이에요.
+            <br />
+            AI가 실제 내 피부 톤·명도·채도를 직접 분석하면
+            <br />
+            더 정밀한 타입과 맞춤 컬러를 알 수 있어요.
+          </p>
+          <div style={{ borderTop: '1px solid #DDD4FF', margin: '16px 0' }} />
+          <div className="flex flex-wrap gap-3">
+            <div className="min-w-[120px] flex-1">
+              <p style={{ fontSize: '13px', color: '#999', fontWeight: 600, marginBottom: '8px' }}>
+                질문 기반 진단
+              </p>
+              <ul className="space-y-1.5">
+                {['피부 톤 직접 측정 불가', '조명·메이크업 변수 반영 안됨', '예측 기반 결과'].map(
+                  (item) => (
+                    <li
+                      key={item}
+                      style={{ fontSize: '13px', color: '#999', display: 'flex', gap: '6px', alignItems: 'flex-start' }}
+                    >
+                      <span>✗</span>
+                      <span>{item}</span>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+            <div className="min-w-[120px] flex-1">
+              <p style={{ fontSize: '13px', color: '#7C3AED', fontWeight: 600, marginBottom: '8px' }}>
+                AI 사진 분석
+              </p>
+              <ul className="space-y-1.5">
+                {['실제 피부 톤·명도 직접 측정', '셀카 1장으로 즉시 분석', '메이크업·헤어 컬러까지'].map(
+                  (item) => (
+                    <li
+                      key={item}
+                      style={{ fontSize: '13px', color: '#7C3AED', display: 'flex', gap: '6px', alignItems: 'flex-start' }}
+                    >
+                      <span>✓</span>
+                      <span>{item}</span>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── 4. 정밀 분석 리포트 blur 미리보기 ── */}
+      {/* ── 5. 정밀 분석 리포트 blur 미리보기 ── */}
       <section className="mx-auto max-w-xl px-5 py-4">
         <div className="rounded-3xl bg-gradient-to-br from-violet-600 to-purple-800 p-6 shadow-xl">
           <p className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-white/80">
             ✨ 정밀 분석 리포트 미리보기
           </p>
-          <div className="mb-5 space-y-3">
+          <div className="space-y-3">
             {[
               {
                 title: '나에게 어울리는 셀러브리티 스타일 TOP 3',
@@ -107,24 +159,25 @@ export default function PreviewResultPage() {
         </div>
       </section>
 
-      {/* ── 5. 가격 카드 ── */}
-      <section className="mx-auto max-w-xl px-5 py-6">
+      {/* ── 6. 인페이지 CTA 버튼 ── */}
+      <section className="mx-auto max-w-xl px-5 py-4">
+        <Link
+          href={`/upload/${SAMPLE_ID}`}
+          className="block w-full rounded-2xl bg-[#7C3AED] py-4 text-center text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90"
+        >
+          셀카로 정밀 분석받기 ₩4,900 →
+        </Link>
+      </section>
+
+      {/* ── 7. 가격 카드 ── */}
+      <section className="mx-auto max-w-xl px-5 py-2 pb-6">
         <div className="overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-b from-violet-50 to-white dark:border-violet-800 dark:bg-gray-800 dark:from-gray-800 dark:to-gray-800">
           <div className="bg-[#7C3AED] px-4 py-2.5 text-center">
             <p className="text-xs font-semibold text-white">오늘 진단받은 내 결과, 24시간만 유지돼요</p>
           </div>
           <div className="p-7">
-            <p className="mb-1 text-center text-xs font-bold uppercase tracking-widest text-violet-400">
-              정밀 진단
-            </p>
-            <h3 className="mb-3 text-center text-lg font-bold leading-snug text-gray-900 dark:text-gray-100">
-              질문만으론 100% 확신할 수 없어요.
-              <br />
-              <span className="text-violet-600 dark:text-purple-400">내 사진을 분석하면 더 정확해요.</span>
-            </h3>
-            <p className="mb-6 text-center text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-              AI가 피부 톤·명도·채도를 직접 읽어
-              <br />더 정밀한 타입 분류와 맞춤 조언을 드려요.
+            <p className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-violet-400">
+              AI 사진 정밀 분석에 포함된 것
             </p>
             <ul className="mb-6 space-y-2">
               {[
@@ -160,7 +213,7 @@ export default function PreviewResultPage() {
           href={`/upload/${SAMPLE_ID}`}
           className="mx-auto block max-w-xl rounded-2xl bg-[#7C3AED] py-4 text-center text-lg md:text-base font-bold text-white shadow-lg shadow-violet-200 transition-opacity hover:opacity-90"
         >
-          내 퍼스널컬러 상세 리포트 받기 ₩4,900 →
+          셀카로 정밀 분석받기 ₩4,900 →
         </Link>
       </div>
     </main>
