@@ -115,7 +115,7 @@ function buildHtml(data: SendReportData): string {
                       <tr>
                         <td style="background:${C.brandLight};border-radius:12px;padding:15px 18px;">
                           <p style="margin:0;font-size:12.5px;line-height:1.75;color:${C.brandDark};">
-                            🔗 이 링크들은 결제일로부터 1년간 유효합니다.<br />
+                            🔗 이 링크들은 결제일로부터 3개월간 유효합니다.<br />
                             📱 모바일·PC 어디서든 바로 확인할 수 있어요.
                           </p>
                         </td>
