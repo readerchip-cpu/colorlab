@@ -213,7 +213,7 @@ export default async function PayPage({ params, searchParams }: Props) {
             </li>
             <li>
               <strong className="text-gray-900 dark:text-gray-200">서비스 제공 기간:</strong>
-              <span className="ml-1">결제 완료 후 즉시 제공 (다운로드 가능 기간: 결제일로부터 1년)</span>
+              <span className="ml-1">결제 완료 후 즉시 제공 (다운로드 가능 기간: 결제일로부터 3개월)</span>
             </li>
             <li>
               <strong className="text-gray-900 dark:text-gray-200">리포트 발송:</strong>

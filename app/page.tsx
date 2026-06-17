@@ -474,7 +474,7 @@ export default function LandingPage() {
             {[
               { emoji: '📋', title: '상품 정보', desc: '컬러랩 퍼스널컬러 정밀 분석 리포트 (디지털 PDF + 웹 열람)' },
               { emoji: '💰', title: '가격', desc: '4,900원 (정가 5,900원 / 런칭 이벤트가)' },
-              { emoji: '⏱️', title: '서비스 제공 기간', desc: '결제 완료 즉시 제공 (다운로드 가능 기간: 결제일로부터 1년)' },
+              { emoji: '⏱️', title: '서비스 제공 기간', desc: '결제 완료 즉시 제공 (다운로드 가능 기간: 결제일로부터 3개월)' },
               { emoji: '📦', title: '제공 방식', desc: '결제 완료 후 사진 업로드 → AI 분석 (약 90초 소요) → 웹 리포트 즉시 열람 및 PDF 다운로드' },
               { emoji: '💌', title: '리포트 발송', desc: '입력하신 이메일로 PDF 리포트가 자동 발송됩니다' },
             ].map(({ emoji, title, desc }) => (
