@@ -524,6 +524,12 @@ export default function LandingPage() {
             <Link href="/refund" className="text-gray-500 transition-colors hover:text-violet-600 dark:text-gray-400 dark:hover:text-purple-400">
               환불 정책
             </Link>
+            <Link href="/payment-complete" className="text-gray-500 transition-colors hover:text-violet-600 dark:text-gray-400 dark:hover:text-purple-400">
+              결제 완료 안내
+            </Link>
+            <Link href="/subscribe" className="text-gray-500 transition-colors hover:text-violet-600 dark:text-gray-400 dark:hover:text-purple-400">
+              정기 구독
+            </Link>
           </div>
 
           <div className="mb-4 border-t border-gray-100 pt-4 dark:border-gray-700">
