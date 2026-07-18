@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { getTestSession } from '@/lib/utils/session';
 import { TYPE_DISPLAY } from '@/lib/colorData';
 import PaymentWidget from '@/components/payment/PaymentWidget';
+import PaypalButton from '@/components/pay/PaypalButton';
 import MetaPixelEvent from '@/components/MetaPixelEvent';
 import KarrotPixelEvent from '@/components/KarrotPixelEvent';
 import type { PersonalColorType } from '@/types';
@@ -199,8 +200,24 @@ export default async function PayPage({ params, searchParams }: Props) {
           <PaymentWidget sessionId={params.id} amount={PRICE} />
         </div>
 
+        {/* 해외 결제 (PayPal) */}
+        <div className="mt-4 rounded-3xl bg-white px-6 py-6 shadow-sm dark:bg-gray-800">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-sm font-bold text-gray-900 dark:text-gray-100">해외 결제</span>
+            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
+              Overseas · USD $10
+            </span>
+          </div>
+          <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            해외 카드로 결제하시려면 PayPal을 이용하세요.
+            <br />
+            Pay with PayPal for international cards.
+          </p>
+          <PaypalButton sessionId={params.id} />
+        </div>
+
         <p className="mt-5 text-center text-xs text-gray-400 dark:text-gray-500">
-          결제는 포트원(KG이니시스)을 통해 안전하게 처리됩니다
+          국내 결제는 포트원(KG이니시스), 해외 결제는 PayPal을 통해 안전하게 처리됩니다
         </p>
 
         {/* 서비스 제공 안내 */}
